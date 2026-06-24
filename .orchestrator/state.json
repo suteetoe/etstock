@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-24T07:04:00Z",
+  "updatedAt": "2026-06-24T07:43:16Z",
   "project": {
     "name": "ETStock",
     "repo": "suteetoe/etstock",
@@ -34,7 +34,7 @@
       "qaVerdict": "PASS",
       "qaDate": "2026-06-24",
       "fixRounds": 0,
-      "notes": "PR opened for review"
+      "notes": "PR #1 merged into develop"
     }
   ],
   "prs": {
@@ -43,9 +43,11 @@
       "branch": "feature/phase-0-foundation",
       "title": "[feature] Phase 0 foundation",
       "featureId": "P00",
-      "status": "open",
+      "status": "merged",
       "fixRounds": 0,
-      "lastReviewedAt": null
+      "lastReviewedAt": null,
+      "mergedAt": "2026-06-24T07:43:16Z",
+      "mergeCommit": "4f2b213bbf9de5dad77dde9cf11d8644d4120abd"
     }
   },
   "schema": {
