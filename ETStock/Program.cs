@@ -1,5 +1,6 @@
 using Avalonia;
 using ETStock.Data;
+using ETStock.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +29,7 @@ internal sealed class Program
             {
                 var connectionString = GetDatabaseConnectionString(ctx.Configuration);
                 services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+                services.AddScoped<ICompanyRepository, CompanyRepository>();
             })
             .Build();
 
