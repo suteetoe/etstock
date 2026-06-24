@@ -77,4 +77,20 @@ public class AbbrInvoiceRepository(AppDbContext db) : IAbbrInvoiceRepository
         db.AbbrInvoices.Remove(invoice);
         await db.SaveChangesAsync();
     }
+
+    public async Task<AbbrInvoiceSummary> GetPeriodSummaryAsync(int taxYear, int taxMonth)
+    {
+        var query = db.AbbrInvoices
+            .AsNoTracking()
+            .Where(i => i.TaxYear == taxYear && i.TaxMonth == taxMonth);
+
+        var count = await query.CountAsync();
+        if (count == 0)
+            return new AbbrInvoiceSummary(0, 0, 0);
+
+        var totalAmount = await query.SumAsync(i => i.TotalAmount);
+        var vatAmount = await query.SumAsync(i => i.VatAmount);
+
+        return new AbbrInvoiceSummary(count, totalAmount, vatAmount);
+    }
 }
