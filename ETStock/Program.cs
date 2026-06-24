@@ -30,6 +30,7 @@ internal sealed class Program
                 var connectionString = GetDatabaseConnectionString(ctx.Configuration);
                 services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
                 services.AddScoped<ICompanyRepository, CompanyRepository>();
+                services.AddScoped<IProductRepository, ProductRepository>();
             })
             .Build();
 
