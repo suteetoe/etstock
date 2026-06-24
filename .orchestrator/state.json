@@ -106,42 +106,53 @@
       "title": "Phase 3 - Backend: Monthly transaction repository",
       "group": "backend",
       "scope": "ETStock/Data/Repositories/, ETStock/Models/MonthlyStock.cs, ETStock/Program.cs, ETStock.Tests/MonthlyStockRepositoryTests.cs",
-      "status": "ready-local",
-      "branch": "backend/phase3-monthly-transaction",
-      "pr": null,
+      "status": "pr-open",
+      "branch": "qa/phase3-monthly-transaction-tests",
+      "pr": "https://github.com/suteetoe/etstock/pull/6",
       "qaVerdict": "PASS",
       "qaDate": "2026-06-24",
       "fixRounds": 0,
-      "notes": "Local commit ada1945; tests pass. Awaiting PO approval to push/open PR."
+      "notes": "Stacked into qa/phase3-monthly-transaction-tests; PR #6 open."
     },
     {
       "id": "P03-F",
       "title": "Phase 3 - Frontend: Monthly transaction screen",
       "group": "frontend",
       "scope": "ETStock/ViewModels/, ETStock/Views/ProductView.axaml",
-      "status": "ready-local",
-      "branch": "frontend/phase3-monthly-transaction-ui",
-      "pr": null,
+      "status": "pr-open",
+      "branch": "qa/phase3-monthly-transaction-tests",
+      "pr": "https://github.com/suteetoe/etstock/pull/6",
       "qaVerdict": "PASS",
       "qaDate": "2026-06-24",
       "fixRounds": 0,
-      "notes": "Local commit b422fef; stacked on P03-B. Awaiting PO approval to push/open PR."
+      "notes": "Stacked into qa/phase3-monthly-transaction-tests; PR #6 open."
     },
     {
       "id": "P03-Q",
       "title": "Phase 3 - QA: Monthly transaction coverage",
       "group": "qa",
       "scope": "ETStock.Tests/, .team/qa-report-phase3.md",
-      "status": "ready-local",
+      "status": "pr-open",
       "branch": "qa/phase3-monthly-transaction-tests",
-      "pr": null,
+      "pr": "https://github.com/suteetoe/etstock/pull/6",
       "qaVerdict": "PASS",
       "qaDate": "2026-06-24",
       "fixRounds": 0,
-      "notes": "Local commit 17d3e26; dotnet test ETStock.slnx passed 36 tests. Awaiting PO approval to push/open PR."
+      "notes": "PR #6 opened 2026-06-24; 36 tests pass. Awaiting PO approval to merge."
     }
   ],
   "prs": {
+    "6": {
+      "url": "https://github.com/suteetoe/etstock/pull/6",
+      "branch": "qa/phase3-monthly-transaction-tests",
+      "title": "[Phase 3 QA] Monthly Stock Transaction — Coverage & Full Phase 3 Stack",
+      "featureId": "P03-Q",
+      "status": "open",
+      "fixRounds": 0,
+      "lastReviewedAt": null,
+      "mergedAt": null,
+      "mergeCommit": null
+    },
     "1": {
       "url": "https://github.com/suteetoe/etstock/pull/1",
       "branch": "feature/phase-0-foundation",
