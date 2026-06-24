@@ -121,6 +121,73 @@ public class MonthlyStockRepositoryTests
     }
 
     [Fact]
+    public async Task CarryForwardAsync_ChainsClosingAcrossNormalMonthAndYearBoundary()
+    {
+        var databaseName = Guid.NewGuid().ToString();
+        int productId;
+
+        await using (var db = CreateDb(databaseName))
+        {
+            var product = CreateProduct("P001");
+            db.Products.Add(product);
+            await db.SaveChangesAsync();
+            productId = product.Id;
+
+            db.MonthlyStocks.Add(new MonthlyStock
+            {
+                ProductId = productId,
+                Year = 2026,
+                Month = 11,
+                OpeningQty = 10,
+                BuyQty = 8,
+                SellFullQty = 3,
+                SellPosQty = 2
+            });
+            await db.SaveChangesAsync();
+
+            var repository = new MonthlyStockRepository(db);
+            var december = Assert.Single(
+                await repository.CarryForwardAsync(2026, 12));
+            Assert.Equal(13, december.OpeningQty);
+
+            await repository.SaveAsync(
+                new MonthlyStockInput(productId, 2026, 12, 13, 7, 4, 1));
+
+            var january = Assert.Single(
+                await repository.CarryForwardAsync(2027, 1));
+            Assert.Equal(15, january.OpeningQty);
+            Assert.Equal(15, january.ClosingQty);
+        }
+
+        await using (var db = CreateDb(databaseName))
+        {
+            var rows = await db.MonthlyStocks
+                .Where(stock => stock.ProductId == productId)
+                .OrderBy(stock => stock.Year)
+                .ThenBy(stock => stock.Month)
+                .ToListAsync();
+
+            Assert.Collection(
+                rows,
+                november =>
+                {
+                    Assert.Equal((2026, 11), (november.Year, november.Month));
+                    Assert.Equal(13, november.ClosingQty);
+                },
+                december =>
+                {
+                    Assert.Equal((2026, 12), (december.Year, december.Month));
+                    Assert.Equal(15, december.ClosingQty);
+                },
+                january =>
+                {
+                    Assert.Equal((2027, 1), (january.Year, january.Month));
+                    Assert.Equal(15, january.OpeningQty);
+                });
+        }
+    }
+
+    [Fact]
     public async Task CarryForwardAsync_UpdatesOpeningWithoutReplacingCurrentTransactions()
     {
         await using var db = CreateDb();
