@@ -1,92 +1,166 @@
-{
-  "version": 1,
-  "updatedAt": "2026-06-24T07:43:16Z",
-  "project": {
-    "name": "ETStock",
-    "repo": "suteetoe/etstock",
-    "remote": "https://github.com/suteetoe/etstock.git",
-    "defaultBranch": "main",
-    "stack": [".NET 10", "Avalonia 11.3.11", "CommunityToolkit.Mvvm 8.2.1", "EF Core 10.0.7 + Npgsql 10.0.0", "PostgreSQL", "xUnit 2.9.3 + InMemory"]
-  },
-  "agents": {
-    "frontend": "antigravity",
-    "backend": "codex",
-    "qa": "gemini"
-  },
-  "policy": {
-    "oneTaskOnePr": true,
-    "maxFixRoundsPerPr": 3,
-    "agentTouchesGit": false,
-    "scriptsOwnGit": true,
-    "agentMayPush": false,
-    "agentMayOpenPr": false,
-    "branchPattern": "^(frontend|backend|qa|feature)/[a-z0-9]+-[a-z0-9-]+$"
-  },
-  "backlog": [
-    {
-      "id": "P00",
-      "title": "Phase 0 — Foundation",
-      "group": "all",
-      "scope": "ETStock/**, ETStock.Tests/**",
-      "status": "done",
-      "branch": "feature/phase-0-foundation",
-      "pr": "https://github.com/suteetoe/etstock/pull/1",
-      "qaVerdict": "PASS",
-      "qaDate": "2026-06-24",
-      "fixRounds": 0,
-      "notes": "PR #1 merged into develop"
-    }
-  ],
-  "prs": {
-    "1": {
-      "url": "https://github.com/suteetoe/etstock/pull/1",
-      "branch": "feature/phase-0-foundation",
-      "title": "[feature] Phase 0 foundation",
-      "featureId": "P00",
-      "status": "merged",
-      "fixRounds": 0,
-      "lastReviewedAt": null,
-      "mergedAt": "2026-06-24T07:43:16Z",
-      "mergeCommit": "4f2b213bbf9de5dad77dde9cf11d8644d4120abd"
-    }
-  },
-  "schema": {
-    "note": "Initial schema established in Phase 0. Migration: 20260624035619_Initial",
-    "dbContext": "ETStock.Data.AppDbContext",
-    "migrations": "ETStock/Data/Migrations/",
-    "entities": [
-      {
-        "class": "Company",
-        "table": "Companies",
-        "namespace": "ETStock.Models",
-        "file": "ETStock/Models/Company.cs"
-      },
-      {
-        "class": "Product",
-        "table": "Products",
-        "namespace": "ETStock.Models",
-        "file": "ETStock/Models/Product.cs",
-        "indexes": ["Code (UNIQUE)"]
-      },
-      {
-        "class": "MonthlyStock",
-        "table": "MonthlyStocks",
-        "namespace": "ETStock.Models",
-        "file": "ETStock/Models/MonthlyStock.cs",
-        "indexes": ["(ProductId, Year, Month) UNIQUE"]
-      },
-      {
-        "class": "AbbrInvoice",
-        "table": "AbbrInvoices",
-        "namespace": "ETStock.Models",
-        "file": "ETStock/Models/AbbrInvoice.cs"
-      },
-      {
-        "class": "AbbrInvoiceItem",
-        "table": "AbbrInvoiceItems",
-        "namespace": "ETStock.Models",
-        "file": "ETStock/Models/AbbrInvoiceItem.cs"
-      }
-    ]
-  }
+﻿{
+    "version":  1,
+    "updatedAt":  "2026-06-24T09:32:17Z",
+    "project":  {
+                    "name":  "ETStock",
+                    "repo":  "suteetoe/etstock",
+                    "remote":  "https://github.com/suteetoe/etstock.git",
+                    "defaultBranch":  "main",
+                    "stack":  [
+                                  ".NET 10",
+                                  "Avalonia 11.3.11",
+                                  "CommunityToolkit.Mvvm 8.2.1",
+                                  "EF Core 10.0.7 + Npgsql 10.0.0",
+                                  "PostgreSQL",
+                                  "xUnit 2.9.3 + InMemory"
+                              ]
+                },
+    "agents":  {
+                   "frontend":  "antigravity",
+                   "backend":  "codex",
+                   "qa":  "gemini"
+               },
+    "policy":  {
+                   "oneTaskOnePr":  true,
+                   "maxFixRoundsPerPr":  3,
+                   "agentTouchesGit":  false,
+                   "scriptsOwnGit":  true,
+                   "agentMayPush":  false,
+                   "agentMayOpenPr":  false,
+                   "branchPattern":  "^(frontend|backend|qa|feature)/[a-z0-9]+-[a-z0-9-]+$"
+               },
+    "backlog":  [
+                    {
+                        "id":  "P00",
+                        "title":  "Phase 0 โ€” Foundation",
+                        "group":  "all",
+                        "scope":  "ETStock/**, ETStock.Tests/**",
+                        "status":  "done",
+                        "branch":  "feature/phase-0-foundation",
+                        "pr":  "https://github.com/suteetoe/etstock/pull/1",
+                        "qaVerdict":  "PASS",
+                        "qaDate":  "2026-06-24",
+                        "fixRounds":  0,
+                        "notes":  "PR #1 merged into develop"
+                    },
+                    {
+                        "id":  "P01",
+                        "title":  "Phase 1 - Company Settings",
+                        "group":  "all",
+                        "scope":  "ETStock/**, ETStock.Tests/**, .team/**",
+                        "status":  "done",
+                        "branch":  "feature/phase-1-company",
+                        "pr":  "https://github.com/suteetoe/etstock/pull/2",
+                        "qaVerdict":  "PASS",
+                        "qaDate":  "2026-06-24",
+                        "fixRounds":  0,
+                        "notes":  "PR #2 merged into develop"
+                    },
+                    {
+                        "id":  "P02-BE",
+                        "title":  "Phase 2 backend - Product stock repository contract",
+                        "group":  "backend",
+                        "scope":  "ETStock/Models/**, ETStock/Data/**, ETStock.Tests/**, .team/backend-contract-2.md",
+                        "status":  "local-ready",
+                        "branch":  "backend/phase2-product-repo",
+                        "pr":  null,
+                        "qaVerdict":  null,
+                        "qaDate":  null,
+                        "fixRounds":  0,
+                        "notes":  "Local commit 62fd77a; publish requires PO approval"
+                    },
+                    {
+                        "id":  "P02-FE",
+                        "title":  "Phase 2 frontend - Product stock screen",
+                        "group":  "frontend",
+                        "scope":  "ETStock/ViewModels/**, ETStock/Views/**, .team/frontend-notes-2.md",
+                        "status":  "local-ready",
+                        "branch":  "frontend/phase2-product-ui",
+                        "pr":  null,
+                        "qaVerdict":  null,
+                        "qaDate":  null,
+                        "fixRounds":  0,
+                        "notes":  "Local commit ea02c5b stacked on backend/phase2-product-repo; publish requires PO approval"
+                    },
+                    {
+                        "id":  "P02-QA",
+                        "title":  "Phase 2 QA - Product stock coverage",
+                        "group":  "qa",
+                        "scope":  "ETStock.Tests/**, .team/qa-plan-2.md, .team/qa-report-2.md",
+                        "status":  "local-ready",
+                        "branch":  "qa/phase2-product-stock-tests",
+                        "pr":  null,
+                        "qaVerdict":  "PASS",
+                        "qaDate":  "2026-06-24",
+                        "fixRounds":  0,
+                        "notes":  "Local commit 2cf0edc stacked on frontend/phase2-product-ui; Gemini auth unavailable, Codex used as QA fallback"
+                    }
+                ],
+    "prs":  {
+                "1":  {
+                          "url":  "https://github.com/suteetoe/etstock/pull/1",
+                          "branch":  "feature/phase-0-foundation",
+                          "title":  "[feature] Phase 0 foundation",
+                          "featureId":  "P00",
+                          "status":  "merged",
+                          "fixRounds":  0,
+                          "lastReviewedAt":  null,
+                          "mergedAt":  "2026-06-24T07:43:16Z",
+                          "mergeCommit":  "4f2b213bbf9de5dad77dde9cf11d8644d4120abd"
+                      },
+                "2":  {
+                          "url":  "https://github.com/suteetoe/etstock/pull/2",
+                          "branch":  "feature/phase-1-company",
+                          "title":  "[Phase 1] Company Settings",
+                          "featureId":  "P01",
+                          "status":  "merged",
+                          "fixRounds":  0,
+                          "lastReviewedAt":  null,
+                          "mergedAt":  null,
+                          "mergeCommit":  "f49c6d8"
+                      }
+            },
+    "schema":  {
+                   "note":  "Initial schema established in Phase 0. Migration: 20260624035619_Initial",
+                   "dbContext":  "ETStock.Data.AppDbContext",
+                   "migrations":  "ETStock/Data/Migrations/",
+                   "entities":  [
+                                    {
+                                        "class":  "Company",
+                                        "table":  "Companies",
+                                        "namespace":  "ETStock.Models",
+                                        "file":  "ETStock/Models/Company.cs"
+                                    },
+                                    {
+                                        "class":  "Product",
+                                        "table":  "Products",
+                                        "namespace":  "ETStock.Models",
+                                        "file":  "ETStock/Models/Product.cs",
+                                        "indexes":  [
+                                                        "Code (UNIQUE)"
+                                                    ]
+                                    },
+                                    {
+                                        "class":  "MonthlyStock",
+                                        "table":  "MonthlyStocks",
+                                        "namespace":  "ETStock.Models",
+                                        "file":  "ETStock/Models/MonthlyStock.cs",
+                                        "indexes":  [
+                                                        "(ProductId, Year, Month) UNIQUE"
+                                                    ]
+                                    },
+                                    {
+                                        "class":  "AbbrInvoice",
+                                        "table":  "AbbrInvoices",
+                                        "namespace":  "ETStock.Models",
+                                        "file":  "ETStock/Models/AbbrInvoice.cs"
+                                    },
+                                    {
+                                        "class":  "AbbrInvoiceItem",
+                                        "table":  "AbbrInvoiceItems",
+                                        "namespace":  "ETStock.Models",
+                                        "file":  "ETStock/Models/AbbrInvoiceItem.cs"
+                                    }
+                                ]
+               }
 }
