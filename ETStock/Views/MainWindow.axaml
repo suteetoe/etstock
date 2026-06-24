@@ -3,18 +3,39 @@
         xmlns:vm="using:ETStock.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="680"
         x:Class="ETStock.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="ETStock">
+        Title="ETStock — ระบบออกใบกำกับภาษีอย่างย่อ"
+        Width="1024" Height="680">
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <Grid ColumnDefinitions="220,*">
+        <!-- Sidebar -->
+        <Border Grid.Column="0" Background="#1E1E2E" Padding="8">
+            <StackPanel>
+                <TextBlock Text="ETStock" FontSize="18" FontWeight="Bold"
+                           Foreground="White" Margin="8,12,8,16"/>
+                <ListBox ItemsSource="{Binding NavItems}"
+                         Background="Transparent">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="vm:NavItem">
+                            <Button Content="{Binding Label}"
+                                    Command="{Binding $parent[Window].DataContext.NavigateCommand}"
+                                    CommandParameter="{Binding}"
+                                    HorizontalAlignment="Stretch"
+                                    Background="Transparent"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </Border>
+
+        <!-- Content -->
+        <ContentControl Grid.Column="1" Content="{Binding CurrentPage}" Margin="16"/>
+    </Grid>
 
 </Window>

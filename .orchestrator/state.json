@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-23T00:00:00Z",
+  "updatedAt": "2026-06-24T07:04:00Z",
   "project": {
     "name": "ETStock",
     "repo": "suteetoe/etstock",
     "remote": "https://github.com/suteetoe/etstock.git",
     "defaultBranch": "main",
-    "stack": [".NET 10", "Avalonia 11.3.11", "CommunityToolkit.Mvvm 8.2.1", "EF Core + Npgsql (planned)", "PostgreSQL (planned)", "xUnit + Avalonia.Headless (planned)"]
+    "stack": [".NET 10", "Avalonia 11.3.11", "CommunityToolkit.Mvvm 8.2.1", "EF Core 10.0.7 + Npgsql 10.0.0", "PostgreSQL", "xUnit 2.9.3 + InMemory"]
   },
   "agents": {
     "frontend": "antigravity",
@@ -20,22 +20,71 @@
     "scriptsOwnGit": true,
     "agentMayPush": false,
     "agentMayOpenPr": false,
-    "branchPattern": "^(frontend|backend|qa)/[a-z0-9]+-[a-z0-9-]+$"
+    "branchPattern": "^(frontend|backend|qa|feature)/[a-z0-9]+-[a-z0-9-]+$"
   },
-  "backlogItemShape": {
-    "id": "F00x",
-    "title": "string",
-    "group": "frontend|backend|qa",
-    "scope": "comma-separated globs",
-    "status": "todo|delegating|in-review|changes-requested|done",
-    "branch": "string|null",
-    "pr": "number|null"
+  "backlog": [
+    {
+      "id": "P00",
+      "title": "Phase 0 — Foundation",
+      "group": "all",
+      "scope": "ETStock/**, ETStock.Tests/**",
+      "status": "done",
+      "branch": "feature/phase-0-foundation",
+      "pr": "https://github.com/suteetoe/etstock/pull/1",
+      "qaVerdict": "PASS",
+      "qaDate": "2026-06-24",
+      "fixRounds": 0,
+      "notes": "PR opened for review"
+    }
+  ],
+  "prs": {
+    "1": {
+      "url": "https://github.com/suteetoe/etstock/pull/1",
+      "branch": "feature/phase-0-foundation",
+      "title": "[feature] Phase 0 foundation",
+      "featureId": "P00",
+      "status": "open",
+      "fixRounds": 0,
+      "lastReviewedAt": null
+    }
   },
-  "backlog": [],
-  "prs": {},
   "schema": {
-    "note": "No database schema yet. Project is a fresh Avalonia MVVM template. EF Core/Npgsql not added. Update this object when the first DbContext/entities land.",
-    "dbContext": null,
-    "entities": []
+    "note": "Initial schema established in Phase 0. Migration: 20260624035619_Initial",
+    "dbContext": "ETStock.Data.AppDbContext",
+    "migrations": "ETStock/Data/Migrations/",
+    "entities": [
+      {
+        "class": "Company",
+        "table": "Companies",
+        "namespace": "ETStock.Models",
+        "file": "ETStock/Models/Company.cs"
+      },
+      {
+        "class": "Product",
+        "table": "Products",
+        "namespace": "ETStock.Models",
+        "file": "ETStock/Models/Product.cs",
+        "indexes": ["Code (UNIQUE)"]
+      },
+      {
+        "class": "MonthlyStock",
+        "table": "MonthlyStocks",
+        "namespace": "ETStock.Models",
+        "file": "ETStock/Models/MonthlyStock.cs",
+        "indexes": ["(ProductId, Year, Month) UNIQUE"]
+      },
+      {
+        "class": "AbbrInvoice",
+        "table": "AbbrInvoices",
+        "namespace": "ETStock.Models",
+        "file": "ETStock/Models/AbbrInvoice.cs"
+      },
+      {
+        "class": "AbbrInvoiceItem",
+        "table": "AbbrInvoiceItems",
+        "namespace": "ETStock.Models",
+        "file": "ETStock/Models/AbbrInvoiceItem.cs"
+      }
+    ]
   }
 }
