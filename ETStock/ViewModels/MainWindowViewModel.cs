@@ -1,5 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ETStock.Data.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 
 namespace ETStock.ViewModels;
@@ -14,7 +16,10 @@ public partial class MainWindowViewModel : ViewModelBase
     public MainWindowViewModel()
     {
         var home = new HomeViewModel();
-        var company = new CompanyViewModel();
+
+        var repo = Program.Services?.CreateScope().ServiceProvider.GetService<ICompanyRepository>();
+        var company = repo is not null ? new CompanyViewModel(repo) : new CompanyViewModel();
+
         var product = new ProductViewModel();
         var invoice = new InvoiceViewModel();
 
