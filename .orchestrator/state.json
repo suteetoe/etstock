@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-24T07:43:16Z",
+  "updatedAt": "2026-06-24T10:03:00Z",
   "project": {
     "name": "ETStock",
     "repo": "suteetoe/etstock",
@@ -9,9 +9,22 @@
     "stack": [".NET 10", "Avalonia 11.3.11", "CommunityToolkit.Mvvm 8.2.1", "EF Core 10.0.7 + Npgsql 10.0.0", "PostgreSQL", "xUnit 2.9.3 + InMemory"]
   },
   "agents": {
-    "frontend": "antigravity",
-    "backend": "codex",
-    "qa": "gemini"
+    "lead": {
+      "default":  { "provider": "claude", "model": "opus" },
+      "fallback": { "provider": "codex",  "model": "gpt-5.5" }
+    },
+    "backend": {
+      "default":  { "provider": "codex",  "model": "gpt-5.5" },
+      "fallback": { "provider": "claude", "model": "sonnet" }
+    },
+    "frontend": {
+      "default":  { "provider": "codex",  "model": "gpt-5.5" },
+      "fallback": { "provider": "claude", "model": "sonnet" }
+    },
+    "qa": {
+      "default":  { "provider": "codex",  "model": "gpt-5.5" },
+      "fallback": { "provider": "claude", "model": "haiku" }
+    }
   },
   "policy": {
     "oneTaskOnePr": true,
@@ -20,7 +33,7 @@
     "scriptsOwnGit": true,
     "agentMayPush": false,
     "agentMayOpenPr": false,
-    "branchPattern": "^(frontend|backend|qa|feature)/[a-z0-9]+-[a-z0-9-]+$"
+    "branchPattern": "^(lead|frontend|backend|qa|feature)/[a-z0-9]+-[a-z0-9-]+$"
   },
   "backlog": [
     {
@@ -54,36 +67,39 @@
       "title": "Phase 2 — Backend: IProductRepository + ProductRepository",
       "group": "backend",
       "scope": "ETStock/Data/Repositories/, ETStock/Program.cs, ETStock.Tests/ProductRepositoryTests.cs",
-      "status": "pending",
+      "status": "done",
       "branch": "backend/phase2-product-repo",
-      "pr": null,
-      "qaVerdict": null,
+      "pr": "https://github.com/suteetoe/etstock/pull/3",
+      "qaVerdict": "PASS",
+      "qaDate": "2026-06-24",
       "fixRounds": 0,
-      "notes": ""
+      "notes": "PR #3 merged into develop at 2026-06-24T10:02:12Z"
     },
     {
       "id": "P02-F",
       "title": "Phase 2 — Frontend: ProductViewModel + ProductView CRUD",
       "group": "frontend",
       "scope": "ETStock/ViewModels/ProductViewModel.cs, ETStock/Views/ProductView.axaml, ETStock/ViewModels/MainWindowViewModel.cs",
-      "status": "pending",
+      "status": "done",
       "branch": "frontend/phase2-product-ui",
-      "pr": null,
-      "qaVerdict": null,
+      "pr": "https://github.com/suteetoe/etstock/pull/4",
+      "qaVerdict": "PASS",
+      "qaDate": "2026-06-24",
       "fixRounds": 0,
-      "notes": "depends on P02-B"
+      "notes": "PR #4 merged into backend/phase2-product-repo at 2026-06-24T10:02:34Z"
     },
     {
       "id": "P02-Q",
       "title": "Phase 2 — QA: ProductViewModel tests + verdict",
       "group": "qa",
       "scope": "ETStock.Tests/ProductViewModelTests.cs",
-      "status": "pending",
-      "branch": "qa/phase2-product-tests",
-      "pr": null,
-      "qaVerdict": null,
+      "status": "done",
+      "branch": "qa/phase2-product-stock-tests",
+      "pr": "https://github.com/suteetoe/etstock/pull/5",
+      "qaVerdict": "PASS",
+      "qaDate": "2026-06-24",
       "fixRounds": 0,
-      "notes": "depends on P02-F"
+      "notes": "PR #5 merged into frontend/phase2-product-ui at 2026-06-24T10:02:58Z"
     }
   ],
   "prs": {
@@ -107,6 +123,39 @@
       "fixRounds": 0,
       "lastReviewedAt": "2026-06-24T08:42:10Z",
       "mergedAt": "2026-06-24T08:42:10Z",
+      "mergeCommit": null
+    },
+    "3": {
+      "url": "https://github.com/suteetoe/etstock/pull/3",
+      "branch": "backend/phase2-product-repo",
+      "title": "[Phase 2 BE] Product Stock Repository Contract",
+      "featureId": "P02-B",
+      "status": "merged",
+      "fixRounds": 0,
+      "lastReviewedAt": "2026-06-24T10:02:12Z",
+      "mergedAt": "2026-06-24T10:02:12Z",
+      "mergeCommit": null
+    },
+    "4": {
+      "url": "https://github.com/suteetoe/etstock/pull/4",
+      "branch": "frontend/phase2-product-ui",
+      "title": "[Phase 2 FE] Product Stock Screen",
+      "featureId": "P02-F",
+      "status": "merged",
+      "fixRounds": 0,
+      "lastReviewedAt": "2026-06-24T10:02:34Z",
+      "mergedAt": "2026-06-24T10:02:34Z",
+      "mergeCommit": null
+    },
+    "5": {
+      "url": "https://github.com/suteetoe/etstock/pull/5",
+      "branch": "qa/phase2-product-stock-tests",
+      "title": "[Phase 2 QA] Product Stock Test Coverage",
+      "featureId": "P02-Q",
+      "status": "merged",
+      "fixRounds": 0,
+      "lastReviewedAt": "2026-06-24T10:02:58Z",
+      "mergedAt": "2026-06-24T10:02:58Z",
       "mergeCommit": null
     }
   },
