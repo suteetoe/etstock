@@ -8,6 +8,8 @@ namespace ETStock.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
+    private readonly IServiceScope? _serviceScope;
+
     [ObservableProperty]
     private ViewModelBase _currentPage;
 
@@ -17,10 +19,16 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         var home = new HomeViewModel();
 
-        var repo = Program.Services?.CreateScope().ServiceProvider.GetService<ICompanyRepository>();
-        var company = repo is not null ? new CompanyViewModel(repo) : new CompanyViewModel();
+        _serviceScope = Program.Services?.CreateScope();
+        var companyRepository = _serviceScope?.ServiceProvider.GetService<ICompanyRepository>();
+        var productRepository = _serviceScope?.ServiceProvider.GetService<IProductRepository>();
+        var company = companyRepository is not null
+            ? new CompanyViewModel(companyRepository)
+            : new CompanyViewModel();
 
-        var product = new ProductViewModel();
+        var product = productRepository is not null
+            ? new ProductViewModel(productRepository)
+            : new ProductViewModel();
         var invoice = new InvoiceViewModel();
 
         NavItems.Add(new NavItem("หน้าแรก", home));

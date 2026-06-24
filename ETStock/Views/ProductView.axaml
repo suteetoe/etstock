@@ -3,7 +3,7 @@
              xmlns:vm="using:ETStock.ViewModels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             mc:Ignorable="d" d:DesignWidth="1100" d:DesignHeight="720"
              x:Class="ETStock.Views.ProductView"
              x:DataType="vm:ProductViewModel">
 
@@ -11,9 +11,96 @@
         <vm:ProductViewModel/>
     </Design.DataContext>
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
-        <TextBlock Text="{Binding Title}" FontSize="24" FontWeight="Bold"/>
-        <TextBlock Text="(placeholder — phase 3 จะใส่ตาราง Product/Stock)" Opacity="0.6"/>
-    </StackPanel>
+    <Grid RowDefinitions="Auto,Auto,*" RowSpacing="16">
+        <Border Grid.Row="0" BorderBrush="#D0D0D0" BorderThickness="1" CornerRadius="6" Padding="16">
+            <StackPanel Spacing="12">
+                <TextBlock Text="เพิ่มสินค้า" FontSize="20" FontWeight="Bold"/>
+                <Grid ColumnDefinitions="100,*,100,*,100,*"
+                      RowDefinitions="Auto,Auto,Auto"
+                      ColumnSpacing="8" RowSpacing="8">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="รหัสสินค้า" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Code}" IsEnabled="{Binding !IsBusy}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="ชื่อสินค้า" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding Name}" IsEnabled="{Binding !IsBusy}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="4" Text="หน่วย" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="0" Grid.Column="5" Text="{Binding Unit}" IsEnabled="{Binding !IsBusy}"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="ราคาทุน" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding CostPrice}" IsEnabled="{Binding !IsBusy}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="ราคาขาย" VerticalAlignment="Center"/>
+                    <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding SellPrice}" IsEnabled="{Binding !IsBusy}"/>
+
+                    <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="6"
+                                Orientation="Horizontal" Spacing="10">
+                        <Button Content="เพิ่มสินค้า"
+                                Command="{Binding AddProductCommand}"
+                                IsEnabled="{Binding !IsBusy}"/>
+                        <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center"
+                                   IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,100,Auto,100,Auto,*" ColumnSpacing="8">
+            <TextBlock Grid.Column="0" Text="ปี" VerticalAlignment="Center"/>
+            <TextBox Grid.Column="1" Text="{Binding SelectedYear}" IsEnabled="{Binding !IsBusy}"/>
+            <TextBlock Grid.Column="2" Text="เดือน" VerticalAlignment="Center"/>
+            <ComboBox Grid.Column="3"
+                      ItemsSource="{Binding Months}"
+                      SelectedItem="{Binding SelectedMonth}"
+                      IsEnabled="{Binding !IsBusy}"/>
+            <Button Grid.Column="4" Content="โหลดสินค้า"
+                    Command="{Binding LoadCommand}"
+                    IsEnabled="{Binding !IsBusy}"/>
+        </Grid>
+
+        <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <StackPanel MinWidth="1080">
+                <Border Background="#E8E8E8" Padding="6">
+                    <Grid ColumnDefinitions="90,180,80,100,100,100,100,100,100,160" ColumnSpacing="6">
+                        <TextBlock Grid.Column="0" Text="รหัส" FontWeight="Bold"/>
+                        <TextBlock Grid.Column="1" Text="ชื่อ" FontWeight="Bold"/>
+                        <TextBlock Grid.Column="2" Text="หน่วย" FontWeight="Bold"/>
+                        <TextBlock Grid.Column="3" Text="ยกมา" FontWeight="Bold"/>
+                        <TextBlock Grid.Column="4" Text="ทุน" FontWeight="Bold"/>
+                        <TextBlock Grid.Column="5" Text="ซื้อ" FontWeight="Bold"/>
+                        <TextBlock Grid.Column="6" Text="ขายเต็มใบ" FontWeight="Bold"/>
+                        <TextBlock Grid.Column="7" Text="ขาย POS" FontWeight="Bold"/>
+                        <TextBlock Grid.Column="8" Text="คงเหลือ" FontWeight="Bold"/>
+                        <TextBlock Grid.Column="9" Text="บันทึก" FontWeight="Bold"/>
+                    </Grid>
+                </Border>
+
+                <ItemsControl ItemsSource="{Binding Products}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ProductStockRowViewModel">
+                            <Border BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="6">
+                                <Grid ColumnDefinitions="90,180,80,100,100,100,100,100,100,160" ColumnSpacing="6">
+                                    <TextBlock Grid.Column="0" Text="{Binding Code}" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding Unit}" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="3" Text="{Binding OpeningQty}" IsEnabled="{Binding !IsBusy}"/>
+                                    <TextBlock Grid.Column="4" Text="{Binding CostPrice, StringFormat={}{0:N2}}" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="5" Text="{Binding BuyQty}" IsEnabled="{Binding !IsBusy}"/>
+                                    <TextBox Grid.Column="6" Text="{Binding SellFullQty}" IsEnabled="{Binding !IsBusy}"/>
+                                    <TextBox Grid.Column="7" Text="{Binding SellPosQty}" IsEnabled="{Binding !IsBusy}"/>
+                                    <TextBlock Grid.Column="8" Text="{Binding ClosingQty}" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Column="9" Orientation="Horizontal" Spacing="6">
+                                        <Button Content="บันทึก" Command="{Binding SaveCommand}" IsEnabled="{Binding !IsBusy}"/>
+                                        <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center"
+                                                   IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock Text="ไม่พบสินค้า" HorizontalAlignment="Center" Margin="0,24"
+                           IsVisible="{Binding !Products.Count}"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 
 </UserControl>
