@@ -106,39 +106,39 @@
       "title": "Phase 4 — Backend: IAbbrInvoiceRepository + AbbrInvoiceRepository + tests",
       "group": "backend",
       "scope": "ETStock/Data/Repositories/IAbbrInvoiceRepository.cs,ETStock/Data/Repositories/AbbrInvoiceRepository.cs,ETStock/Program.cs,ETStock.Tests/AbbrInvoiceRepositoryTests.cs",
-      "status": "in-progress",
+      "status": "review",
       "branch": "backend/phase4-invoice-repo",
-      "pr": null,
-      "qaVerdict": null,
-      "qaDate": null,
+      "pr": "https://github.com/suteetoe/etstock/pull/7",
+      "qaVerdict": "PASS",
+      "qaDate": "2026-06-24",
       "fixRounds": 0,
-      "notes": "Phase 4 backend: CRUD repository for AbbrInvoice + AbbrInvoiceItem (GetAllAsync, GetByIdAsync, GetByPeriodAsync, SaveAsync, DeleteAsync)"
+      "notes": "PR #7 open — 6 tests pass, 42 total. Awaiting PO merge approval."
     },
     {
       "id": "P04-F",
       "title": "Phase 4 — Frontend: InvoiceViewModel (full CRUD) + InvoiceView UI",
       "group": "frontend",
       "scope": "ETStock/ViewModels/InvoiceViewModel.cs,ETStock/Views/InvoiceView.axaml,ETStock/ViewModels/MainWindowViewModel.cs",
-      "status": "planned",
+      "status": "review",
       "branch": "frontend/phase4-invoice-ui",
-      "pr": null,
-      "qaVerdict": null,
-      "qaDate": null,
+      "pr": "https://github.com/suteetoe/etstock/pull/8",
+      "qaVerdict": "PASS",
+      "qaDate": "2026-06-24",
       "fixRounds": 0,
-      "notes": "Phase 4 frontend: InvoiceViewModel CRUD + InvoiceView.axaml + DI wire-up in MainWindowViewModel"
+      "notes": "PR #8 open — build 0 errors. Awaiting PO merge approval."
     },
     {
       "id": "P04-Q",
       "title": "Phase 4 — QA: InvoiceViewModelTests + AbbrInvoiceRepositoryTests",
       "group": "qa",
       "scope": "ETStock.Tests/InvoiceViewModelTests.cs",
-      "status": "planned",
+      "status": "review",
       "branch": "qa/phase4-invoice-tests",
-      "pr": null,
-      "qaVerdict": null,
-      "qaDate": null,
+      "pr": "https://github.com/suteetoe/etstock/pull/9",
+      "qaVerdict": "PASS",
+      "qaDate": "2026-06-24",
       "fixRounds": 0,
-      "notes": "Phase 4 QA: ViewModel test coverage for InvoiceViewModel commands"
+      "notes": "PR #9 open — 6 new tests, 48 total pass. Awaiting PO merge approval."
     }
   ],
   "prs": {
