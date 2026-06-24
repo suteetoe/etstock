@@ -32,6 +32,7 @@ internal sealed class Program
                 services.AddScoped<ICompanyRepository, CompanyRepository>();
                 services.AddScoped<IProductRepository, ProductRepository>();
                 services.AddScoped<IMonthlyStockRepository, MonthlyStockRepository>();
+                services.AddScoped<IAbbrInvoiceRepository, AbbrInvoiceRepository>();
             })
             .Build();
 
