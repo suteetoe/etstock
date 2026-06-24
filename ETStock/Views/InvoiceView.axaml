@@ -3,7 +3,7 @@
              xmlns:vm="using:ETStock.ViewModels"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
              x:Class="ETStock.Views.InvoiceView"
              x:DataType="vm:InvoiceViewModel">
 
@@ -11,9 +11,85 @@
         <vm:InvoiceViewModel/>
     </Design.DataContext>
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
-        <TextBlock Text="{Binding Title}" FontSize="24" FontWeight="Bold"/>
-        <TextBlock Text="(placeholder — phase 4-5 จะใส่ฟอร์มใบกำกับภาษี)" Opacity="0.6"/>
-    </StackPanel>
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" RowSpacing="12">
+        <TextBlock Grid.Row="0"
+                   Text="ใบกำกับภาษี"
+                   FontSize="24"
+                   FontWeight="Bold"/>
+
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,100,Auto,80,Auto,*" ColumnSpacing="8">
+            <TextBlock Grid.Column="0" Text="ปี" VerticalAlignment="Center"/>
+            <TextBox Grid.Column="1"
+                     Text="{Binding SelectedYear}"
+                     IsEnabled="{Binding !IsBusy}"
+                     HorizontalContentAlignment="Right"/>
+
+            <TextBlock Grid.Column="2" Text="เดือน" VerticalAlignment="Center"/>
+            <TextBox Grid.Column="3"
+                     Text="{Binding SelectedMonth}"
+                     IsEnabled="{Binding !IsBusy}"
+                     HorizontalContentAlignment="Right"/>
+
+            <Button Grid.Column="4"
+                    Content="โหลด"
+                    Command="{Binding LoadCommand}"
+                    IsEnabled="{Binding !IsBusy}"/>
+        </Grid>
+
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,Auto,*" ColumnSpacing="8">
+            <Button Grid.Column="0"
+                    Content="เพิ่มใหม่"
+                    Command="{Binding AddInvoiceCommand}"
+                    IsEnabled="{Binding !IsBusy}"/>
+            <Button Grid.Column="1"
+                    Content="ลบ"
+                    Command="{Binding DeleteCommand}"
+                    IsEnabled="{Binding !IsBusy}"/>
+        </Grid>
+
+        <Border Grid.Row="3"
+                BorderBrush="#D0D0D0"
+                BorderThickness="1"
+                CornerRadius="4">
+            <DataGrid ItemsSource="{Binding Invoices}"
+                      SelectedItem="{Binding SelectedInvoice}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      GridLinesVisibility="Horizontal"
+                      CanUserResizeColumns="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="เลขที่ใบกำกับ"
+                                        Binding="{Binding InvoiceNo}"
+                                        Width="160"/>
+                    <DataGridTextColumn Header="วันที่"
+                                        Binding="{Binding InvoiceDate, StringFormat={}{0:dd/MM/yyyy}}"
+                                        Width="110"/>
+                    <DataGridTextColumn Header="ปีภาษี"
+                                        Binding="{Binding TaxYear}"
+                                        Width="80"/>
+                    <DataGridTextColumn Header="เดือนภาษี"
+                                        Binding="{Binding TaxMonth}"
+                                        Width="90"/>
+                    <DataGridTextColumn Header="มูลค่ารวม"
+                                        Binding="{Binding TotalAmount, StringFormat={}{0:N2}}"
+                                        Width="120"/>
+                    <DataGridTextColumn Header="VAT"
+                                        Binding="{Binding VatAmount, StringFormat={}{0:N2}}"
+                                        Width="100"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <Grid Grid.Row="4" ColumnDefinitions="*,Auto">
+            <TextBlock Grid.Column="0"
+                       Text="{Binding StatusMessage}"
+                       FontStyle="Italic"
+                       TextWrapping="Wrap"/>
+            <ProgressBar Grid.Column="1"
+                         Width="120"
+                         IsIndeterminate="True"
+                         IsVisible="{Binding IsBusy}"/>
+        </Grid>
+    </Grid>
 
 </UserControl>
