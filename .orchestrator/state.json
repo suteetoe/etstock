@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-24T10:45:00Z",
+  "updatedAt": "2026-06-24T07:04:00Z",
   "project": {
     "name": "ETStock",
     "repo": "suteetoe/etstock",
@@ -30,14 +30,24 @@
       "scope": "ETStock/**, ETStock.Tests/**",
       "status": "done",
       "branch": "feature/phase-0-foundation",
-      "pr": null,
+      "pr": "https://github.com/suteetoe/etstock/pull/1",
       "qaVerdict": "PASS",
       "qaDate": "2026-06-24",
       "fixRounds": 0,
-      "notes": "Awaiting PO approval to push + open PR"
+      "notes": "PR opened for review"
     }
   ],
-  "prs": {},
+  "prs": {
+    "1": {
+      "url": "https://github.com/suteetoe/etstock/pull/1",
+      "branch": "feature/phase-0-foundation",
+      "title": "[feature] Phase 0 foundation",
+      "featureId": "P00",
+      "status": "open",
+      "fixRounds": 0,
+      "lastReviewedAt": null
+    }
+  },
   "schema": {
     "note": "Initial schema established in Phase 0. Migration: 20260624035619_Initial",
     "dbContext": "ETStock.Data.AppDbContext",
