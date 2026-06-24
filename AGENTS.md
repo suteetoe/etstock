@@ -84,8 +84,7 @@
 ## Shared Knowledge Base (State ถาวร)
 
 เก็บ state ของ orchestration ไว้ใน:
-- `.orchestrator/state.json` — feature backlog, mapping task → PR, PR ที่รีวิวไปแล้ว, จำนวนรอบแก้ของแต่ละ PR
-- `.orchestrator/context.md` — coding convention, schema ปัจจุบัน, ข้อตกลงที่สะสมระหว่างทาง
+- `.team/state.json` — feature backlog, mapping task → PR, PR ที่รีวิวไปแล้ว, จำนวนรอบแก้ของแต่ละ PR
 
 อ่าน state เหล่านี้ตอนเริ่ม session เพื่อให้ทำงานต่อเนื่องจากของเดิม และอัปเดตเมื่อมีความเปลี่ยนแปลง
 
@@ -99,7 +98,7 @@ gh pr list --state open --json number,title,headRefName,author,updatedAt
 gh pr diff <n>
 gh pr checks <n>
 ```
-เทียบกับ `.orchestrator/state.json` เพื่อหา PR ที่ยังไม่ได้รีวิว แล้วรีวิวทีละตัว
+เทียบกับ `.team/state.json` เพื่อหา PR ที่ยังไม่ได้รีวิว แล้วรีวิวทีละตัว
 (ออกแบบเผื่อให้ต่อยอดเป็น GitHub Actions event-driven ภายหลังได้ แต่ยังไม่ต้องทำตอนนี้)
 
 ---
