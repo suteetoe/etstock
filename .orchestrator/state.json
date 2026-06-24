@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-24T10:03:00Z",
+  "updatedAt": "2026-06-24T18:23:00Z",
   "project": {
     "name": "ETStock",
     "repo": "suteetoe/etstock",
@@ -142,6 +142,17 @@
     }
   ],
   "prs": {
+    "6": {
+      "url": "https://github.com/suteetoe/etstock/pull/6",
+      "branch": "qa/phase3-monthly-transaction-tests",
+      "title": "[Phase 3 QA] Monthly Stock Transaction — Coverage & Full Phase 3 Stack",
+      "featureId": "P02-MT-Q",
+      "status": "open",
+      "fixRounds": 0,
+      "lastReviewedAt": null,
+      "mergedAt": null,
+      "mergeCommit": null
+    },
     "1": {
       "url": "https://github.com/suteetoe/etstock/pull/1",
       "branch": "feature/phase-0-foundation",

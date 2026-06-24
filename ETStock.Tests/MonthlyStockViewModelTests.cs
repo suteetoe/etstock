@@ -1,0 +1,206 @@
+using ETStock.Data.Repositories;
+using ETStock.ViewModels;
+using Xunit;
+
+namespace ETStock.Tests;
+
+public class MonthlyStockViewModelTests
+{
+    [Fact]
+    public async Task LoadCommand_LoadsSelectedPeriodIntoRows()
+    {
+        var repository = new FakeMonthlyStockRepository();
+        repository.SetPeriod(
+            2026,
+            6,
+            Product(
+                new MonthlyStockSnapshot(10, 1, 2026, 6, 12, 5, 2, 1)));
+        var viewModel = CreateViewModel(repository);
+
+        await viewModel.LoadCommand.ExecuteAsync(null);
+
+        var row = Assert.Single(viewModel.Rows);
+        Assert.Equal(1, row.ProductId);
+        Assert.Equal(12, row.OpeningQty);
+        Assert.Equal(5, row.BuyQty);
+        Assert.Equal(2, row.SellFullQty);
+        Assert.Equal(1, row.SellPosQty);
+        Assert.Equal(14, row.ClosingQty);
+        Assert.Equal((2026, 6), repository.LastGetPeriod);
+        Assert.Equal("Loaded 1 products for 06/2026.", viewModel.StatusMessage);
+    }
+
+    [Fact]
+    public async Task SaveCommand_SavesEditedValuesThenReloadsRows()
+    {
+        var repository = new FakeMonthlyStockRepository();
+        repository.SetPeriod(2026, 6, Product());
+        var viewModel = CreateViewModel(repository);
+        await viewModel.LoadCommand.ExecuteAsync(null);
+
+        var row = Assert.Single(viewModel.Rows);
+        row.OpeningQty = 20;
+        row.BuyQty = 7;
+        row.SellFullQty = 4;
+        row.SellPosQty = 2;
+
+        await viewModel.SaveCommand.ExecuteAsync(null);
+
+        var saved = Assert.Single(repository.SavedInputs);
+        Assert.Equal(1, saved.ProductId);
+        Assert.Equal((2026, 6), (saved.Year, saved.Month));
+        Assert.Equal(20, saved.OpeningQty);
+        Assert.Equal(7, saved.BuyQty);
+        Assert.Equal(4, saved.SellFullQty);
+        Assert.Equal(2, saved.SellPosQty);
+
+        var reloaded = Assert.Single(viewModel.Rows);
+        Assert.Equal(21, reloaded.ClosingQty);
+        Assert.Equal(2, repository.GetPeriodCallCount);
+        Assert.Equal("Saved 1 monthly stock rows.", viewModel.StatusMessage);
+    }
+
+    [Fact]
+    public async Task CarryForwardCommand_PreservesCurrentTransactionsAndReloadsRows()
+    {
+        var repository = new FakeMonthlyStockRepository();
+        repository.SetPeriod(
+            2026,
+            5,
+            Product(
+                new MonthlyStockSnapshot(9, 1, 2026, 5, 10, 5, 2, 1)));
+        repository.SetPeriod(
+            2026,
+            6,
+            Product(
+                new MonthlyStockSnapshot(10, 1, 2026, 6, 99, 7, 3, 2)));
+        var viewModel = CreateViewModel(repository);
+
+        await viewModel.CarryForwardCommand.ExecuteAsync(null);
+
+        Assert.Equal((2026, 6), repository.LastCarryForwardPeriod);
+        var row = Assert.Single(viewModel.Rows);
+        Assert.Equal(12, row.OpeningQty);
+        Assert.Equal(7, row.BuyQty);
+        Assert.Equal(3, row.SellFullQty);
+        Assert.Equal(2, row.SellPosQty);
+        Assert.Equal(14, row.ClosingQty);
+        Assert.Equal(
+            "Carried forward opening quantities for 1 products.",
+            viewModel.StatusMessage);
+    }
+
+    private static ProductViewModel CreateViewModel(
+        IMonthlyStockRepository repository) => new(repository)
+    {
+        SelectedYear = 2026,
+        SelectedMonth = 6
+    };
+
+    private static ProductWithStock Product(
+        MonthlyStockSnapshot? stock = null) => new(
+        1,
+        "P001",
+        "Product P001",
+        "piece",
+        100,
+        150,
+        stock);
+
+    private sealed class FakeMonthlyStockRepository : IMonthlyStockRepository
+    {
+        private readonly Dictionary<(int Year, int Month), List<ProductWithStock>>
+            _periods = [];
+
+        public List<MonthlyStockInput> SavedInputs { get; } = [];
+        public (int Year, int Month)? LastGetPeriod { get; private set; }
+        public (int Year, int Month)? LastCarryForwardPeriod { get; private set; }
+        public int GetPeriodCallCount { get; private set; }
+
+        public void SetPeriod(
+            int year,
+            int month,
+            params ProductWithStock[] products)
+        {
+            _periods[(year, month)] = [.. products];
+        }
+
+        public Task<IReadOnlyList<ProductWithStock>> GetPeriodAsync(
+            int year,
+            int month,
+            CancellationToken ct = default)
+        {
+            LastGetPeriod = (year, month);
+            GetPeriodCallCount++;
+            _periods.TryGetValue((year, month), out var products);
+            return Task.FromResult<IReadOnlyList<ProductWithStock>>(
+                products is null ? [] : [.. products]);
+        }
+
+        public Task<MonthlyStockSnapshot> SaveAsync(
+            MonthlyStockInput stock,
+            CancellationToken ct = default)
+        {
+            SavedInputs.Add(stock);
+            var snapshot = ToSnapshot(stock);
+            var products = _periods[(stock.Year, stock.Month)];
+            var index = products.FindIndex(product => product.Id == stock.ProductId);
+            products[index] = products[index] with { MonthlyStock = snapshot };
+            return Task.FromResult(snapshot);
+        }
+
+        public Task<IReadOnlyList<MonthlyStockSnapshot>> CarryForwardAsync(
+            int year,
+            int month,
+            CancellationToken ct = default)
+        {
+            LastCarryForwardPeriod = (year, month);
+            var previous = month == 1 ? (year - 1, 12) : (year, month - 1);
+            _periods.TryGetValue(previous, out var previousProducts);
+            _periods.TryGetValue((year, month), out var currentProducts);
+
+            if (previousProducts is null || currentProducts is null)
+            {
+                return Task.FromResult<IReadOnlyList<MonthlyStockSnapshot>>([]);
+            }
+
+            var carried = new List<MonthlyStockSnapshot>();
+            for (var index = 0; index < currentProducts.Count; index++)
+            {
+                var current = currentProducts[index];
+                var prior = previousProducts.SingleOrDefault(
+                    product => product.Id == current.Id);
+                if (prior?.MonthlyStock is null)
+                {
+                    continue;
+                }
+
+                var stock = current.MonthlyStock;
+                var snapshot = new MonthlyStockSnapshot(
+                    stock?.Id ?? 0,
+                    current.Id,
+                    year,
+                    month,
+                    prior.MonthlyStock.ClosingQty,
+                    stock?.BuyQty ?? 0,
+                    stock?.SellFullQty ?? 0,
+                    stock?.SellPosQty ?? 0);
+                currentProducts[index] = current with { MonthlyStock = snapshot };
+                carried.Add(snapshot);
+            }
+
+            return Task.FromResult<IReadOnlyList<MonthlyStockSnapshot>>(carried);
+        }
+
+        private static MonthlyStockSnapshot ToSnapshot(
+            MonthlyStockInput stock) => new(
+            1,
+            stock.ProductId,
+            stock.Year,
+            stock.Month,
+            stock.OpeningQty,
+            stock.BuyQty,
+            stock.SellFullQty,
+            stock.SellPosQty);
+    }
+}
