@@ -373,3 +373,7 @@ local.properties
 
 # Directory Build overrides for local setups
 Directory.Build.Override.props
+
+# .team/ is the agent handoff folder — tracked in repo
+# goose local state (ถ้ามี)
+.goose/memory/
