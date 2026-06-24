@@ -71,7 +71,8 @@ function Build-PrBody {
         [Parameter(Mandatory)][string] $Task,
         [Parameter(Mandatory)][string] $Scope,
         [string] $FeatureId,
-        [string] $Agent
+        [string] $Provider,
+        [string] $Model
     )
     @"
 ## Task
@@ -81,7 +82,7 @@ $Task
 - Group: **$Group**
 - Feature id: $(if ($FeatureId) { $FeatureId } else { '(none)' })
 - Allowed scope: ``$Scope``
-- Delegated to agent: $Agent
+- Delegated to: $Provider/$Model
 
 ## Review checklist
 - [ ] Matches the requirement
@@ -134,11 +135,26 @@ function Record-Pr {
     Write-Host "Recorded PR #$num in state.json (feature: $(if ($FeatureId) { $FeatureId } else { 'none' }))." -ForegroundColor Green
 }
 
-# Map group -> default agent from state.json
-function Get-DefaultAgent {
-    param([Parameter(Mandatory)][string] $Group)
+# Resolve a group's provider/model for a tier ('default' or 'fallback') from state.json.
+# Fallback is config-only: nothing auto-switches to it - pass -Tier fallback to use it.
+function Get-AgentMapping {
+    param(
+        [Parameter(Mandatory)][string] $Group,
+        [ValidateSet('default','fallback')][string] $Tier = 'default'
+    )
     $state = Get-State
-    $agent = $state.agents.$Group
-    if (-not $agent) { throw "No default agent mapped for group '$Group' in state.json" }
-    return $agent
+    $entry = $state.agents.$Group
+    if (-not $entry) { throw "No agent mapping for group '$Group' in state.json" }
+    $tierObj = $entry.$Tier
+    if (-not $tierObj) { throw "No '$Tier' provider/model for group '$Group' in state.json" }
+    return [pscustomobject]@{ Provider = $tierObj.provider; Model = $tierObj.model }
+}
+
+# Map a provider name to the CLI executable that must be on PATH.
+function Get-ProviderCli {
+    param([Parameter(Mandatory)][ValidateSet('claude','codex')][string] $Provider)
+    switch ($Provider) {
+        'claude' { 'claude-acp' }
+        'codex'  { 'codex' }
+    }
 }

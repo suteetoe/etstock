@@ -61,15 +61,21 @@ requirement → split into tasks (1 task = 1 reviewable PR) → delegate.ps1
 .\scripts\review-poll.ps1 -Number 7 -MarkReviewed -Verdict approved
 ```
 
-## Agent CLIs
+## Agent providers/models
 
-| Group | CLI | Mode |
+Each group has a Default and a Fallback provider/model (`state.json > agents`). Fallback is
+config-only — pass `-Tier fallback` to use it; nothing auto-switches.
+
+| Group | Default | Fallback |
 |---|---|---|
-| frontend | `antigravity` | `antigravity chat -m agent` — IDE agent (semi-headless) |
-| backend  | `codex`       | `codex exec --full-auto` — true headless |
-| qa       | `gemini`      | `gemini -p ... --approval-mode yolo` — true headless |
+| lead     | `claude/opus`    | `codex/gpt-5.5` |
+| backend  | `codex/gpt-5.5`  | `claude/sonnet` |
+| frontend | `codex/gpt-5.5`  | `claude/sonnet` |
+| qa       | `codex/gpt-5.5`  | `claude/haiku`  |
 
-Override per task with `delegate.ps1 -Agent <name>`. Logins use machine credentials.
+Provider → CLI: `codex` → `codex exec --full-auto -m <model>`; `claude` → `claude-acp -p ... --model <model>`.
+Override per task with `delegate.ps1 -Tier fallback` or `-Provider <claude|codex> -Model <name>`.
+Logins use machine credentials.
 
 ## Rules enforced
 

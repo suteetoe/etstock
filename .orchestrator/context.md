@@ -20,17 +20,25 @@
 | Data | ⏳ planned | EF Core + Npgsql → PostgreSQL. **Not yet added.** |
 | Tests | ⏳ planned | xUnit + Avalonia.Headless. **No test project yet.** |
 
-## Agent groups & default CLI mapping
+## Agent groups & provider/model mapping
 
-| Group | Scope | Default CLI | Headless invocation |
+Each group has a **Default** and a **Fallback** provider/model. Fallback is **config-only** —
+nothing auto-switches to it; pass `delegate.ps1 -Tier fallback` (or `-Provider/-Model`) to use it.
+
+| Group | Scope | Default | Fallback |
 |---|---|---|---|
-| **frontend** | `ETStock/Views/**`, `ETStock/ViewModels/**`, `*.axaml`, `ViewLocator.cs`, `App.axaml*` | `antigravity` | `antigravity chat -m agent "<prompt>"` (opens IDE agent chat — semi-headless, driven in the IDE) |
-| **backend** | `ETStock/Models/**`, `ETStock/Data/**`, `ETStock/Services/**`, EF Core / Npgsql / business logic | `codex` | `codex exec --full-auto "<prompt>"` (true headless) |
-| **qa** | `ETStock.Tests/**` (to be created), test fixtures | `gemini` | `gemini -p "<prompt>" --approval-mode yolo -o text` (true headless) |
+| **lead** | orchestration / planning (this role) | `claude/opus` | `codex/gpt-5.5` |
+| **backend** (BE) | `ETStock/Models/**`, `ETStock/Data/**`, `ETStock/Services/**`, EF Core / Npgsql / business logic | `codex/gpt-5.5` | `claude/sonnet` |
+| **frontend** (FE) | `ETStock/Views/**`, `ETStock/ViewModels/**`, `*.axaml`, `ViewLocator.cs`, `App.axaml*` | `codex/gpt-5.5` | `claude/sonnet` |
+| **qa** | `ETStock.Tests/**`, test fixtures | `codex/gpt-5.5` | `claude/haiku` |
+
+**Provider → CLI** (headless): `codex` → `codex exec --full-auto -m <model> "<prompt>"` ·
+`claude` → `claude-acp -p "<prompt>" --model <model>`.
 
 > Agents **edit files only** — they never run git. `delegate.ps1` commits/pushes/opens the PR.
 
-> Mapping lives in `state.json > agents` and can be overridden per-task via `delegate.ps1 -Agent`.
+> Mapping lives in `state.json > agents` (nested `default`/`fallback`). Override per-task via
+> `delegate.ps1 -Tier fallback` or `-Provider <claude|codex> -Model <name>`.
 
 ## Coding conventions (agreed)
 
@@ -69,3 +77,11 @@
   Agent mapping: frontend→antigravity, backend→codex, qa→gemini.
 - 2026-06-23: PR tracking starts as a **poll** model (`review-poll.ps1`); event-driven GitHub
   Actions deferred.
+- 2026-06-24: QA agent switched from `gemini` to `claude-acp` (provider claude-acp, model `haiku`).
+- 2026-06-24: Reworked agent mapping to **Default + Fallback (provider/model)** per group and added
+  a **lead** group. Default→Fallback: lead `claude/opus`→`codex/gpt-5.5`; backend & frontend
+  `codex/gpt-5.5`→`claude/sonnet`; qa `codex/gpt-5.5`→`claude/haiku`. Dropped `gemini`/`antigravity`.
+  Providers: `claude`→`claude-acp`, `codex`→`codex`. Fallback is config-only (no auto-switch);
+  `delegate.ps1` uses the group's default unless `-Tier fallback` / `-Provider`/`-Model` is passed.
+  Touched `state.json` (agents nested + branchPattern +`lead`), `lib.ps1` (`Get-AgentMapping`,
+  `Get-ProviderCli`, `Build-PrBody`), `delegate.ps1`, `publish.ps1`.

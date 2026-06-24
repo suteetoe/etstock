@@ -49,8 +49,8 @@ parameters:
 # โมเดล / provider (ปรับให้ตรงกับ config ของทีม)
 # ─────────────────────────────────────────────────────────────
 settings:
-  goose_provider: "codex-acp"
-  goose_model: "gpt-5.5"   # << ปรับเป็นโมเดลที่ทีมตั้งค่าไว้ใน goose
+  goose_provider: "claude-acp"
+  goose_model: "opus"   # << ปรับเป็นโมเดลที่ทีมตั้งค่าไว้ใน goose
   temperature: 0.2
 
 # ─────────────────────────────────────────────────────────────

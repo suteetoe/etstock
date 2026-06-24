@@ -7,8 +7,8 @@
 # วิธีใช้: รัน ./scripts/setup-goose.sh เพื่อ copy ไฟล์นี้ไปยัง path ระดับเครื่อง
 # หรือ override ค่าหลักด้วย env (ดู .env.example) ซึ่ง precedence สูงกว่า config.yaml
 
-GOOSE_PROVIDER: codex-acp
-GOOSE_MODEL: gpt-5.5         # << ปรับเป็นโมเดลที่ทีมใช้
+GOOSE_PROVIDER: claude-acp
+GOOSE_MODEL: opus         # << ปรับเป็นโมเดลที่ทีมใช้
 
 # จำกัดพฤติกรรม
 max_turns: 50

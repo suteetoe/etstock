@@ -100,6 +100,45 @@
       "qaDate": "2026-06-24",
       "fixRounds": 0,
       "notes": "PR #5 merged into frontend/phase2-product-ui at 2026-06-24T10:02:58Z"
+    },
+    {
+      "id": "P03-B",
+      "title": "Phase 3 — Backend: IAbbrInvoiceRepository + AbbrInvoiceRepository + tests",
+      "group": "backend",
+      "scope": "ETStock/Data/Repositories/IAbbrInvoiceRepository.cs,ETStock/Data/Repositories/AbbrInvoiceRepository.cs,ETStock/Program.cs,ETStock.Tests/AbbrInvoiceRepositoryTests.cs",
+      "status": "planned",
+      "branch": "backend/phase3-invoice-repo",
+      "pr": null,
+      "qaVerdict": null,
+      "qaDate": null,
+      "fixRounds": 0,
+      "notes": "Phase 3 backend: CRUD repository for AbbrInvoice + AbbrInvoiceItem"
+    },
+    {
+      "id": "P03-F",
+      "title": "Phase 3 — Frontend: InvoiceViewModel (full CRUD) + InvoiceView UI",
+      "group": "frontend",
+      "scope": "ETStock/ViewModels/InvoiceViewModel.cs,ETStock/Views/InvoiceView.axaml,ETStock/ViewModels/MainWindowViewModel.cs",
+      "status": "planned",
+      "branch": "frontend/phase3-invoice-ui",
+      "pr": null,
+      "qaVerdict": null,
+      "qaDate": null,
+      "fixRounds": 0,
+      "notes": "Phase 3 frontend: InvoiceViewModel CRUD + InvoiceView + DI wire-up in MainWindowViewModel"
+    },
+    {
+      "id": "P03-Q",
+      "title": "Phase 3 — QA: InvoiceViewModelTests",
+      "group": "qa",
+      "scope": "ETStock.Tests/InvoiceViewModelTests.cs",
+      "status": "planned",
+      "branch": "qa/phase3-invoice-tests",
+      "pr": null,
+      "qaVerdict": null,
+      "qaDate": null,
+      "fixRounds": 0,
+      "notes": "Phase 3 QA: ViewModel test coverage for InvoiceViewModel commands"
     }
   ],
   "prs": {

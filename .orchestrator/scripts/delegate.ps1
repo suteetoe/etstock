@@ -34,11 +34,13 @@
 #>
 [CmdletBinding(SupportsShouldProcess)]
 param(
-    [Parameter(Mandatory)][ValidateSet('frontend','backend','qa')][string] $Group,
+    [Parameter(Mandatory)][ValidateSet('lead','frontend','backend','qa')][string] $Group,
     [Parameter(Mandatory)][string] $Task,
     [Parameter(Mandatory)][string] $Scope,
     [Parameter(Mandatory)][string] $Branch,
-    [ValidateSet('codex','gemini','antigravity')][string] $Agent,
+    [ValidateSet('claude','codex')][string] $Provider,
+    [string] $Model,
+    [ValidateSet('default','fallback')][string] $Tier = 'default',
     [string] $FeatureId,
     [string] $CommitMessage,
     [string] $Title,
@@ -56,20 +58,24 @@ if ($Branch -notmatch $pattern) {
     throw "Branch '$Branch' does not match required pattern: $pattern (e.g. $Group/feature-desc)"
 }
 
-if (-not $Agent) { $Agent = Get-DefaultAgent -Group $Group }
-Assert-Tool $Agent
+# Resolve provider/model from the group's $Tier mapping unless overridden on the CLI.
+$map = Get-AgentMapping -Group $Group -Tier $Tier
+if (-not $Provider) { $Provider = $map.Provider }
+if (-not $Model)    { $Model    = $map.Model }
+$Cli = Get-ProviderCli -Provider $Provider
+Assert-Tool $Cli
 Assert-Tool 'git'
 if ($Publish) { Assert-Tool 'gh' }
 
 if (-not $CommitMessage) { $CommitMessage = "$Group`: $Task" }
 if (-not $Title)         { $Title = "[$Group] $Task" }
-if (-not $Body)          { $Body  = Build-PrBody -Group $Group -Task $Task -Scope $Scope -FeatureId $FeatureId -Agent $Agent }
+if (-not $Body)          { $Body  = Build-PrBody -Group $Group -Task $Task -Scope $Scope -FeatureId $FeatureId -Provider $Provider -Model $Model }
 
 $prompt = Build-AgentPrompt -Group $Group -Task $Task -Scope $Scope -Branch $Branch -FeatureId $FeatureId
 
 Write-Host "=== DELEGATE (1 task = 1 PR) ===" -ForegroundColor Cyan
 Write-Host "Group   : $Group"
-Write-Host "Agent   : $Agent"
+Write-Host "Provider: $Provider/$Model ($Tier tier, via $Cli)"
 Write-Host "Branch  : $Branch"
 Write-Host "Scope   : $Scope"
 Write-Host "Feature : $(if ($FeatureId) { $FeatureId } else { '(none)' })"
@@ -97,18 +103,12 @@ if ($exists) { git -C $RepoRoot checkout $Branch }
 else         { git -C $RepoRoot checkout -b $Branch "origin/$base" }
 
 # --- b. invoke the agent (edits files only) -----------------------------------
-Write-Host "[b] Running agent '$Agent' (edits in-scope files only; no git)..." -ForegroundColor Cyan
+Write-Host "[b] Running $Provider/$Model via '$Cli' (edits in-scope files only; no git)..." -ForegroundColor Cyan
 Push-Location $RepoRoot
 try {
-    switch ($Agent) {
-        'codex'       { codex exec --full-auto $prompt }
-        'gemini'      { gemini -p $prompt --approval-mode yolo -o text }
-        'antigravity' {
-            Write-Host "Launching Antigravity agent chat. Drive the task in the IDE, then return." -ForegroundColor Green
-            antigravity chat -m agent $prompt
-            Write-Host "When the IDE agent has finished editing (do NOT let it commit), press Enter..." -ForegroundColor Yellow
-            [void](Read-Host)
-        }
+    switch ($Provider) {
+        'codex'  { codex exec --full-auto -m $Model $prompt }
+        'claude' { claude-acp -p $prompt --model $Model }
     }
 }
 finally { Pop-Location }

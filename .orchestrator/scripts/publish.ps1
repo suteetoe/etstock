@@ -33,7 +33,7 @@ if ($Branch -eq $base) { throw "Refusing to publish the default branch '$base'."
 
 if (-not $Body) {
     $taskText = if ($Task) { $Task } else { $Title }
-    $Body = Build-PrBody -Group $Group -Task $taskText -Scope $Scope -FeatureId $FeatureId -Agent '(committed locally)'
+    $Body = Build-PrBody -Group $Group -Task $taskText -Scope $Scope -FeatureId $FeatureId -Provider '(committed' -Model 'locally)'
 }
 
 if ($PSCmdlet.ShouldProcess("origin/$Branch", "git push -u")) {
