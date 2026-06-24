@@ -1,0 +1,40 @@
+# ETStock — Project Hints (โหลดทุก goose session ใน repo นี้)
+
+## Project
+- ETStock = แอปเดสก์ท็อปจัดการสต๊อก + ออกใบกำกับภาษีอย่างย่อรายเดือน สำหรับร้านค้าปลีก
+- Repo นี้คือ project_dir; ใช้ภาษาไทยในข้อความผู้ใช้/ใบกำกับ
+
+## Tech stack (ห้ามเปลี่ยนโดยไม่ขออนุมัติ)
+- UI: Avalonia 11.3 (.NET 10, WinExe)
+- Pattern: MVVM (CommunityToolkit.Mvvm 8.2) — logic อยู่ใน ViewModel, code-behind เกือบว่าง
+- DB: PostgreSQL ผ่าน Npgsql + Dapper (หรือ EF Core ถ้าทีมตกลง)
+- Print: Print Preview Dialog → เครื่องพิมพ์ของระบบ
+
+## โครงสร้าง solution
+- ETStock.Domain : entity + business rules (ไม่พึ่ง UI/DB)
+- ETStock.Data   : repository + PostgreSQL access
+- ETStock.App    : Avalonia views + viewmodels
+- ETStock.Tests  : unit / integration tests
+
+## Business rules (บังคับใช้เสมอ)
+1. คงเหลือยกไป = ยกมา + ซื้อ − ขาย(เต็ม) − ขายหน้าร้าน(ย่อ)
+2. ยกไป(เดือน N) = ยกมา(เดือน N+1)
+3. ราคาขายหน้าร้าน VAT-inclusive (ปกติ 7%): net = round(amount/(1+rate),2); vat = amount − net
+4. เลขที่ใบกำกับ = running number ตาม prefix บริษัท (reset monthly/yearly/none)
+5. สร้างใบกำกับย่อซ้ำเดือนเดิม ต้องยืนยันก่อนลบ+สร้างใหม่ (atomic transaction)
+
+## Workflow ทีม (multi-agent)
+- Team Lead (recipe `recipes/etstock-team-lead.yaml`) รับคำสั่ง PO → วางแผน → สั่ง Backend/Frontend/QA
+- ส่งต่อบริบทระหว่าง agent ผ่านไฟล์ใน `.team/` (backend-contract / frontend-notes / qa-report / pr-body)
+
+## Git / PR convention
+- 1 phase = 1 branch = 1 PR: `feature/phase-<n>-<slug>` → merge เข้า `develop`
+- Conventional Commits: `feat(be):`, `feat(fe):`, `test(qa):`
+- เปิด PR เฉพาะเมื่อ QA verdict = PASS เท่านั้น; ใช้ `gh` CLI
+- ห้าม commit ความลับ (.env, token) ลง git
+
+## Definition of Done
+- build ผ่าน (`dotnet build`) + test ที่เกี่ยวข้องเขียว (`dotnet test`)
+- migration รันกับ PostgreSQL ได้
+- UI ผูก ViewModel ตาม MVVM
+- เปิด PR เข้า base branch แล้ว

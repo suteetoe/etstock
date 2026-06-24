@@ -373,3 +373,8 @@ local.properties
 
 # Directory Build overrides for local setups
 Directory.Build.Override.props
+
+# Agent/local runtime state
+.env
+.codegraph/
+.goose/memory/

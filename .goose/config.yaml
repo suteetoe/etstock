@@ -1,0 +1,31 @@
+# ETStock — team config template (เก็บใน repo เพื่อแชร์/version control)
+#
+# หมายเหตุสำคัญ: goose อ่าน config.yaml จาก path ระดับเครื่องเท่านั้น
+#   - macOS/Linux : ~/.config/goose/config.yaml
+#   - Windows     : %APPDATA%\Block\goose\config\config.yaml
+# ไฟล์นี้ "ไม่ถูกอ่านอัตโนมัติ" จาก repo — เป็น template ให้ทีมใช้ตรงกัน
+# วิธีใช้: รัน ./scripts/setup-goose.sh เพื่อ copy ไฟล์นี้ไปยัง path ระดับเครื่อง
+# หรือ override ค่าหลักด้วย env (ดู .env.example) ซึ่ง precedence สูงกว่า config.yaml
+
+GOOSE_PROVIDER: codex-acp
+GOOSE_MODEL: gpt-5.5         # << ปรับเป็นโมเดลที่ทีมใช้
+
+# จำกัดพฤติกรรม
+max_turns: 50
+context_limit: 1000000
+
+# extensions ที่ทีมต้องเปิดร่วมกัน
+extensions:
+  developer:
+    enabled: true
+    type: builtin
+    timeout: 900
+  # ตัวอย่าง: เปิด GitHub MCP แทน gh CLI (ปลดคอมเมนต์ถ้าจะใช้)
+  # github:
+  #   enabled: true
+  #   type: stdio
+  #   cmd: github-mcp-server
+  #   args: []
+  #   timeout: 60
+  #   env_keys:
+  #     - GITHUB_PERSONAL_ACCESS_TOKEN
