@@ -10,5 +10,5 @@ public class MonthlyStock
     public decimal BuyQty { get; set; }     // ซื้อ
     public decimal SellFullQty { get; set; }// ขายเต็มใบ
     public decimal SellPosQty { get; set; } // ขายหน้าร้าน
-    // closing = opening + buy - sellFull - sellPos (computed by app, not DB)
+    public decimal ClosingQty => OpeningQty + BuyQty - SellFullQty - SellPosQty;
 }
