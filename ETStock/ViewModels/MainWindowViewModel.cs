@@ -29,7 +29,8 @@ public partial class MainWindowViewModel : ViewModelBase
         var product = stockRepo is not null
             ? new ProductViewModel(stockRepo)
             : new ProductViewModel();
-        var invoice = new InvoiceViewModel();
+        var invoiceRepo = serviceProvider?.GetService<IAbbrInvoiceRepository>();
+        var invoice = invoiceRepo is not null ? new InvoiceViewModel(invoiceRepo) : new InvoiceViewModel();
 
         NavItems.Add(new NavItem("หน้าแรก", home));
         NavItems.Add(new NavItem("ข้อมูลบริษัท", company));
