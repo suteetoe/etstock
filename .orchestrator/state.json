@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-24T10:03:00Z",
+  "updatedAt": "2026-06-24T11:15:00Z",
   "project": {
     "name": "ETStock",
     "repo": "suteetoe/etstock",
@@ -100,6 +100,45 @@
       "qaDate": "2026-06-24",
       "fixRounds": 0,
       "notes": "PR #5 merged into frontend/phase2-product-ui at 2026-06-24T10:02:58Z"
+    },
+    {
+      "id": "P03-B",
+      "title": "Phase 3 - Backend: Monthly transaction repository",
+      "group": "backend",
+      "scope": "ETStock/Data/Repositories/, ETStock/Models/MonthlyStock.cs, ETStock/Program.cs, ETStock.Tests/MonthlyStockRepositoryTests.cs",
+      "status": "ready-local",
+      "branch": "backend/phase3-monthly-transaction",
+      "pr": null,
+      "qaVerdict": "PASS",
+      "qaDate": "2026-06-24",
+      "fixRounds": 0,
+      "notes": "Local commit ada1945; tests pass. Awaiting PO approval to push/open PR."
+    },
+    {
+      "id": "P03-F",
+      "title": "Phase 3 - Frontend: Monthly transaction screen",
+      "group": "frontend",
+      "scope": "ETStock/ViewModels/, ETStock/Views/ProductView.axaml",
+      "status": "ready-local",
+      "branch": "frontend/phase3-monthly-transaction-ui",
+      "pr": null,
+      "qaVerdict": "PASS",
+      "qaDate": "2026-06-24",
+      "fixRounds": 0,
+      "notes": "Local commit b422fef; stacked on P03-B. Awaiting PO approval to push/open PR."
+    },
+    {
+      "id": "P03-Q",
+      "title": "Phase 3 - QA: Monthly transaction coverage",
+      "group": "qa",
+      "scope": "ETStock.Tests/, .team/qa-report-phase3.md",
+      "status": "ready-local",
+      "branch": "qa/phase3-monthly-transaction-tests",
+      "pr": null,
+      "qaVerdict": "PASS",
+      "qaDate": "2026-06-24",
+      "fixRounds": 0,
+      "notes": "Local commit 17d3e26; dotnet test ETStock.slnx passed 36 tests. Awaiting PO approval to push/open PR."
     }
   ],
   "prs": {
