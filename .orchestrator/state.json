@@ -1,6 +1,6 @@
 ﻿{
     "version":  1,
-    "updatedAt":  "2026-06-24T09:32:17Z",
+    "updatedAt":  "2026-06-24T16:59:00Z",
     "project":  {
                     "name":  "ETStock",
                     "repo":  "suteetoe/etstock",
@@ -61,39 +61,39 @@
                         "title":  "Phase 2 backend - Product stock repository contract",
                         "group":  "backend",
                         "scope":  "ETStock/Models/**, ETStock/Data/**, ETStock.Tests/**, .team/backend-contract-2.md",
-                        "status":  "local-ready",
+                        "status":  "pr-open",
                         "branch":  "backend/phase2-product-repo",
-                        "pr":  null,
+                        "pr":  "https://github.com/suteetoe/etstock/pull/3",
                         "qaVerdict":  null,
                         "qaDate":  null,
                         "fixRounds":  0,
-                        "notes":  "Local commit 62fd77a; publish requires PO approval"
+                        "notes":  "PR #3 open; base: develop; stacked below P02-FE"
                     },
                     {
                         "id":  "P02-FE",
                         "title":  "Phase 2 frontend - Product stock screen",
                         "group":  "frontend",
                         "scope":  "ETStock/ViewModels/**, ETStock/Views/**, .team/frontend-notes-2.md",
-                        "status":  "local-ready",
+                        "status":  "pr-open",
                         "branch":  "frontend/phase2-product-ui",
-                        "pr":  null,
+                        "pr":  "https://github.com/suteetoe/etstock/pull/4",
                         "qaVerdict":  null,
                         "qaDate":  null,
                         "fixRounds":  0,
-                        "notes":  "Local commit ea02c5b stacked on backend/phase2-product-repo; publish requires PO approval"
+                        "notes":  "PR #4 open; base: backend/phase2-product-repo; stacked on P02-BE"
                     },
                     {
                         "id":  "P02-QA",
                         "title":  "Phase 2 QA - Product stock coverage",
                         "group":  "qa",
                         "scope":  "ETStock.Tests/**, .team/qa-plan-2.md, .team/qa-report-2.md",
-                        "status":  "local-ready",
+                        "status":  "pr-open",
                         "branch":  "qa/phase2-product-stock-tests",
-                        "pr":  null,
+                        "pr":  "https://github.com/suteetoe/etstock/pull/5",
                         "qaVerdict":  "PASS",
                         "qaDate":  "2026-06-24",
                         "fixRounds":  0,
-                        "notes":  "Local commit 2cf0edc stacked on frontend/phase2-product-ui; Gemini auth unavailable, Codex used as QA fallback"
+                        "notes":  "PR #5 open; base: frontend/phase2-product-ui; stacked on P02-FE"
                     }
                 ],
     "prs":  {
