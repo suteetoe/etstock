@@ -2,12 +2,18 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ETStock.Data.Repositories;
+using ETStock.Models;
 
 namespace ETStock.ViewModels;
 
 public partial class ProductViewModel
 {
     private readonly IMonthlyStockRepository? _repository;
+    private IProductRepository? _productRepository;
+
+    public event EventHandler? AddProductRequested;
+
+    private TaskCompletionSource<AddProductResult?>? _addProductTcs;
 
     public ProductViewModel()
     {
@@ -20,6 +26,12 @@ public partial class ProductViewModel
         : this()
     {
         _repository = repository;
+    }
+
+    public ProductViewModel(IMonthlyStockRepository repository, IProductRepository productRepository)
+        : this(repository)
+    {
+        _productRepository = productRepository;
     }
 
     public ObservableCollection<MonthlyStockRowViewModel> Rows { get; } = [];
@@ -35,6 +47,9 @@ public partial class ProductViewModel
 
     [ObservableProperty]
     private string _statusMessage = string.Empty;
+
+    [ObservableProperty]
+    private MonthlyStockRowViewModel? _selectedRow;
 
     [RelayCommand]
     private async Task LoadAsync()
@@ -113,6 +128,66 @@ public partial class ProductViewModel
         }
     }
 
+    [RelayCommand]
+    private async Task AddProductAsync()
+    {
+        if (_productRepository is null) { StatusMessage = "Product repository not available."; return; }
+        if (IsBusy) return;
+        IsBusy = true;
+        StatusMessage = string.Empty;
+        _addProductTcs = new TaskCompletionSource<AddProductResult?>();
+        AddProductRequested?.Invoke(this, EventArgs.Empty);
+        var dialogResult = await _addProductTcs.Task;
+        _addProductTcs = null;
+        try
+        {
+            if (dialogResult is not null)
+            {
+                var product = dialogResult.Product;
+                var balanceQty = dialogResult.BalanceQty;
+
+                await _productRepository.AddAsync(product);
+
+                if (_repository is not null && balanceQty > 0)
+                    await _repository.SaveAsync(
+                        new MonthlyStockInput(product.Id, SelectedYear, SelectedMonth, balanceQty, 0, 0, 0));
+
+                var snap = balanceQty > 0
+                    ? new MonthlyStockSnapshot(0, product.Id, SelectedYear, SelectedMonth, balanceQty, 0, 0, 0)
+                    : null;
+                var newRow = new MonthlyStockRowViewModel(new ProductWithStock(
+                    product.Id, product.Code, product.Name, product.Unit,
+                    product.CostPrice, product.SellPrice, snap));
+                Rows.Add(newRow);
+                newRow.LineNumber = Rows.Count;
+                StatusMessage = $"เพิ่มสินค้า '{product.Name}' เรียบร้อยแล้ว";
+            }
+        }
+        catch (Exception ex) { StatusMessage = $"ไม่สามารถเพิ่มสินค้าได้: {ex.Message}"; }
+        finally { IsBusy = false; }
+    }
+
+    [RelayCommand]
+    private async Task DeleteProductAsync()
+    {
+        if (_productRepository is null) { StatusMessage = "Product repository not available."; return; }
+        if (SelectedRow is null) { StatusMessage = "กรุณาเลือกสินค้าที่ต้องการลบ"; return; }
+        if (IsBusy) return;
+        IsBusy = true;
+        StatusMessage = string.Empty;
+        try
+        {
+            var name = SelectedRow.Name;
+            await _productRepository.DeleteAsync(SelectedRow.ProductId);
+            await LoadRowsAsync();
+            StatusMessage = $"ลบสินค้า '{name}' เรียบร้อยแล้ว";
+        }
+        catch (Exception ex) { StatusMessage = $"ไม่สามารถลบสินค้าได้: {ex.Message}"; }
+        finally { IsBusy = false; }
+    }
+
+    public void CompleteAddProduct(AddProductResult? result) => _addProductTcs?.TrySetResult(result);
+
     private bool CanRun()
     {
         if (_repository is null)
@@ -139,6 +214,14 @@ public partial class ProductViewModel
         {
             Rows.Add(new MonthlyStockRowViewModel(product));
         }
+
+        RefreshLineNumbers();
+    }
+
+    private void RefreshLineNumbers()
+    {
+        for (int i = 0; i < Rows.Count; i++)
+            Rows[i].LineNumber = i + 1;
     }
 }
 
@@ -166,6 +249,9 @@ public partial class MonthlyStockRowViewModel : ViewModelBase
     public string Unit { get; }
     public decimal CostPrice { get; }
     public decimal SellPrice { get; }
+
+    [ObservableProperty]
+    private int _lineNumber;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ClosingQty))]

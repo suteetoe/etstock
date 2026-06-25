@@ -1,0 +1,41 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ETStock.ViewModels"
+        x:Class="ETStock.Views.AddProductDialog"
+        x:DataType="vm:AddProductDialogViewModel"
+        Title="เพิ่มสินค้า"
+        Width="360" Height="260"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+
+    <Grid RowDefinitions="*,Auto" Margin="16">
+        <StackPanel Grid.Row="0" Spacing="8">
+            <TextBlock Text="ชื่อสินค้า *" FontWeight="SemiBold"/>
+            <TextBox Text="{Binding Name}"/>
+
+            <TextBlock Text="จำนวนคงเหลือ" FontWeight="SemiBold"/>
+            <NumericUpDown Value="{Binding BalanceQty}" Minimum="0" FormatString="0.##"/>
+
+            <Grid ColumnDefinitions="*,16,*">
+                <StackPanel Grid.Column="0" Spacing="4">
+                    <TextBlock Text="ต้นทุน" FontWeight="SemiBold"/>
+                    <NumericUpDown Value="{Binding CostPrice}" Minimum="0" FormatString="0.##"/>
+                </StackPanel>
+                <StackPanel Grid.Column="2" Spacing="4">
+                    <TextBlock Text="ราคาขาย" FontWeight="SemiBold"/>
+                    <NumericUpDown Value="{Binding SellPrice}" Minimum="0" FormatString="0.##"/>
+                </StackPanel>
+            </Grid>
+
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,8,*" Margin="0,8,0,0">
+            <Button Grid.Column="0" Content="ยกเลิก" HorizontalAlignment="Stretch"
+                    Command="{Binding CancelCommand}"/>
+            <Button Grid.Column="2" Content="บันทึก" HorizontalAlignment="Stretch"
+                    Classes="accent" Command="{Binding ConfirmCommand}"/>
+        </Grid>
+    </Grid>
+</Window>

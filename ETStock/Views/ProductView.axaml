@@ -12,10 +12,20 @@
     </Design.DataContext>
 
     <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
-        <TextBlock Grid.Row="0"
-                   Text="Monthly Stock Transactions"
-                   FontSize="24"
-                   FontWeight="Bold"/>
+
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+            <TextBlock Grid.Column="0"
+                       Text="Monthly Stock Transactions"
+                       FontSize="24"
+                       FontWeight="Bold"/>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <Button Content="ลบสินค้า"
+                        Command="{Binding DeleteProductCommand}"
+                        IsEnabled="{Binding SelectedRow, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                <Button Content="เพิ่มสินค้า"
+                        Command="{Binding AddProductCommand}"/>
+            </StackPanel>
+        </Grid>
 
         <Grid Grid.Row="1" ColumnDefinitions="Auto,100,Auto,80,Auto,Auto,Auto,*" ColumnSpacing="8">
             <TextBlock Grid.Column="0" Text="Year" VerticalAlignment="Center"/>
@@ -52,9 +62,9 @@
                           VerticalScrollBarVisibility="Auto">
                 <StackPanel MinWidth="1130">
                     <Border Background="#EEEEEE" Padding="8">
-                        <Grid ColumnDefinitions="90,190,70,90,90,100,100,110,110,110"
+                        <Grid ColumnDefinitions="50,190,70,90,90,100,100,110,110,110"
                               ColumnSpacing="8">
-                            <TextBlock Grid.Column="0" Text="Code" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Column="0" Text="#" FontWeight="SemiBold"/>
                             <TextBlock Grid.Column="1" Text="Product" FontWeight="SemiBold"/>
                             <TextBlock Grid.Column="2" Text="Unit" FontWeight="SemiBold"/>
                             <TextBlock Grid.Column="3" Text="Cost" FontWeight="SemiBold" TextAlignment="Right"/>
@@ -67,15 +77,25 @@
                         </Grid>
                     </Border>
 
-                    <ItemsControl ItemsSource="{Binding Rows}">
-                        <ItemsControl.ItemTemplate>
+                    <ListBox ItemsSource="{Binding Rows}"
+                             SelectedItem="{Binding SelectedRow}"
+                             SelectionMode="Single"
+                             Background="Transparent"
+                             BorderThickness="0">
+                        <ListBox.ItemContainerTheme>
+                            <ControlTheme TargetType="ListBoxItem">
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                            </ControlTheme>
+                        </ListBox.ItemContainerTheme>
+                        <ListBox.ItemTemplate>
                             <DataTemplate x:DataType="vm:MonthlyStockRowViewModel">
                                 <Border BorderBrush="#E5E5E5"
                                         BorderThickness="0,0,0,1"
                                         Padding="8">
-                                    <Grid ColumnDefinitions="90,190,70,90,90,100,100,110,110,110"
+                                    <Grid ColumnDefinitions="50,190,70,90,90,100,100,110,110,110"
                                           ColumnSpacing="8">
-                                        <TextBlock Grid.Column="0" Text="{Binding Code}" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="0" Text="{Binding LineNumber}" VerticalAlignment="Center"/>
                                         <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center"/>
                                         <TextBlock Grid.Column="2" Text="{Binding Unit}" VerticalAlignment="Center"/>
                                         <TextBlock Grid.Column="3"
@@ -114,8 +134,8 @@
                                     </Grid>
                                 </Border>
                             </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                 </StackPanel>
             </ScrollViewer>
         </Border>
