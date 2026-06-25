@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:ETStock.ViewModels"
+        xmlns:views="using:ETStock.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="680"
@@ -28,29 +29,15 @@
             </DockPanel>
         </Border>
 
-        <!-- Main area: sidebar + content -->
-        <Grid Grid.Row="1" ColumnDefinitions="220,*">
-            <!-- Sidebar -->
-            <Border Grid.Column="0" Background="#1E1E2E" Padding="8">
-                <StackPanel>
-                    <ListBox ItemsSource="{Binding NavItems}"
-                             Background="Transparent">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate x:DataType="vm:NavItem">
-                                <Button Content="{Binding Label}"
-                                        Command="{Binding $parent[Window].DataContext.NavigateCommand}"
-                                        CommandParameter="{Binding}"
-                                        HorizontalAlignment="Stretch"
-                                        Background="Transparent"/>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </StackPanel>
-            </Border>
-
-            <!-- Content -->
-            <ContentControl Grid.Column="1" Content="{Binding CurrentPage}" Margin="16"/>
-        </Grid>
+        <!-- Tab area -->
+        <TabControl Grid.Row="1">
+            <TabItem Header="Stock">
+                <views:ProductView DataContext="{Binding StockPage}" Margin="16"/>
+            </TabItem>
+            <TabItem Header="ABB List">
+                <views:InvoiceView DataContext="{Binding InvoicePage}" Margin="16"/>
+            </TabItem>
+        </TabControl>
     </Grid>
 
 </Window>
