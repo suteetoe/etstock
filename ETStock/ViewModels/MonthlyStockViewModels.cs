@@ -144,7 +144,11 @@ public partial class ProductViewModel
             if (newProduct is not null)
             {
                 await _productRepository.AddAsync(newProduct);
-                await LoadRowsAsync();
+                var newRow = new MonthlyStockRowViewModel(new ProductWithStock(
+                    newProduct.Id, newProduct.Code, newProduct.Name, newProduct.Unit,
+                    newProduct.CostPrice, newProduct.SellPrice, null));
+                Rows.Add(newRow);
+                newRow.LineNumber = Rows.Count;
                 StatusMessage = $"เพิ่มสินค้า '{newProduct.Name}' เรียบร้อยแล้ว";
             }
         }
@@ -199,6 +203,14 @@ public partial class ProductViewModel
         {
             Rows.Add(new MonthlyStockRowViewModel(product));
         }
+
+        RefreshLineNumbers();
+    }
+
+    private void RefreshLineNumbers()
+    {
+        for (int i = 0; i < Rows.Count; i++)
+            Rows[i].LineNumber = i + 1;
     }
 }
 
@@ -223,6 +235,9 @@ public partial class MonthlyStockRowViewModel : ViewModelBase
     public int ProductId { get; }
     public string Code { get; }
     public string Name { get; }
+
+    [ObservableProperty]
+    private int _lineNumber;
     public string Unit { get; }
     public decimal CostPrice { get; }
     public decimal SellPrice { get; }

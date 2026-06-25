@@ -6,9 +6,7 @@ namespace ETStock.ViewModels;
 
 public partial class AddProductDialogViewModel : ViewModelBase
 {
-    [ObservableProperty] private string _code = string.Empty;
     [ObservableProperty] private string _name = string.Empty;
-    [ObservableProperty] private string _unit = string.Empty;
     [ObservableProperty] private decimal _costPrice;
     [ObservableProperty] private decimal _sellPrice;
     [ObservableProperty] private string _errorMessage = string.Empty;
@@ -18,14 +16,13 @@ public partial class AddProductDialogViewModel : ViewModelBase
     [RelayCommand]
     private void Confirm()
     {
-        if (string.IsNullOrWhiteSpace(Code)) { ErrorMessage = "กรุณาระบุรหัสสินค้า"; return; }
         if (string.IsNullOrWhiteSpace(Name)) { ErrorMessage = "กรุณาระบุชื่อสินค้า"; return; }
         ErrorMessage = string.Empty;
         DialogCompleted?.Invoke(this, new Product
         {
-            Code = Code.Trim(),
+            Code = Guid.NewGuid().ToString("N")[..8].ToUpper(),
             Name = Name.Trim(),
-            Unit = Unit.Trim(),
+            Unit = string.Empty,
             CostPrice = CostPrice,
             SellPrice = SellPrice
         });
