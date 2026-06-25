@@ -378,3 +378,4 @@ Directory.Build.Override.props
 .env
 .codegraph/
 .goose/memory/
+.claude
