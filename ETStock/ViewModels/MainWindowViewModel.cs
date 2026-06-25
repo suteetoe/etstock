@@ -16,6 +16,10 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public ObservableCollection<NavItem> NavItems { get; } = [];
 
+    public CompanyViewModel CompanyPage { get; }
+
+    public event EventHandler? OpenCompanyDialogRequested;
+
     public MainWindowViewModel()
     {
         var home = new HomeViewModel();
@@ -24,12 +28,11 @@ public partial class MainWindowViewModel : ViewModelBase
         var serviceProvider = _serviceScope?.ServiceProvider;
 
         var repo = serviceProvider?.GetService<ICompanyRepository>();
-        var company = repo is not null ? new CompanyViewModel(repo) : new CompanyViewModel();
+        CompanyPage = repo is not null ? new CompanyViewModel(repo) : new CompanyViewModel();
 
         var stockRepo = serviceProvider?.GetService<IMonthlyStockRepository>();
-        var product = stockRepo is not null
-            ? new ProductViewModel(stockRepo)
-            : new ProductViewModel();
+        var product = stockRepo is not null ? new ProductViewModel(stockRepo) : new ProductViewModel();
+
         var invoiceRepo = serviceProvider?.GetService<IAbbrInvoiceRepository>();
         var printService = serviceProvider?.GetService<IInvoicePrintService>();
         var invoice = invoiceRepo is not null
@@ -37,7 +40,6 @@ public partial class MainWindowViewModel : ViewModelBase
             : new InvoiceViewModel();
 
         NavItems.Add(new NavItem("หน้าแรก", home));
-        NavItems.Add(new NavItem("ข้อมูลบริษัท", company));
         NavItems.Add(new NavItem("สินค้า / สต๊อก", product));
         NavItems.Add(new NavItem("ใบกำกับภาษี", invoice));
 
@@ -46,6 +48,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [RelayCommand]
     private void Navigate(NavItem item) => CurrentPage = item.Page;
+
+    [RelayCommand]
+    private void OpenCompanyDialog() => OpenCompanyDialogRequested?.Invoke(this, EventArgs.Empty);
 }
 
 public record NavItem(string Label, ViewModelBase Page);

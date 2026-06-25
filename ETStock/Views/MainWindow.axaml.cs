@@ -1,12 +1,23 @@
 using Avalonia.Controls;
+using ETStock.ViewModels;
 
-namespace ETStock.Views
+namespace ETStock.Views;
+
+public partial class MainWindow : Window
 {
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
+        InitializeComponent();
+        DataContextChanged += (_, _) =>
         {
-            InitializeComponent();
-        }
+            if (DataContext is MainWindowViewModel vm)
+            {
+                vm.OpenCompanyDialogRequested += async (_, _) =>
+                {
+                    var dialog = new CompanyDialog { DataContext = vm.CompanyPage };
+                    await dialog.ShowDialog(this);
+                };
+            }
+        };
     }
 }
