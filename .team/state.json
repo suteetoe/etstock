@@ -122,6 +122,17 @@
       "qaDate": "2026-06-25",
       "fixRounds": 0,
       "notes": "PR #17 open. 79/79 tests pass (14 new). Merge after PR #16."
+    },
+    {
+      "id": "P-TOPBAR",
+      "title": "UX: Move company info from sidebar to topbar dialog",
+      "group": "frontend",
+      "scope": "ETStock/ViewModels/MainWindowViewModel.cs,ETStock/Views/MainWindow.axaml,ETStock/Views/MainWindow.axaml.cs,ETStock/Views/CompanyDialog.axaml,ETStock/Views/CompanyDialog.axaml.cs",
+      "status": "review",
+      "branch": "frontend/company-info-topbar-dialog",
+      "pr": "https://github.com/suteetoe/etstock/pull/18",
+      "fixRounds": 0,
+      "notes": "PR #18 open. Build 0 errors. Awaiting PO merge approval."
     }
   ],
   "prs": {
@@ -141,7 +152,8 @@
     "14": { "url": "https://github.com/suteetoe/etstock/pull/14", "branch": "frontend/phase5-invoice-full-ui",      "title": "[Phase 5 FE+QA] Integrate full InvoiceViewModel + tests into develop", "featureId": "P05-F+P05-Q", "status": "merged", "fixRounds": 0, "mergedAt": "2026-06-25T08:30:00Z", "orchestratorVerdict": "PASS", "notes": "Corrective PR merged into develop." },
     "15": { "url": "https://github.com/suteetoe/etstock/pull/15", "branch": "backend/phase5-print-service",         "title": "[Phase 5 BE] InvoiceDocumentModel + InvoicePrintService",              "featureId": "P5P-B", "status": "open", "fixRounds": 0, "orchestratorVerdict": "PASS", "notes": "Merge first (before PR #16 and #17)." },
     "16": { "url": "https://github.com/suteetoe/etstock/pull/16", "branch": "frontend/phase5-print-preview",        "title": "[Phase 5 FE] PrintPreviewWindow + PrintCommand",                        "featureId": "P5P-F", "status": "open", "fixRounds": 0, "orchestratorVerdict": "PASS", "notes": "Merge second (after PR #15)." },
-    "17": { "url": "https://github.com/suteetoe/etstock/pull/17", "branch": "qa/phase5-print-tests",               "title": "[Phase 5 QA] InvoicePrintService + PrintPreviewViewModel tests",        "featureId": "P5P-Q", "status": "open", "fixRounds": 0, "orchestratorVerdict": "PASS", "notes": "Merge third (after PR #16). 79/79 tests pass." }
+    "17": { "url": "https://github.com/suteetoe/etstock/pull/17", "branch": "qa/phase5-print-tests",               "title": "[Phase 5 QA] InvoicePrintService + PrintPreviewViewModel tests",        "featureId": "P5P-Q", "status": "open", "fixRounds": 0, "orchestratorVerdict": "PASS", "notes": "Merge third (after PR #16). 79/79 tests pass." },
+    "18": { "url": "https://github.com/suteetoe/etstock/pull/18", "branch": "frontend/company-info-topbar-dialog", "title": "[Frontend] Move company info from sidebar to topbar dialog",             "featureId": "P-TOPBAR", "status": "open", "fixRounds": 0, "notes": "Company info moved to topbar button → CompanyDialog modal. Build 0 errors." }
   },
   "schema": {
     "note": "Initial schema established in Phase 0. Migration: 20260624035619_Initial. No new DB entities in Phase 5 (AbbrInvoiceSummary is a query-result record, not an EF entity).",
