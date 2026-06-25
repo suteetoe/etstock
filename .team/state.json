@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-24T20:21:00Z",
+  "updatedAt": "2026-06-24T20:30:00Z",
   "project": {
     "name": "ETStock",
     "repo": "suteetoe/etstock",
@@ -36,301 +36,79 @@
     "branchPattern": "^(lead|frontend|backend|qa|feature)/[a-z0-9]+-[a-z0-9-]+$"
   },
   "backlog": [
-    {
-      "id": "P00",
-      "title": "Phase 0 — Foundation",
-      "group": "all",
-      "scope": "ETStock/**, ETStock.Tests/**",
-      "status": "done",
-      "branch": "feature/phase-0-foundation",
-      "pr": "https://github.com/suteetoe/etstock/pull/1",
-      "qaVerdict": "PASS",
-      "qaDate": "2026-06-24",
-      "fixRounds": 0,
-      "notes": "PR #1 merged into develop"
-    },
-    {
-      "id": "P01",
-      "title": "Phase 1 — Company Details Setup",
-      "group": "all",
-      "scope": "ETStock/Data/Repositories/, ETStock/ViewModels/CompanyViewModel.cs, ETStock/Views/CompanyView.axaml, ETStock.Tests/",
-      "status": "done",
-      "branch": "feature/phase-1-company",
-      "pr": "https://github.com/suteetoe/etstock/pull/2",
-      "qaVerdict": "PASS",
-      "qaDate": "2026-06-24",
-      "fixRounds": 0,
-      "notes": "PR #2 merged into develop"
-    },
-    {
-      "id": "P02-B",
-      "title": "Phase 2 — Backend: IProductRepository + ProductRepository",
-      "group": "backend",
-      "scope": "ETStock/Data/Repositories/, ETStock/Program.cs, ETStock.Tests/ProductRepositoryTests.cs",
-      "status": "done",
-      "branch": "backend/phase2-product-repo",
-      "pr": "https://github.com/suteetoe/etstock/pull/3",
-      "qaVerdict": "PASS",
-      "qaDate": "2026-06-24",
-      "fixRounds": 0,
-      "notes": "PR #3 merged into develop"
-    },
-    {
-      "id": "P02-F",
-      "title": "Phase 2 — Frontend: ProductViewModel + ProductView CRUD",
-      "group": "frontend",
-      "scope": "ETStock/ViewModels/ProductViewModel.cs, ETStock/Views/ProductView.axaml, ETStock/ViewModels/MainWindowViewModel.cs",
-      "status": "done",
-      "branch": "frontend/phase2-product-ui",
-      "pr": "https://github.com/suteetoe/etstock/pull/4",
-      "qaVerdict": "PASS",
-      "qaDate": "2026-06-24",
-      "fixRounds": 0,
-      "notes": "PR #4 merged into develop"
-    },
-    {
-      "id": "P02-Q",
-      "title": "Phase 2 — QA: ProductViewModel tests + verdict",
-      "group": "qa",
-      "scope": "ETStock.Tests/ProductViewModelTests.cs",
-      "status": "done",
-      "branch": "qa/phase2-product-stock-tests",
-      "pr": "https://github.com/suteetoe/etstock/pull/5",
-      "qaVerdict": "PASS",
-      "qaDate": "2026-06-24",
-      "fixRounds": 0,
-      "notes": "PR #5 merged into develop"
-    },
-    {
-      "id": "P03-Q",
-      "title": "Phase 3 — QA: Monthly Stock Transaction tests",
-      "group": "qa",
-      "scope": "ETStock.Tests/MonthlyStockViewModelTests.cs",
-      "status": "done",
-      "branch": "qa/phase3-monthly-transaction-tests",
-      "pr": "https://github.com/suteetoe/etstock/pull/6",
-      "qaVerdict": "PASS",
-      "qaDate": "2026-06-24",
-      "fixRounds": 0,
-      "notes": "PR #6 merged into develop"
-    },
-    {
-      "id": "P04-B",
-      "title": "Phase 4 — Backend: IAbbrInvoiceRepository + AbbrInvoiceRepository + tests",
-      "group": "backend",
-      "scope": "ETStock/Data/Repositories/IAbbrInvoiceRepository.cs,ETStock/Data/Repositories/AbbrInvoiceRepository.cs,ETStock/Program.cs,ETStock.Tests/AbbrInvoiceRepositoryTests.cs",
-      "status": "done",
-      "branch": "backend/phase4-invoice-repo",
-      "pr": "https://github.com/suteetoe/etstock/pull/7",
-      "qaVerdict": "PASS",
-      "qaDate": "2026-06-24",
-      "fixRounds": 0,
-      "notes": "PR #7 merged into develop"
-    },
-    {
-      "id": "P04-F",
-      "title": "Phase 4 — Frontend: InvoiceViewModel (stub) + InvoiceView (placeholder)",
-      "group": "frontend",
-      "scope": "ETStock/ViewModels/InvoiceViewModel.cs,ETStock/Views/InvoiceView.axaml,ETStock/ViewModels/MainWindowViewModel.cs",
-      "status": "done",
-      "branch": "frontend/phase4-invoice-ui",
-      "pr": "https://github.com/suteetoe/etstock/pull/8",
-      "qaVerdict": "PASS",
-      "qaDate": "2026-06-24",
-      "fixRounds": 0,
-      "notes": "PR #8 merged — delivered as intentional stub/placeholder per phase 4-5 comment in AXAML"
-    },
-    {
-      "id": "P04-Q",
-      "title": "Phase 4 — QA: InvoiceViewModel stub tests",
-      "group": "qa",
-      "scope": "ETStock.Tests/InvoiceViewModelTests.cs",
-      "status": "done",
-      "branch": "qa/phase4-invoice-tests",
-      "pr": "https://github.com/suteetoe/etstock/pull/9",
-      "qaVerdict": "PASS",
-      "qaDate": "2026-06-24",
-      "fixRounds": 0,
-      "notes": "PR #9 merged — stub tests; real coverage delegated to Phase 5 QA"
-    },
+    { "id": "P00", "title": "Phase 0 — Foundation", "group": "all", "status": "done", "branch": "feature/phase-0-foundation", "pr": "https://github.com/suteetoe/etstock/pull/1", "qaVerdict": "PASS", "qaDate": "2026-06-24", "fixRounds": 0, "notes": "PR #1 merged into develop" },
+    { "id": "P01", "title": "Phase 1 — Company Details Setup", "group": "all", "status": "done", "branch": "feature/phase-1-company", "pr": "https://github.com/suteetoe/etstock/pull/2", "qaVerdict": "PASS", "qaDate": "2026-06-24", "fixRounds": 0, "notes": "PR #2 merged into develop" },
+    { "id": "P02-B", "title": "Phase 2 — Backend: IProductRepository + ProductRepository", "group": "backend", "status": "done", "branch": "backend/phase2-product-repo", "pr": "https://github.com/suteetoe/etstock/pull/3", "qaVerdict": "PASS", "qaDate": "2026-06-24", "fixRounds": 0, "notes": "PR #3 merged into develop" },
+    { "id": "P02-F", "title": "Phase 2 — Frontend: ProductViewModel + ProductView CRUD", "group": "frontend", "status": "done", "branch": "frontend/phase2-product-ui", "pr": "https://github.com/suteetoe/etstock/pull/4", "qaVerdict": "PASS", "qaDate": "2026-06-24", "fixRounds": 0, "notes": "PR #4 merged into develop" },
+    { "id": "P02-Q", "title": "Phase 2 — QA: ProductViewModel tests", "group": "qa", "status": "done", "branch": "qa/phase2-product-stock-tests", "pr": "https://github.com/suteetoe/etstock/pull/5", "qaVerdict": "PASS", "qaDate": "2026-06-24", "fixRounds": 0, "notes": "PR #5 merged into develop" },
+    { "id": "P03-Q", "title": "Phase 3 — QA: Monthly Stock Transaction tests", "group": "qa", "status": "done", "branch": "qa/phase3-monthly-transaction-tests", "pr": "https://github.com/suteetoe/etstock/pull/6", "qaVerdict": "PASS", "qaDate": "2026-06-24", "fixRounds": 0, "notes": "PR #6 merged into develop" },
+    { "id": "P04-B", "title": "Phase 4 — Backend: IAbbrInvoiceRepository + AbbrInvoiceRepository + tests", "group": "backend", "status": "done", "branch": "backend/phase4-invoice-repo", "pr": "https://github.com/suteetoe/etstock/pull/7", "qaVerdict": "PASS", "qaDate": "2026-06-24", "fixRounds": 0, "notes": "PR #7 merged into develop" },
+    { "id": "P04-F", "title": "Phase 4 — Frontend: InvoiceViewModel (stub) + InvoiceView (placeholder)", "group": "frontend", "status": "done", "branch": "frontend/phase4-invoice-ui", "pr": "https://github.com/suteetoe/etstock/pull/8", "qaVerdict": "PASS", "qaDate": "2026-06-24", "fixRounds": 0, "notes": "PR #8 merged — intentional stub/placeholder (phase 4-5 comment in AXAML)" },
+    { "id": "P04-Q", "title": "Phase 4 — QA: InvoiceViewModel stub tests", "group": "qa", "status": "done", "branch": "qa/phase4-invoice-tests", "pr": "https://github.com/suteetoe/etstock/pull/9", "qaVerdict": "PASS", "qaDate": "2026-06-24", "fixRounds": 0, "notes": "PR #9 merged — stub tests; real coverage in Phase 5 QA" },
     {
       "id": "P05-B",
       "title": "Phase 5 — Backend: GetPeriodSummaryAsync + AbbrInvoiceSummary record",
       "group": "backend",
       "scope": "ETStock/Models/AbbrInvoiceSummary.cs,ETStock/Data/Repositories/IAbbrInvoiceRepository.cs,ETStock/Data/Repositories/AbbrInvoiceRepository.cs,ETStock.Tests/AbbrInvoiceRepositoryTests.cs",
-      "status": "planned",
+      "status": "review",
       "branch": "backend/phase5-invoice-summary",
-      "pr": null,
-      "qaVerdict": null,
-      "qaDate": null,
+      "pr": "https://github.com/suteetoe/etstock/pull/10",
+      "qaVerdict": "PASS",
+      "qaDate": "2026-06-24",
       "fixRounds": 0,
-      "notes": "Add GetPeriodSummaryAsync(int taxYear, int taxMonth) → AbbrInvoiceSummary(Count, TotalAmount, VatAmount). Used by FE for period-summary footer."
+      "notes": "PR #10 open — 44/44 tests pass. Awaiting PO merge approval."
     },
     {
       "id": "P05-F",
       "title": "Phase 5 — Frontend: Full InvoiceViewModel CRUD + InvoiceView UI",
       "group": "frontend",
-      "scope": "ETStock/ViewModels/InvoiceViewModel.cs,ETStock/Views/InvoiceView.axaml",
-      "status": "planned",
+      "scope": "ETStock/ViewModels/InvoiceViewModel.cs,ETStock/Views/InvoiceView.axaml,ETStock/ViewModels/MainWindowViewModel.cs",
+      "status": "review",
       "branch": "frontend/phase5-invoice-full-ui",
-      "pr": null,
-      "qaVerdict": null,
-      "qaDate": null,
+      "pr": "https://github.com/suteetoe/etstock/pull/11",
+      "qaVerdict": "PASS",
+      "qaDate": "2026-06-24",
       "fixRounds": 0,
-      "notes": "Replace stub with full implementation: period picker, invoice list DataGrid, Add/Edit form with items grid (InvoiceItemRowViewModel), Delete, auto-VAT (7%), period summary footer. Depends on P05-B."
+      "notes": "PR #11 open — build 0 errors. Based on PR #10 (merge order: #10 → #11 → #12). Awaiting PO merge approval."
     },
     {
       "id": "P05-Q",
-      "title": "Phase 5 — QA: InvoiceViewModelTests (full coverage)",
+      "title": "Phase 5 — QA: InvoiceViewModelTests full coverage (20 facts)",
       "group": "qa",
       "scope": "ETStock.Tests/InvoiceViewModelTests.cs",
-      "status": "planned",
+      "status": "review",
       "branch": "qa/phase5-invoice-viewmodel-tests",
-      "pr": null,
-      "qaVerdict": null,
-      "qaDate": null,
+      "pr": "https://github.com/suteetoe/etstock/pull/12",
+      "qaVerdict": "PASS",
+      "qaDate": "2026-06-24",
       "fixRounds": 0,
-      "notes": "Full xUnit tests for InvoiceViewModel using FakeAbbrInvoiceRepository: LoadCommand, NewCommand, SaveCommand, DeleteCommand, period summary. Depends on P05-F."
+      "notes": "PR #12 open — 64/64 tests pass (44 existing + 20 new). Based on PR #11. Awaiting PO merge approval."
     }
   ],
   "prs": {
-    "1": {
-      "url": "https://github.com/suteetoe/etstock/pull/1",
-      "branch": "feature/phase-0-foundation",
-      "title": "[feature] Phase 0 foundation",
-      "featureId": "P00",
-      "status": "merged",
-      "fixRounds": 0,
-      "lastReviewedAt": null,
-      "mergedAt": "2026-06-24T07:43:16Z",
-      "mergeCommit": null
-    },
-    "2": {
-      "url": "https://github.com/suteetoe/etstock/pull/2",
-      "branch": "feature/phase-1-company",
-      "title": "feat: Phase 1 — Company CRUD (BE + FE + QA)",
-      "featureId": "P01",
-      "status": "merged",
-      "fixRounds": 0,
-      "lastReviewedAt": "2026-06-24T08:42:10Z",
-      "mergedAt": "2026-06-24T08:42:10Z",
-      "mergeCommit": null
-    },
-    "3": {
-      "url": "https://github.com/suteetoe/etstock/pull/3",
-      "branch": "backend/phase2-product-repo",
-      "title": "[Phase 2 BE] Product Stock Repository Contract",
-      "featureId": "P02-B",
-      "status": "merged",
-      "fixRounds": 0,
-      "lastReviewedAt": "2026-06-24T10:02:12Z",
-      "mergedAt": "2026-06-24T10:02:12Z",
-      "mergeCommit": null
-    },
-    "4": {
-      "url": "https://github.com/suteetoe/etstock/pull/4",
-      "branch": "frontend/phase2-product-ui",
-      "title": "[Phase 2 FE] Product Stock Screen",
-      "featureId": "P02-F",
-      "status": "merged",
-      "fixRounds": 0,
-      "lastReviewedAt": "2026-06-24T10:02:34Z",
-      "mergedAt": "2026-06-24T10:02:34Z",
-      "mergeCommit": null
-    },
-    "5": {
-      "url": "https://github.com/suteetoe/etstock/pull/5",
-      "branch": "qa/phase2-product-stock-tests",
-      "title": "[Phase 2 QA] Product Stock Test Coverage",
-      "featureId": "P02-Q",
-      "status": "merged",
-      "fixRounds": 0,
-      "lastReviewedAt": "2026-06-24T10:02:58Z",
-      "mergedAt": "2026-06-24T10:02:58Z",
-      "mergeCommit": null
-    },
-    "6": {
-      "url": "https://github.com/suteetoe/etstock/pull/6",
-      "branch": "qa/phase3-monthly-transaction-tests",
-      "title": "[Phase 3 QA] Monthly Stock Transaction — Coverage & Full Phase 3 Stack",
-      "featureId": "P03-Q",
-      "status": "merged",
-      "fixRounds": 0,
-      "lastReviewedAt": "2026-06-24T11:26:10Z",
-      "mergedAt": "2026-06-24T11:26:10Z",
-      "mergeCommit": null
-    },
-    "7": {
-      "url": "https://github.com/suteetoe/etstock/pull/7",
-      "branch": "backend/phase4-invoice-repo",
-      "title": "[Phase 4 BE] AbbrInvoice Repository + Tests",
-      "featureId": "P04-B",
-      "status": "merged",
-      "fixRounds": 0,
-      "lastReviewedAt": "2026-06-24T11:53:04Z",
-      "mergedAt": "2026-06-24T11:53:04Z",
-      "mergeCommit": null
-    },
-    "8": {
-      "url": "https://github.com/suteetoe/etstock/pull/8",
-      "branch": "frontend/phase4-invoice-ui",
-      "title": "[Phase 4 FE] InvoiceViewModel CRUD + InvoiceView UI",
-      "featureId": "P04-F",
-      "status": "merged",
-      "fixRounds": 0,
-      "lastReviewedAt": "2026-06-24T11:53:24Z",
-      "mergedAt": "2026-06-24T11:53:24Z",
-      "mergeCommit": null
-    },
-    "9": {
-      "url": "https://github.com/suteetoe/etstock/pull/9",
-      "branch": "qa/phase4-invoice-tests",
-      "title": "[Phase 4 QA] InvoiceViewModel Test Coverage",
-      "featureId": "P04-Q",
-      "status": "merged",
-      "fixRounds": 0,
-      "lastReviewedAt": "2026-06-24T11:53:38Z",
-      "mergedAt": "2026-06-24T11:53:38Z",
-      "mergeCommit": null
-    }
+    "1":  { "url": "https://github.com/suteetoe/etstock/pull/1",  "branch": "feature/phase-0-foundation",           "title": "[feature] Phase 0 foundation",                                  "featureId": "P00",   "status": "merged", "fixRounds": 0, "mergedAt": "2026-06-24T07:43:16Z" },
+    "2":  { "url": "https://github.com/suteetoe/etstock/pull/2",  "branch": "feature/phase-1-company",              "title": "feat: Phase 1 — Company CRUD (BE + FE + QA)",                   "featureId": "P01",   "status": "merged", "fixRounds": 0, "mergedAt": "2026-06-24T08:42:10Z" },
+    "3":  { "url": "https://github.com/suteetoe/etstock/pull/3",  "branch": "backend/phase2-product-repo",          "title": "[Phase 2 BE] Product Stock Repository Contract",                "featureId": "P02-B", "status": "merged", "fixRounds": 0, "mergedAt": "2026-06-24T10:02:12Z" },
+    "4":  { "url": "https://github.com/suteetoe/etstock/pull/4",  "branch": "frontend/phase2-product-ui",           "title": "[Phase 2 FE] Product Stock Screen",                             "featureId": "P02-F", "status": "merged", "fixRounds": 0, "mergedAt": "2026-06-24T10:02:34Z" },
+    "5":  { "url": "https://github.com/suteetoe/etstock/pull/5",  "branch": "qa/phase2-product-stock-tests",        "title": "[Phase 2 QA] Product Stock Test Coverage",                      "featureId": "P02-Q", "status": "merged", "fixRounds": 0, "mergedAt": "2026-06-24T10:02:58Z" },
+    "6":  { "url": "https://github.com/suteetoe/etstock/pull/6",  "branch": "qa/phase3-monthly-transaction-tests",  "title": "[Phase 3 QA] Monthly Stock Transaction — Coverage & Full Phase 3 Stack", "featureId": "P03-Q", "status": "merged", "fixRounds": 0, "mergedAt": "2026-06-24T11:26:10Z" },
+    "7":  { "url": "https://github.com/suteetoe/etstock/pull/7",  "branch": "backend/phase4-invoice-repo",          "title": "[Phase 4 BE] AbbrInvoice Repository + Tests",                   "featureId": "P04-B", "status": "merged", "fixRounds": 0, "mergedAt": "2026-06-24T11:53:04Z" },
+    "8":  { "url": "https://github.com/suteetoe/etstock/pull/8",  "branch": "frontend/phase4-invoice-ui",           "title": "[Phase 4 FE] InvoiceViewModel CRUD + InvoiceView UI",           "featureId": "P04-F", "status": "merged", "fixRounds": 0, "mergedAt": "2026-06-24T11:53:24Z" },
+    "9":  { "url": "https://github.com/suteetoe/etstock/pull/9",  "branch": "qa/phase4-invoice-tests",              "title": "[Phase 4 QA] InvoiceViewModel Test Coverage",                   "featureId": "P04-Q", "status": "merged", "fixRounds": 0, "mergedAt": "2026-06-24T11:53:38Z" },
+    "10": { "url": "https://github.com/suteetoe/etstock/pull/10", "branch": "backend/phase5-invoice-summary",       "title": "[Phase 5 BE] AbbrInvoiceSummary + GetPeriodSummaryAsync",      "featureId": "P05-B", "status": "open",   "fixRounds": 0, "lastReviewedAt": "2026-06-24T20:30:00Z", "orchestratorVerdict": "PASS" },
+    "11": { "url": "https://github.com/suteetoe/etstock/pull/11", "branch": "frontend/phase5-invoice-full-ui",      "title": "[Phase 5 FE] Full InvoiceViewModel CRUD + InvoiceView UI",    "featureId": "P05-F", "status": "open",   "fixRounds": 0, "lastReviewedAt": "2026-06-24T20:30:00Z", "orchestratorVerdict": "PASS" },
+    "12": { "url": "https://github.com/suteetoe/etstock/pull/12", "branch": "qa/phase5-invoice-viewmodel-tests",    "title": "[Phase 5 QA] InvoiceViewModel Test Coverage",                  "featureId": "P05-Q", "status": "open",   "fixRounds": 0, "lastReviewedAt": "2026-06-24T20:30:00Z", "orchestratorVerdict": "PASS" }
   },
   "schema": {
-    "note": "Initial schema established in Phase 0. Migration: 20260624035619_Initial",
+    "note": "Initial schema established in Phase 0. Migration: 20260624035619_Initial. No new DB entities in Phase 5 (AbbrInvoiceSummary is a query-result record, not an EF entity).",
     "dbContext": "ETStock.Data.AppDbContext",
     "migrations": "ETStock/Data/Migrations/",
     "entities": [
-      {
-        "class": "Company",
-        "table": "Companies",
-        "namespace": "ETStock.Models",
-        "file": "ETStock/Models/Company.cs"
-      },
-      {
-        "class": "Product",
-        "table": "Products",
-        "namespace": "ETStock.Models",
-        "file": "ETStock/Models/Product.cs",
-        "indexes": ["Code (UNIQUE)"]
-      },
-      {
-        "class": "MonthlyStock",
-        "table": "MonthlyStocks",
-        "namespace": "ETStock.Models",
-        "file": "ETStock/Models/MonthlyStock.cs",
-        "indexes": ["(ProductId, Year, Month) UNIQUE"]
-      },
-      {
-        "class": "AbbrInvoice",
-        "table": "AbbrInvoices",
-        "namespace": "ETStock.Models",
-        "file": "ETStock/Models/AbbrInvoice.cs"
-      },
-      {
-        "class": "AbbrInvoiceItem",
-        "table": "AbbrInvoiceItems",
-        "namespace": "ETStock.Models",
-        "file": "ETStock/Models/AbbrInvoiceItem.cs"
-      }
+      { "class": "Company",         "table": "Companies",        "namespace": "ETStock.Models", "file": "ETStock/Models/Company.cs" },
+      { "class": "Product",         "table": "Products",         "namespace": "ETStock.Models", "file": "ETStock/Models/Product.cs", "indexes": ["Code (UNIQUE)"] },
+      { "class": "MonthlyStock",    "table": "MonthlyStocks",    "namespace": "ETStock.Models", "file": "ETStock/Models/MonthlyStock.cs", "indexes": ["(ProductId, Year, Month) UNIQUE"] },
+      { "class": "AbbrInvoice",     "table": "AbbrInvoices",     "namespace": "ETStock.Models", "file": "ETStock/Models/AbbrInvoice.cs" },
+      { "class": "AbbrInvoiceItem", "table": "AbbrInvoiceItems", "namespace": "ETStock.Models", "file": "ETStock/Models/AbbrInvoiceItem.cs" }
     ]
   }
 }
