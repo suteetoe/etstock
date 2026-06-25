@@ -141,7 +141,7 @@
                           VerticalScrollBarVisibility="Auto">
                 <StackPanel MinWidth="700">
                     <Border Background="#EEEEEE" Padding="8">
-                        <Grid ColumnDefinitions="*,110,80,110,80,60,80" ColumnSpacing="8">
+                        <Grid ColumnDefinitions="*,110,80,110,80,60,120" ColumnSpacing="8">
                             <TextBlock Grid.Column="0" Text="เลขที่ใบกำกับ" FontWeight="SemiBold"/>
                             <TextBlock Grid.Column="1" Text="วันที่" FontWeight="SemiBold"/>
                             <TextBlock Grid.Column="2" Text="เดือน" FontWeight="SemiBold" TextAlignment="Center"/>
@@ -156,7 +156,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="vm:InvoiceRowViewModel">
                                 <Border BorderBrush="#E5E5E5" BorderThickness="0,0,0,1" Padding="8">
-                                    <Grid ColumnDefinitions="*,110,80,110,80,60,80" ColumnSpacing="8">
+                                    <Grid ColumnDefinitions="*,110,80,110,80,60,120" ColumnSpacing="8">
                                         <TextBlock Grid.Column="0"
                                                    Text="{Binding InvoiceNo}"
                                                    VerticalAlignment="Center"/>
@@ -180,6 +180,10 @@
                                                    TextAlignment="Center"
                                                    VerticalAlignment="Center"/>
                                         <StackPanel Grid.Column="6" Orientation="Horizontal" Spacing="4">
+                                            <Button Content="พิมพ์"
+                                                    Command="{Binding $parent[UserControl].((vm:InvoiceViewModel)DataContext).PrintCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    Padding="4,2"/>
                                             <Button Content="แก้ไข"
                                                     Command="{Binding $parent[UserControl].((vm:InvoiceViewModel)DataContext).EditCommand}"
                                                     CommandParameter="{Binding}"

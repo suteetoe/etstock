@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ETStock.Data.Repositories;
+using ETStock.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.ObjectModel;
 
@@ -30,7 +31,10 @@ public partial class MainWindowViewModel : ViewModelBase
             ? new ProductViewModel(stockRepo)
             : new ProductViewModel();
         var invoiceRepo = serviceProvider?.GetService<IAbbrInvoiceRepository>();
-        var invoice = invoiceRepo is not null ? new InvoiceViewModel(invoiceRepo) : new InvoiceViewModel();
+        var printService = serviceProvider?.GetService<IInvoicePrintService>();
+        var invoice = invoiceRepo is not null
+            ? new InvoiceViewModel(invoiceRepo, printService)
+            : new InvoiceViewModel();
 
         NavItems.Add(new NavItem("หน้าแรก", home));
         NavItems.Add(new NavItem("ข้อมูลบริษัท", company));
