@@ -8,4 +8,5 @@ public interface IAbbrInvoiceRepository
     Task<AbbrInvoice?> GetByIdAsync(int id);
     Task SaveAsync(AbbrInvoice invoice);
     Task DeleteAsync(int id);
+    Task<AbbrInvoiceSummary> GetPeriodSummaryAsync(int taxYear, int taxMonth);
 }

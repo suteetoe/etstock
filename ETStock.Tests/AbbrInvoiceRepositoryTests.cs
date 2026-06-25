@@ -173,4 +173,39 @@ public class AbbrInvoiceRepositoryTests
         Assert.Equal(0, await db.AbbrInvoices.CountAsync());
         Assert.Equal(0, await db.AbbrInvoiceItems.CountAsync());
     }
+
+    [Fact]
+    public async Task GetPeriodSummaryAsync_ReturnsCorrectTotals()
+    {
+        await using var db = CreateDb();
+        var product = CreateProduct("P001");
+        db.Products.Add(product);
+        await db.SaveChangesAsync();
+
+        var repo = new AbbrInvoiceRepository(db);
+        // Two invoices in period (2566, 1); each has itemCount=2 -> TotalAmount=214m, VatAmount=14m
+        await repo.SaveAsync(CreateInvoice(2566, 1, product.Id, itemCount: 2));
+        await repo.SaveAsync(CreateInvoice(2566, 1, product.Id, itemCount: 2));
+        // One invoice in a different period — must not be counted
+        await repo.SaveAsync(CreateInvoice(2566, 2, product.Id, itemCount: 3));
+
+        var summary = await repo.GetPeriodSummaryAsync(2566, 1);
+
+        Assert.Equal(2, summary.Count);
+        Assert.Equal(214m * 2, summary.TotalAmount);  // 428m
+        Assert.Equal(14m * 2, summary.VatAmount);     // 28m
+    }
+
+    [Fact]
+    public async Task GetPeriodSummaryAsync_NoInvoices_ReturnsZero()
+    {
+        await using var db = CreateDb();
+        var repo = new AbbrInvoiceRepository(db);
+
+        var summary = await repo.GetPeriodSummaryAsync(2566, 1);
+
+        Assert.Equal(0, summary.Count);
+        Assert.Equal(0m, summary.TotalAmount);
+        Assert.Equal(0m, summary.VatAmount);
+    }
 }
