@@ -1,0 +1,211 @@
+using ETStock.Data;
+using ETStock.Data.Repositories;
+using ETStock.Models;
+using Microsoft.EntityFrameworkCore;
+using Xunit;
+
+namespace ETStock.Tests;
+
+public class AbbrInvoiceRepositoryTests
+{
+    private static AppDbContext CreateDb(string? databaseName = null) => new(
+        new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase(databaseName ?? Guid.NewGuid().ToString())
+            .Options);
+
+    private static Product CreateProduct(string code) => new()
+    {
+        Code = code,
+        Name = $"Product {code}",
+        Unit = "piece",
+        CostPrice = 100,
+        SellPrice = 150
+    };
+
+    private static AbbrInvoice CreateInvoice(int taxYear, int taxMonth, int productId, int itemCount = 2)
+    {
+        var invoice = new AbbrInvoice
+        {
+            InvoiceNo = $"INV-{taxYear}-{taxMonth}",
+            InvoiceDate = new DateTime(taxYear, taxMonth, 1),
+            TaxYear = taxYear,
+            TaxMonth = taxMonth,
+            TotalAmount = 107m * itemCount,
+            VatAmount = 7m * itemCount
+        };
+
+        for (var i = 0; i < itemCount; i++)
+        {
+            invoice.Items.Add(new AbbrInvoiceItem
+            {
+                ProductId = productId,
+                Qty = 1,
+                Amount = 100m,
+                VatAmount = 7m
+            });
+        }
+
+        return invoice;
+    }
+
+    [Fact]
+    public async Task SaveAsync_NewInvoice_AssignsId()
+    {
+        await using var db = CreateDb();
+        var product = CreateProduct("P001");
+        db.Products.Add(product);
+        await db.SaveChangesAsync();
+
+        var invoice = CreateInvoice(2566, 1, product.Id, itemCount: 2);
+        var repo = new AbbrInvoiceRepository(db);
+        await repo.SaveAsync(invoice);
+
+        Assert.True(invoice.Id > 0);
+        Assert.Equal(2, await db.AbbrInvoiceItems.CountAsync());
+    }
+
+    [Fact]
+    public async Task GetByPeriodAsync_ReturnsMatchingPeriod()
+    {
+        await using var db = CreateDb();
+        var product = CreateProduct("P001");
+        db.Products.Add(product);
+        await db.SaveChangesAsync();
+
+        var repo = new AbbrInvoiceRepository(db);
+        await repo.SaveAsync(CreateInvoice(2566, 1, product.Id));
+        await repo.SaveAsync(CreateInvoice(2566, 2, product.Id));
+
+        var period1 = await repo.GetByPeriodAsync(2566, 1);
+        var period2 = await repo.GetByPeriodAsync(2566, 2);
+
+        Assert.Single(period1);
+        Assert.Equal(1, period1[0].TaxMonth);
+        Assert.Single(period2);
+        Assert.Equal(2, period2[0].TaxMonth);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_ReturnsWithItems()
+    {
+        await using var db = CreateDb();
+        var product = CreateProduct("P001");
+        db.Products.Add(product);
+        await db.SaveChangesAsync();
+
+        var invoice = CreateInvoice(2566, 1, product.Id, itemCount: 2);
+        var repo = new AbbrInvoiceRepository(db);
+        await repo.SaveAsync(invoice);
+
+        var result = await repo.GetByIdAsync(invoice.Id);
+
+        Assert.NotNull(result);
+        Assert.Equal(invoice.Id, result.Id);
+        Assert.Equal(2, result.Items.Count);
+        Assert.All(result.Items, item => Assert.NotNull(item.Product));
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_NotFound_ReturnsNull()
+    {
+        await using var db = CreateDb();
+        var repo = new AbbrInvoiceRepository(db);
+
+        var result = await repo.GetByIdAsync(99999);
+
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task SaveAsync_UpdateInvoice_ReplacesItems()
+    {
+        await using var db = CreateDb();
+        var product = CreateProduct("P001");
+        db.Products.Add(product);
+        await db.SaveChangesAsync();
+
+        var invoice = CreateInvoice(2566, 1, product.Id, itemCount: 2);
+        var repo = new AbbrInvoiceRepository(db);
+        await repo.SaveAsync(invoice);
+
+        Assert.Equal(2, await db.AbbrInvoiceItems.CountAsync());
+
+        var updated = new AbbrInvoice
+        {
+            Id = invoice.Id,
+            InvoiceNo = invoice.InvoiceNo,
+            InvoiceDate = invoice.InvoiceDate,
+            TaxYear = invoice.TaxYear,
+            TaxMonth = invoice.TaxMonth,
+            TotalAmount = 107m,
+            VatAmount = 7m
+        };
+        updated.Items.Add(new AbbrInvoiceItem
+        {
+            ProductId = product.Id,
+            Qty = 1,
+            Amount = 100m,
+            VatAmount = 7m
+        });
+
+        await repo.SaveAsync(updated);
+
+        Assert.Equal(1, await db.AbbrInvoiceItems.CountAsync());
+    }
+
+    [Fact]
+    public async Task DeleteAsync_RemovesInvoiceAndItems()
+    {
+        await using var db = CreateDb();
+        var product = CreateProduct("P001");
+        db.Products.Add(product);
+        await db.SaveChangesAsync();
+
+        var invoice = CreateInvoice(2566, 1, product.Id, itemCount: 2);
+        var repo = new AbbrInvoiceRepository(db);
+        await repo.SaveAsync(invoice);
+
+        Assert.Equal(1, await db.AbbrInvoices.CountAsync());
+        Assert.Equal(2, await db.AbbrInvoiceItems.CountAsync());
+
+        await repo.DeleteAsync(invoice.Id);
+
+        Assert.Equal(0, await db.AbbrInvoices.CountAsync());
+        Assert.Equal(0, await db.AbbrInvoiceItems.CountAsync());
+    }
+
+    [Fact]
+    public async Task GetPeriodSummaryAsync_ReturnsCorrectTotals()
+    {
+        await using var db = CreateDb();
+        var product = CreateProduct("P001");
+        db.Products.Add(product);
+        await db.SaveChangesAsync();
+
+        var repo = new AbbrInvoiceRepository(db);
+        // Two invoices in period (2566, 1); each has itemCount=2 -> TotalAmount=214m, VatAmount=14m
+        await repo.SaveAsync(CreateInvoice(2566, 1, product.Id, itemCount: 2));
+        await repo.SaveAsync(CreateInvoice(2566, 1, product.Id, itemCount: 2));
+        // One invoice in a different period — must not be counted
+        await repo.SaveAsync(CreateInvoice(2566, 2, product.Id, itemCount: 3));
+
+        var summary = await repo.GetPeriodSummaryAsync(2566, 1);
+
+        Assert.Equal(2, summary.Count);
+        Assert.Equal(214m * 2, summary.TotalAmount);  // 428m
+        Assert.Equal(14m * 2, summary.VatAmount);     // 28m
+    }
+
+    [Fact]
+    public async Task GetPeriodSummaryAsync_NoInvoices_ReturnsZero()
+    {
+        await using var db = CreateDb();
+        var repo = new AbbrInvoiceRepository(db);
+
+        var summary = await repo.GetPeriodSummaryAsync(2566, 1);
+
+        Assert.Equal(0, summary.Count);
+        Assert.Equal(0m, summary.TotalAmount);
+        Assert.Equal(0m, summary.VatAmount);
+    }
+}

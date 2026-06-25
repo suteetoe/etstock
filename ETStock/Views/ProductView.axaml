@@ -1,0 +1,135 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:ETStock.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="ETStock.Views.ProductView"
+             x:DataType="vm:ProductViewModel">
+
+    <Design.DataContext>
+        <vm:ProductViewModel/>
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
+        <TextBlock Grid.Row="0"
+                   Text="Monthly Stock Transactions"
+                   FontSize="24"
+                   FontWeight="Bold"/>
+
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,100,Auto,80,Auto,Auto,Auto,*" ColumnSpacing="8">
+            <TextBlock Grid.Column="0" Text="Year" VerticalAlignment="Center"/>
+            <TextBox Grid.Column="1"
+                     Text="{Binding SelectedYear}"
+                     IsEnabled="{Binding !IsBusy}"
+                     HorizontalContentAlignment="Right"/>
+
+            <TextBlock Grid.Column="2" Text="Month" VerticalAlignment="Center"/>
+            <TextBox Grid.Column="3"
+                     Text="{Binding SelectedMonth}"
+                     IsEnabled="{Binding !IsBusy}"
+                     HorizontalContentAlignment="Right"/>
+
+            <Button Grid.Column="4"
+                    Content="Load period"
+                    Command="{Binding LoadCommand}"
+                    IsEnabled="{Binding !IsBusy}"/>
+            <Button Grid.Column="5"
+                    Content="Carry forward"
+                    Command="{Binding CarryForwardCommand}"
+                    IsEnabled="{Binding !IsBusy}"/>
+            <Button Grid.Column="6"
+                    Content="Save"
+                    Command="{Binding SaveCommand}"
+                    IsEnabled="{Binding !IsBusy}"/>
+        </Grid>
+
+        <Border Grid.Row="2"
+                BorderBrush="#D0D0D0"
+                BorderThickness="1"
+                CornerRadius="4">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Auto">
+                <StackPanel MinWidth="1130">
+                    <Border Background="#EEEEEE" Padding="8">
+                        <Grid ColumnDefinitions="90,190,70,90,90,100,100,110,110,110"
+                              ColumnSpacing="8">
+                            <TextBlock Grid.Column="0" Text="Code" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Column="1" Text="Product" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Column="2" Text="Unit" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Column="3" Text="Cost" FontWeight="SemiBold" TextAlignment="Right"/>
+                            <TextBlock Grid.Column="4" Text="Sell price" FontWeight="SemiBold" TextAlignment="Right"/>
+                            <TextBlock Grid.Column="5" Text="Opening" FontWeight="SemiBold" TextAlignment="Right"/>
+                            <TextBlock Grid.Column="6" Text="Buy" FontWeight="SemiBold" TextAlignment="Right"/>
+                            <TextBlock Grid.Column="7" Text="Full-invoice sale" FontWeight="SemiBold" TextAlignment="Right"/>
+                            <TextBlock Grid.Column="8" Text="POS sale" FontWeight="SemiBold" TextAlignment="Right"/>
+                            <TextBlock Grid.Column="9" Text="Closing" FontWeight="SemiBold" TextAlignment="Right"/>
+                        </Grid>
+                    </Border>
+
+                    <ItemsControl ItemsSource="{Binding Rows}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:MonthlyStockRowViewModel">
+                                <Border BorderBrush="#E5E5E5"
+                                        BorderThickness="0,0,0,1"
+                                        Padding="8">
+                                    <Grid ColumnDefinitions="90,190,70,90,90,100,100,110,110,110"
+                                          ColumnSpacing="8">
+                                        <TextBlock Grid.Column="0" Text="{Binding Code}" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding Unit}" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="3"
+                                                   Text="{Binding CostPrice, StringFormat={}{0:N2}}"
+                                                   TextAlignment="Right"
+                                                   VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="4"
+                                                   Text="{Binding SellPrice, StringFormat={}{0:N2}}"
+                                                   TextAlignment="Right"
+                                                   VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="5"
+                                                       Value="{Binding OpeningQty}"
+                                                       Minimum="0"
+                                                       FormatString="0.##"
+                                                       HorizontalContentAlignment="Right"/>
+                                        <NumericUpDown Grid.Column="6"
+                                                       Value="{Binding BuyQty}"
+                                                       Minimum="0"
+                                                       FormatString="0.##"
+                                                       HorizontalContentAlignment="Right"/>
+                                        <NumericUpDown Grid.Column="7"
+                                                       Value="{Binding SellFullQty}"
+                                                       Minimum="0"
+                                                       FormatString="0.##"
+                                                       HorizontalContentAlignment="Right"/>
+                                        <NumericUpDown Grid.Column="8"
+                                                       Value="{Binding SellPosQty}"
+                                                       Minimum="0"
+                                                       FormatString="0.##"
+                                                       HorizontalContentAlignment="Right"/>
+                                        <TextBlock Grid.Column="9"
+                                                   Text="{Binding ClosingQty, StringFormat={}{0:N2}}"
+                                                   FontWeight="SemiBold"
+                                                   TextAlignment="Right"
+                                                   VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <Grid Grid.Row="3" ColumnDefinitions="*,Auto">
+            <TextBlock Grid.Column="0"
+                       Text="{Binding StatusMessage}"
+                       FontStyle="Italic"
+                       TextWrapping="Wrap"/>
+            <ProgressBar Grid.Column="1"
+                         Width="120"
+                         IsIndeterminate="True"
+                         IsVisible="{Binding IsBusy}"/>
+        </Grid>
+    </Grid>
+
+</UserControl>
