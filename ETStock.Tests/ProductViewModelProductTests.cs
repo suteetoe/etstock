@@ -16,7 +16,7 @@ public class ProductViewModelProductTests
 
         var newProduct = MakeProduct("P001", "Widget");
 
-        vm.AddProductRequested += (_, _) => vm.CompleteAddProduct(newProduct);
+        vm.AddProductRequested += (_, _) => vm.CompleteAddProduct(new AddProductResult(newProduct, 0));
 
         await vm.AddProductCommand.ExecuteAsync(null);
 
@@ -135,7 +135,7 @@ public class ProductViewModelProductTests
         var vm = CreateViewModel(stockRepo, productRepo);
 
         var newProduct = MakeProduct("P042", "Flux Capacitor");
-        vm.AddProductRequested += (_, _) => vm.CompleteAddProduct(newProduct);
+        vm.AddProductRequested += (_, _) => vm.CompleteAddProduct(new AddProductResult(newProduct, 0));
 
         await vm.AddProductCommand.ExecuteAsync(null);
 
@@ -176,11 +176,28 @@ public class ProductViewModelProductTests
         Assert.Single(vm.Rows);
 
         var newProduct = MakeProduct("P002", "New Widget");
-        vm.AddProductRequested += (_, _) => vm.CompleteAddProduct(newProduct);
+        vm.AddProductRequested += (_, _) => vm.CompleteAddProduct(new AddProductResult(newProduct, 0));
 
         await vm.AddProductCommand.ExecuteAsync(null);
 
         Assert.Equal(2, vm.Rows.Count);
+    }
+
+    [Fact]
+    public async Task AddProductCommand_WithBalanceQty_SetsOpeningQtyOnRow()
+    {
+        var productRepo = new InMemoryProductRepository();
+        var stockRepo = new ProductAwareMonthlyStockRepository(productRepo, 2026, 6);
+        var vm = CreateViewModel(stockRepo, productRepo);
+
+        var newProduct = MakeProduct("P001", "Widget");
+        vm.AddProductRequested += (_, _) => vm.CompleteAddProduct(new AddProductResult(newProduct, 50m));
+
+        await vm.AddProductCommand.ExecuteAsync(null);
+
+        var row = Assert.Single(vm.Rows);
+        Assert.Equal(50m, row.OpeningQty);
+        Assert.Equal(50m, row.ClosingQty);
     }
 
     [Fact]
@@ -192,7 +209,7 @@ public class ProductViewModelProductTests
         var vm = CreateViewModel(stockRepo, productRepo);
 
         var duplicate = MakeProduct("P001", "Duplicate");
-        vm.AddProductRequested += (_, _) => vm.CompleteAddProduct(duplicate);
+        vm.AddProductRequested += (_, _) => vm.CompleteAddProduct(new AddProductResult(duplicate, 0));
 
         await vm.AddProductCommand.ExecuteAsync(null);
 
