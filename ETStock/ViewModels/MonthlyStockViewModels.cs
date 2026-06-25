@@ -2,12 +2,18 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ETStock.Data.Repositories;
+using ETStock.Models;
 
 namespace ETStock.ViewModels;
 
 public partial class ProductViewModel
 {
     private readonly IMonthlyStockRepository? _repository;
+    private IProductRepository? _productRepository;
+
+    public event EventHandler? AddProductRequested;
+
+    private TaskCompletionSource<Product?>? _addProductTcs;
 
     public ProductViewModel()
     {
@@ -20,6 +26,12 @@ public partial class ProductViewModel
         : this()
     {
         _repository = repository;
+    }
+
+    public ProductViewModel(IMonthlyStockRepository repository, IProductRepository productRepository)
+        : this(repository)
+    {
+        _productRepository = productRepository;
     }
 
     public ObservableCollection<MonthlyStockRowViewModel> Rows { get; } = [];
@@ -35,6 +47,9 @@ public partial class ProductViewModel
 
     [ObservableProperty]
     private string _statusMessage = string.Empty;
+
+    [ObservableProperty]
+    private MonthlyStockRowViewModel? _selectedRow;
 
     [RelayCommand]
     private async Task LoadAsync()
@@ -112,6 +127,51 @@ public partial class ProductViewModel
             IsBusy = false;
         }
     }
+
+    [RelayCommand]
+    private async Task AddProductAsync()
+    {
+        if (_productRepository is null) { StatusMessage = "Product repository not available."; return; }
+        if (IsBusy) return;
+        IsBusy = true;
+        StatusMessage = string.Empty;
+        _addProductTcs = new TaskCompletionSource<Product?>();
+        AddProductRequested?.Invoke(this, EventArgs.Empty);
+        var newProduct = await _addProductTcs.Task;
+        _addProductTcs = null;
+        try
+        {
+            if (newProduct is not null)
+            {
+                await _productRepository.AddAsync(newProduct);
+                await LoadRowsAsync();
+                StatusMessage = $"เพิ่มสินค้า '{newProduct.Name}' เรียบร้อยแล้ว";
+            }
+        }
+        catch (Exception ex) { StatusMessage = $"ไม่สามารถเพิ่มสินค้าได้: {ex.Message}"; }
+        finally { IsBusy = false; }
+    }
+
+    [RelayCommand]
+    private async Task DeleteProductAsync()
+    {
+        if (_productRepository is null) { StatusMessage = "Product repository not available."; return; }
+        if (SelectedRow is null) { StatusMessage = "กรุณาเลือกสินค้าที่ต้องการลบ"; return; }
+        if (IsBusy) return;
+        IsBusy = true;
+        StatusMessage = string.Empty;
+        try
+        {
+            var name = SelectedRow.Name;
+            await _productRepository.DeleteAsync(SelectedRow.ProductId);
+            await LoadRowsAsync();
+            StatusMessage = $"ลบสินค้า '{name}' เรียบร้อยแล้ว";
+        }
+        catch (Exception ex) { StatusMessage = $"ไม่สามารถลบสินค้าได้: {ex.Message}"; }
+        finally { IsBusy = false; }
+    }
+
+    public void CompleteAddProduct(Product? product) => _addProductTcs?.TrySetResult(product);
 
     private bool CanRun()
     {
