@@ -3,12 +3,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ETStock.Data.Repositories;
 using ETStock.Models;
+using ETStock.Services;
 
 namespace ETStock.ViewModels;
 
 public partial class InvoiceViewModel : ViewModelBase
 {
     private readonly IAbbrInvoiceRepository? _repository;
+    private readonly IInvoicePrintService? _printService;
 
     public InvoiceViewModel()
     {
@@ -22,6 +24,13 @@ public partial class InvoiceViewModel : ViewModelBase
         : this()
     {
         _repository = repository;
+    }
+
+    public InvoiceViewModel(IAbbrInvoiceRepository repository, IInvoicePrintService? printService)
+        : this()
+    {
+        _repository = repository;
+        _printService = printService;
     }
 
     public ObservableCollection<InvoiceRowViewModel> Invoices { get; } = [];
@@ -241,6 +250,35 @@ public partial class InvoiceViewModel : ViewModelBase
     private void RemoveItem(InvoiceItemRowViewModel item)
     {
         EditItems.Remove(item);
+    }
+
+    public event Action<PrintPreviewViewModel>? PrintPreviewRequested;
+
+    [RelayCommand]
+    private async Task PrintAsync(InvoiceRowViewModel row)
+    {
+        if (_printService is null)
+        {
+            StatusMessage = "ไม่สามารถพิมพ์ได้: บริการพิมพ์ไม่พร้อม";
+            return;
+        }
+
+        IsBusy = true;
+        StatusMessage = string.Empty;
+        try
+        {
+            var doc = await _printService.BuildAsync(row.Id);
+            var vm = new PrintPreviewViewModel(doc);
+            PrintPreviewRequested?.Invoke(vm);
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"ไม่สามารถสร้างพรีวิวได้: {ex.Message}";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private bool CanRun()
