@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using ETStock.Models;
 using ETStock.ViewModels;
 
 namespace ETStock.Views;
@@ -30,7 +29,7 @@ public partial class ProductView : UserControl
         var topLevel = TopLevel.GetTopLevel(this) as Window;
         if (topLevel is null || _vm is null) { _vm?.CompleteAddProduct(null); return; }
         var dialog = new AddProductDialog();
-        var result = await dialog.ShowDialog<Product?>(topLevel);
+        var result = await dialog.ShowDialog<AddProductResult?>(topLevel);
         _vm.CompleteAddProduct(result);
     }
 }

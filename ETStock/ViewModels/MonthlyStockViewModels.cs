@@ -13,7 +13,7 @@ public partial class ProductViewModel
 
     public event EventHandler? AddProductRequested;
 
-    private TaskCompletionSource<Product?>? _addProductTcs;
+    private TaskCompletionSource<AddProductResult?>? _addProductTcs;
 
     public ProductViewModel()
     {
@@ -135,21 +135,32 @@ public partial class ProductViewModel
         if (IsBusy) return;
         IsBusy = true;
         StatusMessage = string.Empty;
-        _addProductTcs = new TaskCompletionSource<Product?>();
+        _addProductTcs = new TaskCompletionSource<AddProductResult?>();
         AddProductRequested?.Invoke(this, EventArgs.Empty);
-        var newProduct = await _addProductTcs.Task;
+        var dialogResult = await _addProductTcs.Task;
         _addProductTcs = null;
         try
         {
-            if (newProduct is not null)
+            if (dialogResult is not null)
             {
-                await _productRepository.AddAsync(newProduct);
+                var product = dialogResult.Product;
+                var balanceQty = dialogResult.BalanceQty;
+
+                await _productRepository.AddAsync(product);
+
+                if (_repository is not null && balanceQty > 0)
+                    await _repository.SaveAsync(
+                        new MonthlyStockInput(product.Id, SelectedYear, SelectedMonth, balanceQty, 0, 0, 0));
+
+                var snap = balanceQty > 0
+                    ? new MonthlyStockSnapshot(0, product.Id, SelectedYear, SelectedMonth, balanceQty, 0, 0, 0)
+                    : null;
                 var newRow = new MonthlyStockRowViewModel(new ProductWithStock(
-                    newProduct.Id, newProduct.Code, newProduct.Name, newProduct.Unit,
-                    newProduct.CostPrice, newProduct.SellPrice, null));
+                    product.Id, product.Code, product.Name, product.Unit,
+                    product.CostPrice, product.SellPrice, snap));
                 Rows.Add(newRow);
                 newRow.LineNumber = Rows.Count;
-                StatusMessage = $"เพิ่มสินค้า '{newProduct.Name}' เรียบร้อยแล้ว";
+                StatusMessage = $"เพิ่มสินค้า '{product.Name}' เรียบร้อยแล้ว";
             }
         }
         catch (Exception ex) { StatusMessage = $"ไม่สามารถเพิ่มสินค้าได้: {ex.Message}"; }
@@ -175,7 +186,7 @@ public partial class ProductViewModel
         finally { IsBusy = false; }
     }
 
-    public void CompleteAddProduct(Product? product) => _addProductTcs?.TrySetResult(product);
+    public void CompleteAddProduct(AddProductResult? result) => _addProductTcs?.TrySetResult(result);
 
     private bool CanRun()
     {
@@ -235,12 +246,12 @@ public partial class MonthlyStockRowViewModel : ViewModelBase
     public int ProductId { get; }
     public string Code { get; }
     public string Name { get; }
-
-    [ObservableProperty]
-    private int _lineNumber;
     public string Unit { get; }
     public decimal CostPrice { get; }
     public decimal SellPrice { get; }
+
+    [ObservableProperty]
+    private int _lineNumber;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ClosingQty))]
