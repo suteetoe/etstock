@@ -17,12 +17,12 @@
         <!-- TopBar -->
         <Border Grid.Row="0" Background="#12121C" Padding="12,0">
             <DockPanel>
-                <Button DockPanel.Dock="Right"
-                        Content="⚙ ข้อมูลบริษัท"
-                        Command="{Binding OpenCompanyDialogCommand}"
-                        Background="Transparent"
-                        Foreground="White"
-                        Padding="12,0"/>
+                <Menu DockPanel.Dock="Right" Background="Transparent" VerticalAlignment="Center">
+                    <MenuItem Header="⚙ ตั้งค่า" Foreground="White">
+                        <MenuItem Header="ข้อมูลบริษัท"
+                                  Command="{Binding OpenCompanyDialogCommand}"/>
+                    </MenuItem>
+                </Menu>
                 <TextBlock Text="ETStock" FontSize="14" FontWeight="Bold"
                            Foreground="White" VerticalAlignment="Center"/>
             </DockPanel>
