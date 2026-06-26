@@ -70,6 +70,8 @@ public class MonthlyStockRepository(AppDbContext db) : IMonthlyStockRepository
         entity.BuyQty = stock.BuyQty;
         entity.SellFullQty = stock.SellFullQty;
         entity.SellPosQty = stock.SellPosQty;
+        entity.SalesAmount = (stock.SellFullQty + stock.SellPosQty) * stock.SellPrice;
+        entity.ClosingValue = (stock.OpeningQty + stock.BuyQty - stock.SellFullQty - stock.SellPosQty) * stock.CostPrice;
 
         await db.SaveChangesAsync(ct);
         return ToSnapshot(entity);
@@ -126,6 +128,11 @@ public class MonthlyStockRepository(AppDbContext db) : IMonthlyStockRepository
             }
 
             currentRow.OpeningQty = previousRow.ClosingQty;
+            currentRow.BuyQty = 0;
+            currentRow.SellFullQty = 0;
+            currentRow.SellPosQty = 0;
+            currentRow.SalesAmount = 0;
+            currentRow.ClosingValue = currentRow.OpeningQty * currentRow.CostPrice;
         }
 
         await db.SaveChangesAsync(ct);

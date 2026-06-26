@@ -60,20 +60,21 @@
                 CornerRadius="4">
             <ScrollViewer HorizontalScrollBarVisibility="Auto"
                           VerticalScrollBarVisibility="Auto">
-                <StackPanel MinWidth="1130">
+                <StackPanel MinWidth="1300">
                     <Border Background="#EEEEEE" Padding="8">
-                        <Grid ColumnDefinitions="50,190,70,90,90,100,100,110,110,110"
+                        <Grid ColumnDefinitions="50,190,90,90,90,90,90,110,90,110,150"
                               ColumnSpacing="8">
                             <TextBlock Grid.Column="0" Text="#" FontWeight="SemiBold"/>
-                            <TextBlock Grid.Column="1" Text="Product" FontWeight="SemiBold"/>
-                            <TextBlock Grid.Column="2" Text="Unit" FontWeight="SemiBold"/>
-                            <TextBlock Grid.Column="3" Text="Cost" FontWeight="SemiBold" TextAlignment="Right"/>
-                            <TextBlock Grid.Column="4" Text="Sell price" FontWeight="SemiBold" TextAlignment="Right"/>
-                            <TextBlock Grid.Column="5" Text="Opening" FontWeight="SemiBold" TextAlignment="Right"/>
-                            <TextBlock Grid.Column="6" Text="Buy" FontWeight="SemiBold" TextAlignment="Right"/>
-                            <TextBlock Grid.Column="7" Text="Full-invoice sale" FontWeight="SemiBold" TextAlignment="Right"/>
-                            <TextBlock Grid.Column="8" Text="POS sale" FontWeight="SemiBold" TextAlignment="Right"/>
-                            <TextBlock Grid.Column="9" Text="Closing" FontWeight="SemiBold" TextAlignment="Right"/>
+                            <TextBlock Grid.Column="1" Text="ชื่อสินค้า" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Column="2" Text="ยอดยกมา" FontWeight="SemiBold" TextAlignment="Right"/>
+                            <TextBlock Grid.Column="3" Text="ซื้อ" FontWeight="SemiBold" TextAlignment="Right"/>
+                            <TextBlock Grid.Column="4" Text="ขายออก" FontWeight="SemiBold" TextAlignment="Right"/>
+                            <TextBlock Grid.Column="5" Text="บิลเต็ม" FontWeight="SemiBold" TextAlignment="Right"/>
+                            <TextBlock Grid.Column="6" Text="คงเหลือ" FontWeight="SemiBold" TextAlignment="Right"/>
+                            <TextBlock Grid.Column="7" Text="ต้นทุนสินค้า" FontWeight="SemiBold" TextAlignment="Right"/>
+                            <TextBlock Grid.Column="8" Text="ราคาขาย" FontWeight="SemiBold" TextAlignment="Right"/>
+                            <TextBlock Grid.Column="9" Text="จำนวนเงิน" FontWeight="SemiBold" TextAlignment="Right"/>
+                            <TextBlock Grid.Column="10" Text="มูลค่าสินค้าคงเหลือ" FontWeight="SemiBold" TextAlignment="Right"/>
                         </Grid>
                     </Border>
 
@@ -93,42 +94,50 @@
                                 <Border BorderBrush="#E5E5E5"
                                         BorderThickness="0,0,0,1"
                                         Padding="8">
-                                    <Grid ColumnDefinitions="50,190,70,90,90,100,100,110,110,110"
+                                    <Grid ColumnDefinitions="50,190,90,90,90,90,90,110,90,110,150"
                                           ColumnSpacing="8">
                                         <TextBlock Grid.Column="0" Text="{Binding LineNumber}" VerticalAlignment="Center"/>
                                         <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="2" Text="{Binding Unit}" VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="3"
-                                                   Text="{Binding CostPrice, StringFormat={}{0:N2}}"
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{Binding OpeningQty, StringFormat={}{0:N2}}"
                                                    TextAlignment="Right"
                                                    VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="4"
-                                                   Text="{Binding SellPrice, StringFormat={}{0:N2}}"
-                                                   TextAlignment="Right"
-                                                   VerticalAlignment="Center"/>
-                                        <NumericUpDown Grid.Column="5"
-                                                       Value="{Binding OpeningQty}"
-                                                       Minimum="0"
-                                                       FormatString="0.##"
-                                                       HorizontalContentAlignment="Right"/>
-                                        <NumericUpDown Grid.Column="6"
+                                        <NumericUpDown Grid.Column="3"
                                                        Value="{Binding BuyQty}"
                                                        Minimum="0"
                                                        FormatString="0.##"
                                                        HorizontalContentAlignment="Right"/>
-                                        <NumericUpDown Grid.Column="7"
-                                                       Value="{Binding SellFullQty}"
-                                                       Minimum="0"
-                                                       FormatString="0.##"
-                                                       HorizontalContentAlignment="Right"/>
-                                        <NumericUpDown Grid.Column="8"
+                                        <NumericUpDown Grid.Column="4"
                                                        Value="{Binding SellPosQty}"
                                                        Minimum="0"
                                                        FormatString="0.##"
                                                        HorizontalContentAlignment="Right"/>
-                                        <TextBlock Grid.Column="9"
+                                        <NumericUpDown Grid.Column="5"
+                                                       Value="{Binding SellFullQty}"
+                                                       Minimum="0"
+                                                       FormatString="0.##"
+                                                       HorizontalContentAlignment="Right"/>
+                                        <TextBlock Grid.Column="6"
                                                    Text="{Binding ClosingQty, StringFormat={}{0:N2}}"
                                                    FontWeight="SemiBold"
+                                                   TextAlignment="Right"
+                                                   VerticalAlignment="Center"/>
+                                        <NumericUpDown Grid.Column="7"
+                                                       Value="{Binding CostPrice}"
+                                                       Minimum="0"
+                                                       FormatString="0.##"
+                                                       HorizontalContentAlignment="Right"/>
+                                        <NumericUpDown Grid.Column="8"
+                                                       Value="{Binding SellPrice}"
+                                                       Minimum="0"
+                                                       FormatString="0.##"
+                                                       HorizontalContentAlignment="Right"/>
+                                        <TextBlock Grid.Column="9"
+                                                   Text="{Binding SalesAmount, StringFormat={}{0:N2}}"
+                                                   TextAlignment="Right"
+                                                   VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="10"
+                                                   Text="{Binding ClosingValue, StringFormat={}{0:N2}}"
                                                    TextAlignment="Right"
                                                    VerticalAlignment="Center"/>
                                     </Grid>

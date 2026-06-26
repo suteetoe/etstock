@@ -215,8 +215,8 @@ public partial class MonthlyStockRowViewModel : ViewModelBase
     {
         Name = product.ProductName;
         Unit = product.Unit;
-        CostPrice = product.CostPrice;
-        SellPrice = product.SellPrice;
+        _costPrice = product.CostPrice;
+        _sellPrice = product.SellPrice;
 
         var stock = product.MonthlyStock;
         StockId = stock?.Id ?? 0;
@@ -229,8 +229,15 @@ public partial class MonthlyStockRowViewModel : ViewModelBase
     public int StockId { get; }
     public string Name { get; }
     public string Unit { get; }
-    public decimal CostPrice { get; }
-    public decimal SellPrice { get; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ClosingValue))]
+    private decimal _costPrice;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SalesAmount))]
+    private decimal _sellPrice;
+
     public decimal ClosingValue => ClosingQty * CostPrice;
 
     [ObservableProperty]
@@ -249,14 +256,20 @@ public partial class MonthlyStockRowViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ClosingQty))]
     [NotifyPropertyChangedFor(nameof(ClosingValue))]
+    [NotifyPropertyChangedFor(nameof(SalesQty))]
+    [NotifyPropertyChangedFor(nameof(SalesAmount))]
     private decimal _sellFullQty;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ClosingQty))]
     [NotifyPropertyChangedFor(nameof(ClosingValue))]
+    [NotifyPropertyChangedFor(nameof(SalesQty))]
+    [NotifyPropertyChangedFor(nameof(SalesAmount))]
     private decimal _sellPosQty;
 
     public decimal ClosingQty => OpeningQty + BuyQty - SellFullQty - SellPosQty;
+    public decimal SalesQty => SellFullQty + SellPosQty;
+    public decimal SalesAmount => SalesQty * SellPrice;
 
     public MonthlyStockInput ToInput(int year, int month) => new(
         Name,

@@ -13,5 +13,6 @@ public class MonthlyStock
     public decimal SellFullQty { get; set; }// ขายเต็มใบ
     public decimal SellPosQty { get; set; } // ขายหน้าร้าน
     public decimal ClosingQty => OpeningQty + BuyQty - SellFullQty - SellPosQty;
-    public decimal ClosingValue => ClosingQty * CostPrice;
+    public decimal SalesAmount { get; set; }
+    public decimal ClosingValue { get; set; }
 }

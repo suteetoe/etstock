@@ -88,6 +88,9 @@ namespace ETStock.Data.Migrations
             migrationBuilder.DropTable(
                 name: "Products");
 
+            // 12b. Remove legacy rows whose ProductName is still empty (they have no valid product data)
+            migrationBuilder.Sql(@"DELETE FROM ""MonthlyStocks"" WHERE ""ProductName"" = '';");
+
             // 13. Create unique index on (Year, Month, ProductName)
             migrationBuilder.CreateIndex(
                 name: "IX_MonthlyStocks_Year_Month_ProductName",

@@ -4,7 +4,7 @@
         x:Class="ETStock.Views.AddProductDialog"
         x:DataType="vm:AddProductDialogViewModel"
         Title="เพิ่มสินค้า"
-        Width="360" Height="320"
+        Width="360" Height="280"
         WindowStartupLocation="CenterOwner"
         CanResize="False"
         ShowInTaskbar="False">
@@ -13,9 +13,6 @@
         <StackPanel Grid.Row="0" Spacing="8">
             <TextBlock Text="ชื่อสินค้า *" FontWeight="SemiBold"/>
             <TextBox Text="{Binding Name}"/>
-
-            <TextBlock Text="หน่วย" FontWeight="SemiBold"/>
-            <TextBox Text="{Binding Unit}"/>
 
             <TextBlock Text="จำนวนคงเหลือ" FontWeight="SemiBold"/>
             <NumericUpDown Value="{Binding BalanceQty}" Minimum="0" FormatString="0.##"/>
