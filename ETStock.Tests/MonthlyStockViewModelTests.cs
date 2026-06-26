@@ -14,13 +14,13 @@ public class MonthlyStockViewModelTests
             2026,
             6,
             Product(
-                new MonthlyStockSnapshot(10, 1, 2026, 6, 12, 5, 2, 1)));
+                new MonthlyStockSnapshot(10, "สินค้า A", 2026, 6, 12, 5, 2, 1)));
         var viewModel = CreateViewModel(repository);
 
         await viewModel.LoadCommand.ExecuteAsync(null);
 
         var row = Assert.Single(viewModel.Rows);
-        Assert.Equal(1, row.ProductId);
+        Assert.Equal("สินค้า A", row.Name);
         Assert.Equal(12, row.OpeningQty);
         Assert.Equal(5, row.BuyQty);
         Assert.Equal(2, row.SellFullQty);
@@ -47,7 +47,7 @@ public class MonthlyStockViewModelTests
         await viewModel.SaveCommand.ExecuteAsync(null);
 
         var saved = Assert.Single(repository.SavedInputs);
-        Assert.Equal(1, saved.ProductId);
+        Assert.Equal("สินค้า A", saved.ProductName);
         Assert.Equal((2026, 6), (saved.Year, saved.Month));
         Assert.Equal(20, saved.OpeningQty);
         Assert.Equal(7, saved.BuyQty);
@@ -68,12 +68,12 @@ public class MonthlyStockViewModelTests
             2026,
             5,
             Product(
-                new MonthlyStockSnapshot(9, 1, 2026, 5, 10, 5, 2, 1)));
+                new MonthlyStockSnapshot(9, "สินค้า A", 2026, 5, 10, 5, 2, 1)));
         repository.SetPeriod(
             2026,
             6,
             Product(
-                new MonthlyStockSnapshot(10, 1, 2026, 6, 99, 7, 3, 2)));
+                new MonthlyStockSnapshot(10, "สินค้า A", 2026, 6, 99, 7, 3, 2)));
         var viewModel = CreateViewModel(repository);
 
         await viewModel.CarryForwardCommand.ExecuteAsync(null);
@@ -99,12 +99,10 @@ public class MonthlyStockViewModelTests
 
     private static ProductWithStock Product(
         MonthlyStockSnapshot? stock = null) => new(
-        1,
-        "P001",
-        "Product P001",
-        "piece",
-        100,
-        150,
+        "สินค้า A",
+        "ชิ้น",
+        100m,
+        150m,
         stock);
 
     private sealed class FakeMonthlyStockRepository : IMonthlyStockRepository
@@ -143,9 +141,22 @@ public class MonthlyStockViewModelTests
         {
             SavedInputs.Add(stock);
             var snapshot = ToSnapshot(stock);
-            var products = _periods[(stock.Year, stock.Month)];
-            var index = products.FindIndex(product => product.Id == stock.ProductId);
-            products[index] = products[index] with { MonthlyStock = snapshot };
+            _periods.TryGetValue((stock.Year, stock.Month), out var products);
+            if (products is not null)
+            {
+                var index = products.FindIndex(product => product.ProductName == stock.ProductName);
+                if (index >= 0)
+                    products[index] = products[index] with { MonthlyStock = snapshot };
+                else
+                    products.Add(new ProductWithStock(stock.ProductName, stock.Unit, stock.CostPrice, stock.SellPrice, snapshot));
+            }
+            else
+            {
+                _periods[(stock.Year, stock.Month)] =
+                [
+                    new ProductWithStock(stock.ProductName, stock.Unit, stock.CostPrice, stock.SellPrice, snapshot)
+                ];
+            }
             return Task.FromResult(snapshot);
         }
 
@@ -169,7 +180,7 @@ public class MonthlyStockViewModelTests
             {
                 var current = currentProducts[index];
                 var prior = previousProducts.SingleOrDefault(
-                    product => product.Id == current.Id);
+                    product => product.ProductName == current.ProductName);
                 if (prior?.MonthlyStock is null)
                 {
                     continue;
@@ -178,7 +189,7 @@ public class MonthlyStockViewModelTests
                 var stock = current.MonthlyStock;
                 var snapshot = new MonthlyStockSnapshot(
                     stock?.Id ?? 0,
-                    current.Id,
+                    current.ProductName,
                     year,
                     month,
                     prior.MonthlyStock.ClosingQty,
@@ -192,10 +203,22 @@ public class MonthlyStockViewModelTests
             return Task.FromResult<IReadOnlyList<MonthlyStockSnapshot>>(carried);
         }
 
+        public Task<bool> DeleteAsync(
+            string productName,
+            int year,
+            int month,
+            CancellationToken ct = default)
+        {
+            if (!_periods.TryGetValue((year, month), out var products))
+                return Task.FromResult(false);
+            var removed = products.RemoveAll(p => p.ProductName == productName) > 0;
+            return Task.FromResult(removed);
+        }
+
         private static MonthlyStockSnapshot ToSnapshot(
             MonthlyStockInput stock) => new(
             1,
-            stock.ProductId,
+            stock.ProductName,
             stock.Year,
             stock.Month,
             stock.OpeningQty,

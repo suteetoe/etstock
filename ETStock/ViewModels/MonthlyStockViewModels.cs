@@ -9,6 +9,10 @@ public partial class ProductViewModel
 {
     private readonly IMonthlyStockRepository? _repository;
 
+    public event EventHandler? AddProductRequested;
+
+    private TaskCompletionSource<AddProductResult?>? _addProductTcs;
+
     public ProductViewModel()
     {
         var today = DateTime.Today;
@@ -35,6 +39,9 @@ public partial class ProductViewModel
 
     [ObservableProperty]
     private string _statusMessage = string.Empty;
+
+    [ObservableProperty]
+    private MonthlyStockRowViewModel? _selectedRow;
 
     [RelayCommand]
     private async Task LoadAsync()
@@ -113,6 +120,58 @@ public partial class ProductViewModel
         }
     }
 
+    [RelayCommand]
+    private async Task AddProductAsync()
+    {
+        if (_repository is null) { StatusMessage = "Monthly stock repository is not available."; return; }
+        if (IsBusy) return;
+        IsBusy = true;
+        StatusMessage = string.Empty;
+        _addProductTcs = new TaskCompletionSource<AddProductResult?>();
+        AddProductRequested?.Invoke(this, EventArgs.Empty);
+        var dialogResult = await _addProductTcs.Task;
+        _addProductTcs = null;
+        try
+        {
+            if (dialogResult is not null)
+            {
+                var input = new MonthlyStockInput(
+                    dialogResult.ProductName,
+                    dialogResult.Unit,
+                    dialogResult.CostPrice,
+                    dialogResult.SellPrice,
+                    SelectedYear, SelectedMonth,
+                    dialogResult.BalanceQty, 0, 0, 0);
+                await _repository.SaveAsync(input);
+                await LoadRowsAsync();
+                StatusMessage = $"เพิ่มสินค้า '{dialogResult.ProductName}' เรียบร้อยแล้ว";
+            }
+        }
+        catch (Exception ex) { StatusMessage = $"ไม่สามารถเพิ่มสินค้าได้: {ex.Message}"; }
+        finally { IsBusy = false; }
+    }
+
+    [RelayCommand]
+    private async Task DeleteProductAsync()
+    {
+        if (_repository is null) { StatusMessage = "Monthly stock repository is not available."; return; }
+        if (SelectedRow is null) { StatusMessage = "กรุณาเลือกสินค้าที่ต้องการลบ"; return; }
+        if (IsBusy) return;
+        IsBusy = true;
+        StatusMessage = string.Empty;
+        try
+        {
+            var name = SelectedRow.Name;
+            await _repository.DeleteAsync(SelectedRow.Name, SelectedYear, SelectedMonth);
+            await LoadRowsAsync();
+            StatusMessage = $"ลบสินค้า '{name}' เรียบร้อยแล้ว";
+        }
+        catch (Exception ex) { StatusMessage = $"ไม่สามารถลบสินค้าได้: {ex.Message}"; }
+        finally { IsBusy = false; }
+    }
+
+    public void CompleteAddProduct(AddProductResult? result) => _addProductTcs?.TrySetResult(result);
+
     private bool CanRun()
     {
         if (_repository is null)
@@ -139,6 +198,14 @@ public partial class ProductViewModel
         {
             Rows.Add(new MonthlyStockRowViewModel(product));
         }
+
+        RefreshLineNumbers();
+    }
+
+    private void RefreshLineNumbers()
+    {
+        for (int i = 0; i < Rows.Count; i++)
+            Rows[i].LineNumber = i + 1;
     }
 }
 
@@ -146,47 +213,69 @@ public partial class MonthlyStockRowViewModel : ViewModelBase
 {
     public MonthlyStockRowViewModel(ProductWithStock product)
     {
-        ProductId = product.Id;
-        Code = product.Code;
-        Name = product.Name;
+        Name = product.ProductName;
         Unit = product.Unit;
-        CostPrice = product.CostPrice;
-        SellPrice = product.SellPrice;
+        _costPrice = product.CostPrice;
+        _sellPrice = product.SellPrice;
 
         var stock = product.MonthlyStock;
+        StockId = stock?.Id ?? 0;
         _openingQty = stock?.OpeningQty ?? 0;
         _buyQty = stock?.BuyQty ?? 0;
         _sellFullQty = stock?.SellFullQty ?? 0;
         _sellPosQty = stock?.SellPosQty ?? 0;
     }
 
-    public int ProductId { get; }
-    public string Code { get; }
+    public int StockId { get; }
     public string Name { get; }
     public string Unit { get; }
-    public decimal CostPrice { get; }
-    public decimal SellPrice { get; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ClosingValue))]
+    private decimal _costPrice;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SalesAmount))]
+    private decimal _sellPrice;
+
+    public decimal ClosingValue => ClosingQty * CostPrice;
+
+    [ObservableProperty]
+    private int _lineNumber;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ClosingQty))]
+    [NotifyPropertyChangedFor(nameof(ClosingValue))]
     private decimal _openingQty;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ClosingQty))]
+    [NotifyPropertyChangedFor(nameof(ClosingValue))]
     private decimal _buyQty;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ClosingQty))]
+    [NotifyPropertyChangedFor(nameof(ClosingValue))]
+    [NotifyPropertyChangedFor(nameof(SalesQty))]
+    [NotifyPropertyChangedFor(nameof(SalesAmount))]
     private decimal _sellFullQty;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ClosingQty))]
+    [NotifyPropertyChangedFor(nameof(ClosingValue))]
+    [NotifyPropertyChangedFor(nameof(SalesQty))]
+    [NotifyPropertyChangedFor(nameof(SalesAmount))]
     private decimal _sellPosQty;
 
     public decimal ClosingQty => OpeningQty + BuyQty - SellFullQty - SellPosQty;
+    public decimal SalesQty => SellFullQty + SellPosQty;
+    public decimal SalesAmount => SalesQty * SellPrice;
 
     public MonthlyStockInput ToInput(int year, int month) => new(
-        ProductId,
+        Name,
+        Unit,
+        CostPrice,
+        SellPrice,
         year,
         month,
         OpeningQty,

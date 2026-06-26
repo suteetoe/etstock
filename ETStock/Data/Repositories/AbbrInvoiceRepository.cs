@@ -10,7 +10,6 @@ public class AbbrInvoiceRepository(AppDbContext db) : IAbbrInvoiceRepository
         return await db.AbbrInvoices
             .AsNoTracking()
             .Include(i => i.Items)
-                .ThenInclude(it => it.Product)
             .Where(i => i.TaxYear == taxYear && i.TaxMonth == taxMonth)
             .OrderByDescending(i => i.InvoiceDate)
             .ToListAsync();
@@ -21,7 +20,6 @@ public class AbbrInvoiceRepository(AppDbContext db) : IAbbrInvoiceRepository
         return await db.AbbrInvoices
             .AsNoTracking()
             .Include(i => i.Items)
-                .ThenInclude(it => it.Product)
             .SingleOrDefaultAsync(i => i.Id == id);
     }
 

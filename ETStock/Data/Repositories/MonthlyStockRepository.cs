@@ -12,28 +12,24 @@ public class MonthlyStockRepository(AppDbContext db) : IMonthlyStockRepository
     {
         ValidatePeriod(year, month);
 
-        return await db.Products
+        return await db.MonthlyStocks
             .AsNoTracking()
-            .OrderBy(product => product.Code)
-            .Select(product => new ProductWithStock(
-                product.Id,
-                product.Code,
-                product.Name,
-                product.Unit,
-                product.CostPrice,
-                product.SellPrice,
-                product.MonthlyStocks
-                    .Where(stock => stock.Year == year && stock.Month == month)
-                    .Select(stock => new MonthlyStockSnapshot(
-                        stock.Id,
-                        stock.ProductId,
-                        stock.Year,
-                        stock.Month,
-                        stock.OpeningQty,
-                        stock.BuyQty,
-                        stock.SellFullQty,
-                        stock.SellPosQty))
-                    .SingleOrDefault()))
+            .Where(stock => stock.Year == year && stock.Month == month)
+            .OrderBy(stock => stock.ProductName)
+            .Select(stock => new ProductWithStock(
+                stock.ProductName,
+                stock.Unit,
+                stock.CostPrice,
+                stock.SellPrice,
+                new MonthlyStockSnapshot(
+                    stock.Id,
+                    stock.ProductName,
+                    stock.Year,
+                    stock.Month,
+                    stock.OpeningQty,
+                    stock.BuyQty,
+                    stock.SellFullQty,
+                    stock.SellPosQty)))
             .ToListAsync(ct);
     }
 
@@ -42,11 +38,10 @@ public class MonthlyStockRepository(AppDbContext db) : IMonthlyStockRepository
         CancellationToken ct = default)
     {
         ValidatePeriod(stock.Year, stock.Month);
-        await EnsureProductExistsAsync(stock.ProductId, ct);
 
         var entity = await db.MonthlyStocks.SingleOrDefaultAsync(
             candidate =>
-                candidate.ProductId == stock.ProductId
+                candidate.ProductName == stock.ProductName
                 && candidate.Year == stock.Year
                 && candidate.Month == stock.Month,
             ct);
@@ -55,17 +50,28 @@ public class MonthlyStockRepository(AppDbContext db) : IMonthlyStockRepository
         {
             entity = new MonthlyStock
             {
-                ProductId = stock.ProductId,
+                ProductName = stock.ProductName,
+                Unit = stock.Unit,
+                CostPrice = stock.CostPrice,
+                SellPrice = stock.SellPrice,
                 Year = stock.Year,
                 Month = stock.Month
             };
             db.MonthlyStocks.Add(entity);
+        }
+        else
+        {
+            entity.Unit = stock.Unit;
+            entity.CostPrice = stock.CostPrice;
+            entity.SellPrice = stock.SellPrice;
         }
 
         entity.OpeningQty = stock.OpeningQty;
         entity.BuyQty = stock.BuyQty;
         entity.SellFullQty = stock.SellFullQty;
         entity.SellPosQty = stock.SellPosQty;
+        entity.SalesAmount = (stock.SellFullQty + stock.SellPosQty) * stock.SellPrice;
+        entity.ClosingValue = (stock.OpeningQty + stock.BuyQty - stock.SellFullQty - stock.SellPosQty) * stock.CostPrice;
 
         await db.SaveChangesAsync(ct);
         return ToSnapshot(entity);
@@ -89,47 +95,73 @@ public class MonthlyStockRepository(AppDbContext db) : IMonthlyStockRepository
             return [];
         }
 
-        var productIds = previousRows.Select(stock => stock.ProductId).ToArray();
+        var productNames = previousRows.Select(stock => stock.ProductName).ToArray();
         var currentRows = await db.MonthlyStocks
             .Where(stock =>
                 stock.Year == year
                 && stock.Month == month
-                && productIds.Contains(stock.ProductId))
-            .ToDictionaryAsync(stock => stock.ProductId, ct);
+                && productNames.Contains(stock.ProductName))
+            .ToDictionaryAsync(stock => stock.ProductName, ct);
 
         foreach (var previousRow in previousRows)
         {
-            if (!currentRows.TryGetValue(previousRow.ProductId, out var currentRow))
+            if (!currentRows.TryGetValue(previousRow.ProductName, out var currentRow))
             {
                 currentRow = new MonthlyStock
                 {
-                    ProductId = previousRow.ProductId,
+                    ProductName = previousRow.ProductName,
+                    Unit = previousRow.Unit,
+                    CostPrice = previousRow.CostPrice,
+                    SellPrice = previousRow.SellPrice,
                     Year = year,
                     Month = month
                 };
                 db.MonthlyStocks.Add(currentRow);
-                currentRows.Add(previousRow.ProductId, currentRow);
+                currentRows.Add(previousRow.ProductName, currentRow);
+            }
+            else
+            {
+                // Update product details from previous row
+                currentRow.Unit = previousRow.Unit;
+                currentRow.CostPrice = previousRow.CostPrice;
+                currentRow.SellPrice = previousRow.SellPrice;
             }
 
             currentRow.OpeningQty = previousRow.ClosingQty;
+            currentRow.BuyQty = 0;
+            currentRow.SellFullQty = 0;
+            currentRow.SellPosQty = 0;
+            currentRow.SalesAmount = 0;
+            currentRow.ClosingValue = currentRow.OpeningQty * currentRow.CostPrice;
         }
 
         await db.SaveChangesAsync(ct);
 
         return currentRows.Values
-            .OrderBy(stock => stock.ProductId)
+            .OrderBy(stock => stock.ProductName)
             .Select(ToSnapshot)
             .ToList();
     }
 
-    private async Task EnsureProductExistsAsync(int productId, CancellationToken ct)
+    public async Task<bool> DeleteAsync(
+        string productName,
+        int year,
+        int month,
+        CancellationToken ct = default)
     {
-        if (!await db.Products.AnyAsync(product => product.Id == productId, ct))
-        {
-            throw new ArgumentException(
-                $"Product id {productId} does not exist.",
-                nameof(productId));
-        }
+        var entity = await db.MonthlyStocks.SingleOrDefaultAsync(
+            stock =>
+                stock.ProductName == productName
+                && stock.Year == year
+                && stock.Month == month,
+            ct);
+
+        if (entity is null)
+            return false;
+
+        db.MonthlyStocks.Remove(entity);
+        await db.SaveChangesAsync(ct);
+        return true;
     }
 
     private static (int Year, int Month) GetPreviousPeriod(int year, int month)
@@ -143,7 +175,7 @@ public class MonthlyStockRepository(AppDbContext db) : IMonthlyStockRepository
     {
         return new MonthlyStockSnapshot(
             stock.Id,
-            stock.ProductId,
+            stock.ProductName,
             stock.Year,
             stock.Month,
             stock.OpeningQty,

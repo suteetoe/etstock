@@ -1,0 +1,13 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ETStock.ViewModels"
+        xmlns:views="using:ETStock.Views"
+        x:Class="ETStock.Views.CompanyDialog"
+        x:DataType="vm:CompanyViewModel"
+        Title="ตั้งค่าข้อมูลบริษัท"
+        Width="700" Height="520"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+    <views:CompanyView/>
+</Window>

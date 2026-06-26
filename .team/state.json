@@ -83,6 +83,57 @@
       "qaDate": "2026-06-25",
       "fixRounds": 0,
       "notes": "PR #12 was merged into wrong base (frontend/phase5-invoice-full-ui). Included in corrective PR #14. 64/64 tests pass. Awaiting PO merge approval."
+    },
+    {
+      "id": "P5P-B",
+      "title": "Phase 5 Printing — Backend: InvoiceDocumentModel + InvoicePrintService",
+      "group": "backend",
+      "scope": "ETStock/Models/InvoiceDocumentModel.cs,ETStock/Services/IInvoicePrintService.cs,ETStock/Services/InvoicePrintService.cs,ETStock/Program.cs",
+      "status": "review",
+      "branch": "backend/phase5-print-service",
+      "pr": "https://github.com/suteetoe/etstock/pull/15",
+      "qaVerdict": "PASS",
+      "qaDate": "2026-06-25",
+      "fixRounds": 0,
+      "notes": "PR #15 open. Build 0 errors. Merge first."
+    },
+    {
+      "id": "P5P-F",
+      "title": "Phase 5 Printing — Frontend: PrintPreviewWindow + print command",
+      "group": "frontend",
+      "scope": "ETStock/ViewModels/PrintPreviewViewModel.cs,ETStock/Views/PrintPreviewWindow.axaml,ETStock/Views/InvoiceViewModel.cs,ETStock/Views/InvoiceView.axaml,ETStock/ViewModels/MainWindowViewModel.cs",
+      "status": "review",
+      "branch": "frontend/phase5-print-preview",
+      "pr": "https://github.com/suteetoe/etstock/pull/16",
+      "qaVerdict": "PASS",
+      "qaDate": "2026-06-25",
+      "fixRounds": 0,
+      "notes": "PR #16 open. Merge after PR #15."
+    },
+    {
+      "id": "P5P-Q",
+      "title": "Phase 5 Printing — QA: InvoicePrintService + PrintPreviewViewModel tests (14 facts)",
+      "group": "qa",
+      "scope": "ETStock.Tests/InvoicePrintServiceTests.cs",
+      "status": "review",
+      "branch": "qa/phase5-print-tests",
+      "pr": "https://github.com/suteetoe/etstock/pull/17",
+      "qaVerdict": "PASS",
+      "qaDate": "2026-06-25",
+      "fixRounds": 0,
+      "notes": "PR #17 open. 79/79 tests pass (14 new). Merge after PR #16."
+    },
+    {
+      "id": "P-TOPBAR",
+      "title": "UX: Move company info from sidebar to topbar dialog",
+      "group": "frontend",
+      "scope": "ETStock/ViewModels/MainWindowViewModel.cs,ETStock/Views/MainWindow.axaml,ETStock/Views/MainWindow.axaml.cs,ETStock/Views/CompanyDialog.axaml,ETStock/Views/CompanyDialog.axaml.cs",
+      "status": "done",
+      "branch": "frontend/company-info-topbar-dialog",
+      "pr": "https://github.com/suteetoe/etstock/pull/18",
+      "qaVerdict": "PASS",
+      "fixRounds": 0,
+      "notes": "PR #18 merged into develop 2026-06-25."
     }
   ],
   "prs": {
@@ -99,7 +150,11 @@
     "11": { "url": "https://github.com/suteetoe/etstock/pull/11", "branch": "frontend/phase5-invoice-full-ui",      "title": "[Phase 5 FE] Full InvoiceViewModel CRUD + InvoiceView UI",    "featureId": "P05-F", "status": "merged-wrong-base", "fixRounds": 0, "mergedAt": "2026-06-25T01:09:10Z", "orchestratorVerdict": "PASS", "notes": "Merged into backend/phase5-invoice-summary instead of develop — corrected by PR #14" },
     "12": { "url": "https://github.com/suteetoe/etstock/pull/12", "branch": "qa/phase5-invoice-viewmodel-tests",    "title": "[Phase 5 QA] InvoiceViewModel Test Coverage",                  "featureId": "P05-Q", "status": "merged-wrong-base", "fixRounds": 0, "mergedAt": "2026-06-25T01:09:30Z", "orchestratorVerdict": "PASS", "notes": "Merged into frontend/phase5-invoice-full-ui instead of develop — corrected by PR #14" },
     "13": { "url": "https://github.com/suteetoe/etstock/pull/13", "branch": "develop",                              "title": "Release: Phase 0-5 — ETStock full feature stack",              "featureId": "RELEASE", "status": "open", "fixRounds": 0, "notes": "develop → main release PR. Merge after PR #14 lands in develop." },
-    "14": { "url": "https://github.com/suteetoe/etstock/pull/14", "branch": "frontend/phase5-invoice-full-ui",      "title": "[Phase 5 FE+QA] Integrate full InvoiceViewModel + tests into develop", "featureId": "P05-F+P05-Q", "status": "open", "fixRounds": 0, "lastReviewedAt": "2026-06-25T08:25:00Z", "orchestratorVerdict": "PASS", "notes": "Corrective PR — brings FE+QA into develop. 64/64 tests pass. Merge before PR #13." }
+    "14": { "url": "https://github.com/suteetoe/etstock/pull/14", "branch": "frontend/phase5-invoice-full-ui",      "title": "[Phase 5 FE+QA] Integrate full InvoiceViewModel + tests into develop", "featureId": "P05-F+P05-Q", "status": "merged", "fixRounds": 0, "mergedAt": "2026-06-25T08:30:00Z", "orchestratorVerdict": "PASS", "notes": "Corrective PR merged into develop." },
+    "15": { "url": "https://github.com/suteetoe/etstock/pull/15", "branch": "backend/phase5-print-service",         "title": "[Phase 5 BE] InvoiceDocumentModel + InvoicePrintService",              "featureId": "P5P-B", "status": "open", "fixRounds": 0, "orchestratorVerdict": "PASS", "notes": "Merge first (before PR #16 and #17)." },
+    "16": { "url": "https://github.com/suteetoe/etstock/pull/16", "branch": "frontend/phase5-print-preview",        "title": "[Phase 5 FE] PrintPreviewWindow + PrintCommand",                        "featureId": "P5P-F", "status": "open", "fixRounds": 0, "orchestratorVerdict": "PASS", "notes": "Merge second (after PR #15)." },
+    "17": { "url": "https://github.com/suteetoe/etstock/pull/17", "branch": "qa/phase5-print-tests",               "title": "[Phase 5 QA] InvoicePrintService + PrintPreviewViewModel tests",        "featureId": "P5P-Q", "status": "open", "fixRounds": 0, "orchestratorVerdict": "PASS", "notes": "Merge third (after PR #16). 79/79 tests pass." },
+    "18": { "url": "https://github.com/suteetoe/etstock/pull/18", "branch": "frontend/company-info-topbar-dialog", "title": "[Frontend] Move company info from sidebar to topbar dialog",             "featureId": "P-TOPBAR", "status": "merged", "fixRounds": 0, "mergedAt": "2026-06-25T09:40:00Z", "orchestratorVerdict": "PASS", "notes": "Company info moved to topbar Menu control → CompanyDialog modal. Merged into develop." }
   },
   "schema": {
     "note": "Initial schema established in Phase 0. Migration: 20260624035619_Initial. No new DB entities in Phase 5 (AbbrInvoiceSummary is a query-result record, not an EF entity).",

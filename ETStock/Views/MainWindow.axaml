@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:ETStock.ViewModels"
+        xmlns:views="using:ETStock.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="680"
@@ -13,29 +14,30 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <Grid ColumnDefinitions="220,*">
-        <!-- Sidebar -->
-        <Border Grid.Column="0" Background="#1E1E2E" Padding="8">
-            <StackPanel>
-                <TextBlock Text="ETStock" FontSize="18" FontWeight="Bold"
-                           Foreground="White" Margin="8,12,8,16"/>
-                <ListBox ItemsSource="{Binding NavItems}"
-                         Background="Transparent">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate x:DataType="vm:NavItem">
-                            <Button Content="{Binding Label}"
-                                    Command="{Binding $parent[Window].DataContext.NavigateCommand}"
-                                    CommandParameter="{Binding}"
-                                    HorizontalAlignment="Stretch"
-                                    Background="Transparent"/>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </StackPanel>
+    <Grid RowDefinitions="44,*">
+        <!-- TopBar -->
+        <Border Grid.Row="0" Background="#12121C" Padding="12,0">
+            <DockPanel>
+                <Menu DockPanel.Dock="Right" Background="Transparent" VerticalAlignment="Center">
+                    <MenuItem Header="⚙ ตั้งค่า" Foreground="White">
+                        <MenuItem Header="ข้อมูลบริษัท"
+                                  Command="{Binding OpenCompanyDialogCommand}"/>
+                    </MenuItem>
+                </Menu>
+                <TextBlock Text="ETStock" FontSize="14" FontWeight="Bold"
+                           Foreground="White" VerticalAlignment="Center"/>
+            </DockPanel>
         </Border>
 
-        <!-- Content -->
-        <ContentControl Grid.Column="1" Content="{Binding CurrentPage}" Margin="16"/>
+        <!-- Tab area -->
+        <TabControl Grid.Row="1">
+            <TabItem Header="Stock">
+                <views:ProductView DataContext="{Binding StockPage}" Margin="16"/>
+            </TabItem>
+            <TabItem Header="ABB List">
+                <views:InvoiceView DataContext="{Binding InvoicePage}" Margin="16"/>
+            </TabItem>
+        </TabControl>
     </Grid>
 
 </Window>
