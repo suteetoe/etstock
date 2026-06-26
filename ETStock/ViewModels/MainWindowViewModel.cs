@@ -24,12 +24,9 @@ public partial class MainWindowViewModel : ViewModelBase
         CompanyPage = repo is not null ? new CompanyViewModel(repo) : new CompanyViewModel();
 
         var stockRepo = serviceProvider?.GetService<IMonthlyStockRepository>();
-        var productRepo = serviceProvider?.GetService<IProductRepository>();
-        StockPage = (stockRepo is not null && productRepo is not null)
-            ? new ProductViewModel(stockRepo, productRepo)
-            : stockRepo is not null
-                ? new ProductViewModel(stockRepo)
-                : new ProductViewModel();
+        StockPage = stockRepo is not null
+            ? new ProductViewModel(stockRepo)
+            : new ProductViewModel();
 
         var invoiceRepo = serviceProvider?.GetService<IAbbrInvoiceRepository>();
         var printService = serviceProvider?.GetService<IInvoicePrintService>();

@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using ETStock.Models;
 using ETStock.ViewModels;
 
 namespace ETStock.Views;

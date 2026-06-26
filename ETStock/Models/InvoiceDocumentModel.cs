@@ -1,7 +1,6 @@
 namespace ETStock.Models;
 
 public record InvoiceDocumentLine(
-    string ProductCode,
     string ProductName,
     decimal Qty,
     decimal Amount,

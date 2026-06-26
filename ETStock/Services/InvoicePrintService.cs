@@ -23,8 +23,7 @@ public sealed class InvoicePrintService : IInvoicePrintService
 
         var lines = invoice.Items
             .Select(item => new InvoiceDocumentLine(
-                item.Product?.Code ?? string.Empty,
-                item.Product?.Name ?? $"สินค้า {item.ProductId}",
+                item.ProductName,
                 item.Qty,
                 item.Amount,
                 item.VatAmount))

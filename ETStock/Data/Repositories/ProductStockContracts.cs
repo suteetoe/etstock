@@ -1,23 +1,17 @@
 namespace ETStock.Data.Repositories;
 
-public enum ProductWriteResult
-{
-    Success,
-    DuplicateCode,
-    NotFound
-}
-
 public sealed record ProductWithStock(
-    int Id,
-    string Code,
-    string Name,
+    string ProductName,
     string Unit,
     decimal CostPrice,
     decimal SellPrice,
     MonthlyStockSnapshot? MonthlyStock);
 
 public sealed record MonthlyStockInput(
-    int ProductId,
+    string ProductName,
+    string Unit,
+    decimal CostPrice,
+    decimal SellPrice,
     int Year,
     int Month,
     decimal OpeningQty,
@@ -27,7 +21,7 @@ public sealed record MonthlyStockInput(
 
 public sealed record MonthlyStockSnapshot(
     int Id,
-    int ProductId,
+    string ProductName,
     int Year,
     int Month,
     decimal OpeningQty,

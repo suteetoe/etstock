@@ -1,14 +1,15 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ETStock.Models;
 
 namespace ETStock.ViewModels;
 
-public sealed record AddProductResult(Product Product, decimal BalanceQty);
+public sealed record AddProductResult(
+    string ProductName, string Unit, decimal CostPrice, decimal SellPrice, decimal BalanceQty);
 
 public partial class AddProductDialogViewModel : ViewModelBase
 {
     [ObservableProperty] private string _name = string.Empty;
+    [ObservableProperty] private string _unit = string.Empty;
     [ObservableProperty] private decimal _balanceQty;
     [ObservableProperty] private decimal _costPrice;
     [ObservableProperty] private decimal _sellPrice;
@@ -21,15 +22,7 @@ public partial class AddProductDialogViewModel : ViewModelBase
     {
         if (string.IsNullOrWhiteSpace(Name)) { ErrorMessage = "กรุณาระบุชื่อสินค้า"; return; }
         ErrorMessage = string.Empty;
-        var product = new Product
-        {
-            Code = Guid.NewGuid().ToString("N")[..8].ToUpper(),
-            Name = Name.Trim(),
-            Unit = string.Empty,
-            CostPrice = CostPrice,
-            SellPrice = SellPrice
-        };
-        DialogCompleted?.Invoke(this, new AddProductResult(product, BalanceQty));
+        DialogCompleted?.Invoke(this, new AddProductResult(Name.Trim(), Unit.Trim(), CostPrice, SellPrice, BalanceQty));
     }
 
     [RelayCommand]

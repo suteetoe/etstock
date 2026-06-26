@@ -43,9 +43,9 @@ public partial class PrintPreviewViewModel : ViewModelBase
         sb.Append($"<p>สาขา: {H(doc.CompanyBranch)} ({H(doc.CompanyBranchCode)})</p>");
         sb.Append("<hr/><h3>ใบกำกับภาษีอย่างย่อ</h3>");
         sb.Append($"<p><b>เลขที่:</b> {H(doc.InvoiceNo)} &nbsp; <b>วันที่:</b> {doc.InvoiceDate:dd/MM/yyyy} &nbsp; <b>ปีภาษี (พ.ศ.):</b> {doc.TaxYear}/{doc.TaxMonth:D2}</p>");
-        sb.Append("<table><thead><tr><th>รหัสสินค้า</th><th>ชื่อสินค้า</th><th class='r'>จำนวน</th><th class='r'>ยอดก่อน VAT</th><th class='r'>VAT</th></tr></thead><tbody>");
+        sb.Append("<table><thead><tr><th>ชื่อสินค้า</th><th class='r'>จำนวน</th><th class='r'>ยอดก่อน VAT</th><th class='r'>VAT</th></tr></thead><tbody>");
         foreach (var line in doc.Lines)
-            sb.Append($"<tr><td>{H(line.ProductCode)}</td><td>{H(line.ProductName)}</td><td class='r'>{line.Qty:N2}</td><td class='r'>{line.Amount:N2}</td><td class='r'>{line.VatAmount:N2}</td></tr>");
+            sb.Append($"<tr><td>{H(line.ProductName)}</td><td class='r'>{line.Qty:N2}</td><td class='r'>{line.Amount:N2}</td><td class='r'>{line.VatAmount:N2}</td></tr>");
         sb.Append("</tbody></table>");
         sb.Append("<div class='totals'>");
         sb.Append($"<p>ยอดก่อน VAT: <b>{doc.SubTotal:N2} บาท</b></p>");

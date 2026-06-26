@@ -2,14 +2,12 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ETStock.Data.Repositories;
-using ETStock.Models;
 
 namespace ETStock.ViewModels;
 
 public partial class ProductViewModel
 {
     private readonly IMonthlyStockRepository? _repository;
-    private IProductRepository? _productRepository;
 
     public event EventHandler? AddProductRequested;
 
@@ -26,12 +24,6 @@ public partial class ProductViewModel
         : this()
     {
         _repository = repository;
-    }
-
-    public ProductViewModel(IMonthlyStockRepository repository, IProductRepository productRepository)
-        : this(repository)
-    {
-        _productRepository = productRepository;
     }
 
     public ObservableCollection<MonthlyStockRowViewModel> Rows { get; } = [];
@@ -131,7 +123,7 @@ public partial class ProductViewModel
     [RelayCommand]
     private async Task AddProductAsync()
     {
-        if (_productRepository is null) { StatusMessage = "Product repository not available."; return; }
+        if (_repository is null) { StatusMessage = "Monthly stock repository is not available."; return; }
         if (IsBusy) return;
         IsBusy = true;
         StatusMessage = string.Empty;
@@ -143,24 +135,16 @@ public partial class ProductViewModel
         {
             if (dialogResult is not null)
             {
-                var product = dialogResult.Product;
-                var balanceQty = dialogResult.BalanceQty;
-
-                await _productRepository.AddAsync(product);
-
-                if (_repository is not null && balanceQty > 0)
-                    await _repository.SaveAsync(
-                        new MonthlyStockInput(product.Id, SelectedYear, SelectedMonth, balanceQty, 0, 0, 0));
-
-                var snap = balanceQty > 0
-                    ? new MonthlyStockSnapshot(0, product.Id, SelectedYear, SelectedMonth, balanceQty, 0, 0, 0)
-                    : null;
-                var newRow = new MonthlyStockRowViewModel(new ProductWithStock(
-                    product.Id, product.Code, product.Name, product.Unit,
-                    product.CostPrice, product.SellPrice, snap));
-                Rows.Add(newRow);
-                newRow.LineNumber = Rows.Count;
-                StatusMessage = $"เพิ่มสินค้า '{product.Name}' เรียบร้อยแล้ว";
+                var input = new MonthlyStockInput(
+                    dialogResult.ProductName,
+                    dialogResult.Unit,
+                    dialogResult.CostPrice,
+                    dialogResult.SellPrice,
+                    SelectedYear, SelectedMonth,
+                    dialogResult.BalanceQty, 0, 0, 0);
+                await _repository.SaveAsync(input);
+                await LoadRowsAsync();
+                StatusMessage = $"เพิ่มสินค้า '{dialogResult.ProductName}' เรียบร้อยแล้ว";
             }
         }
         catch (Exception ex) { StatusMessage = $"ไม่สามารถเพิ่มสินค้าได้: {ex.Message}"; }
@@ -170,7 +154,7 @@ public partial class ProductViewModel
     [RelayCommand]
     private async Task DeleteProductAsync()
     {
-        if (_productRepository is null) { StatusMessage = "Product repository not available."; return; }
+        if (_repository is null) { StatusMessage = "Monthly stock repository is not available."; return; }
         if (SelectedRow is null) { StatusMessage = "กรุณาเลือกสินค้าที่ต้องการลบ"; return; }
         if (IsBusy) return;
         IsBusy = true;
@@ -178,7 +162,7 @@ public partial class ProductViewModel
         try
         {
             var name = SelectedRow.Name;
-            await _productRepository.DeleteAsync(SelectedRow.ProductId);
+            await _repository.DeleteAsync(SelectedRow.Name, SelectedYear, SelectedMonth);
             await LoadRowsAsync();
             StatusMessage = $"ลบสินค้า '{name}' เรียบร้อยแล้ว";
         }
@@ -229,50 +213,56 @@ public partial class MonthlyStockRowViewModel : ViewModelBase
 {
     public MonthlyStockRowViewModel(ProductWithStock product)
     {
-        ProductId = product.Id;
-        Code = product.Code;
-        Name = product.Name;
+        Name = product.ProductName;
         Unit = product.Unit;
         CostPrice = product.CostPrice;
         SellPrice = product.SellPrice;
 
         var stock = product.MonthlyStock;
+        StockId = stock?.Id ?? 0;
         _openingQty = stock?.OpeningQty ?? 0;
         _buyQty = stock?.BuyQty ?? 0;
         _sellFullQty = stock?.SellFullQty ?? 0;
         _sellPosQty = stock?.SellPosQty ?? 0;
     }
 
-    public int ProductId { get; }
-    public string Code { get; }
+    public int StockId { get; }
     public string Name { get; }
     public string Unit { get; }
     public decimal CostPrice { get; }
     public decimal SellPrice { get; }
+    public decimal ClosingValue => ClosingQty * CostPrice;
 
     [ObservableProperty]
     private int _lineNumber;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ClosingQty))]
+    [NotifyPropertyChangedFor(nameof(ClosingValue))]
     private decimal _openingQty;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ClosingQty))]
+    [NotifyPropertyChangedFor(nameof(ClosingValue))]
     private decimal _buyQty;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ClosingQty))]
+    [NotifyPropertyChangedFor(nameof(ClosingValue))]
     private decimal _sellFullQty;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ClosingQty))]
+    [NotifyPropertyChangedFor(nameof(ClosingValue))]
     private decimal _sellPosQty;
 
     public decimal ClosingQty => OpeningQty + BuyQty - SellFullQty - SellPosQty;
 
     public MonthlyStockInput ToInput(int year, int month) => new(
-        ProductId,
+        Name,
+        Unit,
+        CostPrice,
+        SellPrice,
         year,
         month,
         OpeningQty,
