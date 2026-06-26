@@ -23,8 +23,7 @@ public class InvoicePrintServiceTests
         [
             new AbbrInvoiceItem
             {
-                ProductId = 10,
-                Product = new Product { Code = "P001", Name = "สินค้า ก", Unit = "ชิ้น" },
+                ProductName = "สินค้า ก",
                 Qty = 2m,
                 Amount = 100m,
                 VatAmount = 7m,
@@ -85,7 +84,6 @@ public class InvoicePrintServiceTests
 
         Assert.Single(doc.Lines);
         var line = doc.Lines[0];
-        Assert.Equal("P001", line.ProductCode);
         Assert.Equal("สินค้า ก", line.ProductName);
         Assert.Equal(2m, line.Qty);
         Assert.Equal(100m, line.Amount);
@@ -104,28 +102,6 @@ public class InvoicePrintServiceTests
         Assert.Equal(100m, doc.SubTotal);
         Assert.Equal(7m, doc.VatTotal);
         Assert.Equal(107m, doc.GrandTotal);
-    }
-
-    [Fact]
-    public async Task BuildAsync_UsesFallbackProductName_WhenProductIsNull()
-    {
-        var invoice = new AbbrInvoice
-        {
-            Id = 1,
-            InvoiceNo = "TF-001",
-            InvoiceDate = DateTime.Today,
-            TaxYear = 2568,
-            TaxMonth = 6,
-            Items = [new AbbrInvoiceItem { ProductId = 99, Product = null!, Qty = 1, Amount = 50m, VatAmount = 3.5m }],
-        };
-        var svc = new InvoicePrintService(
-            new FakeAbbrInvoiceRepository([invoice]),
-            new FakeCompanyRepository());
-
-        var doc = await svc.BuildAsync(1);
-
-        Assert.Equal(string.Empty, doc.Lines[0].ProductCode);
-        Assert.Equal("สินค้า 99", doc.Lines[0].ProductName);
     }
 
     [Fact]
@@ -157,7 +133,7 @@ public class PrintPreviewViewModelTests
     private static InvoiceDocumentModel MakeDoc() => new(
         "Company A", "1234567890123", "123 Addr", "สำนักงานใหญ่", "00000",
         "INV-001", new DateTime(2025, 6, 1), 2568, 6,
-        [new InvoiceDocumentLine("P001", "สินค้า ก", 2m, 100m, 7m)],
+        [new InvoiceDocumentLine("สินค้า ก", 2m, 100m, 7m)],
         100m, 7m, 107m);
 
     [Fact]
@@ -203,7 +179,6 @@ public class PrintPreviewViewModelTests
     public void BuildHtml_ContainsProductLine()
     {
         var html = PrintPreviewViewModel.BuildHtml(MakeDoc());
-        Assert.Contains("P001", html);
         Assert.Contains("สินค้า ก", html);
     }
 

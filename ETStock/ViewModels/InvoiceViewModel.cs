@@ -138,7 +138,7 @@ public partial class InvoiceViewModel : ViewModelBase
             {
                 EditItems.Add(new InvoiceItemRowViewModel
                 {
-                    ProductId = item.ProductId,
+                    ProductName = item.ProductName,
                     Qty = item.Qty,
                     Amount = item.Amount,
                     VatAmount = item.VatAmount,
@@ -200,7 +200,7 @@ public partial class InvoiceViewModel : ViewModelBase
         {
             var items = EditItems.Select(i => new AbbrInvoiceItem
             {
-                ProductId = i.ProductId,
+                ProductName = i.ProductName,
                 Qty = i.Qty,
                 Amount = i.Amount,
                 VatAmount = i.VatAmount,
@@ -338,12 +338,6 @@ public class InvoiceRowViewModel
 
 public partial class InvoiceItemRowViewModel : ViewModelBase
 {
-    [ObservableProperty]
-    private int _productId;
-
-    [ObservableProperty]
-    private string _productCode = string.Empty;
-
     [ObservableProperty]
     private string _productName = string.Empty;
 

@@ -18,7 +18,6 @@ public class Phase0SmokeTests
         using var ctx = new AppDbContext(options);
 
         Assert.NotNull(ctx.Companies);
-        Assert.NotNull(ctx.Products);
         Assert.NotNull(ctx.MonthlyStocks);
         Assert.NotNull(ctx.AbbrInvoices);
         Assert.NotNull(ctx.AbbrInvoiceItems);
@@ -39,13 +38,19 @@ public class Phase0SmokeTests
         Assert.Equal(0.07m, c.VatRate);
     }
 
-    // Test 3: Verify Product unique code model
+    // Test 3: MonthlyStock inline product fields
     [Fact]
-    public void Product_HasRequiredProperties()
+    public void MonthlyStock_HasInlineProductFields()
     {
-        var p = new Product { Code = "P001", Name = "สินค้าทดสอบ", Unit = "ชิ้น", SellPrice = 100m };
-        Assert.Equal("P001", p.Code);
-        Assert.Equal(100m, p.SellPrice);
+        var ms = new MonthlyStock
+        {
+            ProductName = "สินค้าทดสอบ",
+            Unit = "ชิ้น",
+            CostPrice = 80m,
+            SellPrice = 100m
+        };
+        Assert.Equal("สินค้าทดสอบ", ms.ProductName);
+        Assert.Equal(100m, ms.SellPrice);
     }
 
     // Test 4: MonthlyStock closing formula

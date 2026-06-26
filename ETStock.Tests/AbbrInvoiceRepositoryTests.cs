@@ -13,16 +13,7 @@ public class AbbrInvoiceRepositoryTests
             .UseInMemoryDatabase(databaseName ?? Guid.NewGuid().ToString())
             .Options);
 
-    private static Product CreateProduct(string code) => new()
-    {
-        Code = code,
-        Name = $"Product {code}",
-        Unit = "piece",
-        CostPrice = 100,
-        SellPrice = 150
-    };
-
-    private static AbbrInvoice CreateInvoice(int taxYear, int taxMonth, int productId, int itemCount = 2)
+    private static AbbrInvoice CreateInvoice(int taxYear, int taxMonth, string productName = "สินค้า ก", int itemCount = 2)
     {
         var invoice = new AbbrInvoice
         {
@@ -38,7 +29,7 @@ public class AbbrInvoiceRepositoryTests
         {
             invoice.Items.Add(new AbbrInvoiceItem
             {
-                ProductId = productId,
+                ProductName = productName,
                 Qty = 1,
                 Amount = 100m,
                 VatAmount = 7m
@@ -52,11 +43,8 @@ public class AbbrInvoiceRepositoryTests
     public async Task SaveAsync_NewInvoice_AssignsId()
     {
         await using var db = CreateDb();
-        var product = CreateProduct("P001");
-        db.Products.Add(product);
-        await db.SaveChangesAsync();
 
-        var invoice = CreateInvoice(2566, 1, product.Id, itemCount: 2);
+        var invoice = CreateInvoice(2566, 1, itemCount: 2);
         var repo = new AbbrInvoiceRepository(db);
         await repo.SaveAsync(invoice);
 
@@ -68,13 +56,10 @@ public class AbbrInvoiceRepositoryTests
     public async Task GetByPeriodAsync_ReturnsMatchingPeriod()
     {
         await using var db = CreateDb();
-        var product = CreateProduct("P001");
-        db.Products.Add(product);
-        await db.SaveChangesAsync();
 
         var repo = new AbbrInvoiceRepository(db);
-        await repo.SaveAsync(CreateInvoice(2566, 1, product.Id));
-        await repo.SaveAsync(CreateInvoice(2566, 2, product.Id));
+        await repo.SaveAsync(CreateInvoice(2566, 1));
+        await repo.SaveAsync(CreateInvoice(2566, 2));
 
         var period1 = await repo.GetByPeriodAsync(2566, 1);
         var period2 = await repo.GetByPeriodAsync(2566, 2);
@@ -89,11 +74,8 @@ public class AbbrInvoiceRepositoryTests
     public async Task GetByIdAsync_ReturnsWithItems()
     {
         await using var db = CreateDb();
-        var product = CreateProduct("P001");
-        db.Products.Add(product);
-        await db.SaveChangesAsync();
 
-        var invoice = CreateInvoice(2566, 1, product.Id, itemCount: 2);
+        var invoice = CreateInvoice(2566, 1, itemCount: 2);
         var repo = new AbbrInvoiceRepository(db);
         await repo.SaveAsync(invoice);
 
@@ -102,7 +84,7 @@ public class AbbrInvoiceRepositoryTests
         Assert.NotNull(result);
         Assert.Equal(invoice.Id, result.Id);
         Assert.Equal(2, result.Items.Count);
-        Assert.All(result.Items, item => Assert.NotNull(item.Product));
+        Assert.All(result.Items, item => Assert.NotEmpty(item.ProductName));
     }
 
     [Fact]
@@ -120,11 +102,8 @@ public class AbbrInvoiceRepositoryTests
     public async Task SaveAsync_UpdateInvoice_ReplacesItems()
     {
         await using var db = CreateDb();
-        var product = CreateProduct("P001");
-        db.Products.Add(product);
-        await db.SaveChangesAsync();
 
-        var invoice = CreateInvoice(2566, 1, product.Id, itemCount: 2);
+        var invoice = CreateInvoice(2566, 1, itemCount: 2);
         var repo = new AbbrInvoiceRepository(db);
         await repo.SaveAsync(invoice);
 
@@ -142,7 +121,7 @@ public class AbbrInvoiceRepositoryTests
         };
         updated.Items.Add(new AbbrInvoiceItem
         {
-            ProductId = product.Id,
+            ProductName = "สินค้า ก",
             Qty = 1,
             Amount = 100m,
             VatAmount = 7m
@@ -157,11 +136,8 @@ public class AbbrInvoiceRepositoryTests
     public async Task DeleteAsync_RemovesInvoiceAndItems()
     {
         await using var db = CreateDb();
-        var product = CreateProduct("P001");
-        db.Products.Add(product);
-        await db.SaveChangesAsync();
 
-        var invoice = CreateInvoice(2566, 1, product.Id, itemCount: 2);
+        var invoice = CreateInvoice(2566, 1, itemCount: 2);
         var repo = new AbbrInvoiceRepository(db);
         await repo.SaveAsync(invoice);
 
@@ -178,16 +154,13 @@ public class AbbrInvoiceRepositoryTests
     public async Task GetPeriodSummaryAsync_ReturnsCorrectTotals()
     {
         await using var db = CreateDb();
-        var product = CreateProduct("P001");
-        db.Products.Add(product);
-        await db.SaveChangesAsync();
 
         var repo = new AbbrInvoiceRepository(db);
         // Two invoices in period (2566, 1); each has itemCount=2 -> TotalAmount=214m, VatAmount=14m
-        await repo.SaveAsync(CreateInvoice(2566, 1, product.Id, itemCount: 2));
-        await repo.SaveAsync(CreateInvoice(2566, 1, product.Id, itemCount: 2));
+        await repo.SaveAsync(CreateInvoice(2566, 1, itemCount: 2));
+        await repo.SaveAsync(CreateInvoice(2566, 1, itemCount: 2));
         // One invoice in a different period — must not be counted
-        await repo.SaveAsync(CreateInvoice(2566, 2, product.Id, itemCount: 3));
+        await repo.SaveAsync(CreateInvoice(2566, 2, itemCount: 3));
 
         var summary = await repo.GetPeriodSummaryAsync(2566, 1);
 

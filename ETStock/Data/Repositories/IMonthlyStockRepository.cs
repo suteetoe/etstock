@@ -15,4 +15,10 @@ public interface IMonthlyStockRepository
         int year,
         int month,
         CancellationToken ct = default);
+
+    Task<bool> DeleteAsync(
+        string productName,
+        int year,
+        int month,
+        CancellationToken ct = default);
 }

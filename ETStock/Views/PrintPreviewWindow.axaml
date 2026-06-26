@@ -52,24 +52,22 @@
                 <Border BorderBrush="#C0C0C0" BorderThickness="1" CornerRadius="3" Margin="0,8,0,0">
                     <StackPanel>
                         <Border Background="#EEEEEE" Padding="8,6">
-                            <Grid ColumnDefinitions="90,*,80,110,80" ColumnSpacing="8">
-                                <TextBlock Grid.Column="0" Text="รหัสสินค้า" FontWeight="SemiBold"/>
-                                <TextBlock Grid.Column="1" Text="ชื่อสินค้า" FontWeight="SemiBold"/>
-                                <TextBlock Grid.Column="2" Text="จำนวน" FontWeight="SemiBold" TextAlignment="Right"/>
-                                <TextBlock Grid.Column="3" Text="ยอดก่อน VAT" FontWeight="SemiBold" TextAlignment="Right"/>
-                                <TextBlock Grid.Column="4" Text="VAT" FontWeight="SemiBold" TextAlignment="Right"/>
+                            <Grid ColumnDefinitions="*,80,110,80" ColumnSpacing="8">
+                                <TextBlock Grid.Column="0" Text="ชื่อสินค้า" FontWeight="SemiBold"/>
+                                <TextBlock Grid.Column="1" Text="จำนวน" FontWeight="SemiBold" TextAlignment="Right"/>
+                                <TextBlock Grid.Column="2" Text="ยอดก่อน VAT" FontWeight="SemiBold" TextAlignment="Right"/>
+                                <TextBlock Grid.Column="3" Text="VAT" FontWeight="SemiBold" TextAlignment="Right"/>
                             </Grid>
                         </Border>
                         <ItemsControl ItemsSource="{Binding Doc.Lines}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="models:InvoiceDocumentLine">
                                     <Border BorderBrush="#E5E5E5" BorderThickness="0,0,0,1" Padding="8,6">
-                                        <Grid ColumnDefinitions="90,*,80,110,80" ColumnSpacing="8">
-                                            <TextBlock Grid.Column="0" Text="{Binding ProductCode}" VerticalAlignment="Center"/>
-                                            <TextBlock Grid.Column="1" Text="{Binding ProductName}" VerticalAlignment="Center" TextWrapping="Wrap"/>
-                                            <TextBlock Grid.Column="2" Text="{Binding Qty, StringFormat='{}{0:N2}'}" TextAlignment="Right" VerticalAlignment="Center"/>
-                                            <TextBlock Grid.Column="3" Text="{Binding Amount, StringFormat='{}{0:N2}'}" TextAlignment="Right" VerticalAlignment="Center"/>
-                                            <TextBlock Grid.Column="4" Text="{Binding VatAmount, StringFormat='{}{0:N2}'}" TextAlignment="Right" VerticalAlignment="Center"/>
+                                        <Grid ColumnDefinitions="*,80,110,80" ColumnSpacing="8">
+                                            <TextBlock Grid.Column="0" Text="{Binding ProductName}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Qty, StringFormat='{}{0:N2}'}" TextAlignment="Right" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding Amount, StringFormat='{}{0:N2}'}" TextAlignment="Right" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="3" Text="{Binding VatAmount, StringFormat='{}{0:N2}'}" TextAlignment="Right" VerticalAlignment="Center"/>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>

@@ -74,7 +74,7 @@ public class InvoiceViewModelTests
             TaxMonth = taxMonth,
             TotalAmount = 107m,
             VatAmount = 7m,
-            Items = [new AbbrInvoiceItem { ProductId = 1, Qty = 1, Amount = 100m, VatAmount = 7m }],
+            Items = [new AbbrInvoiceItem { ProductName = "สินค้า ก", Qty = 1, Amount = 100m, VatAmount = 7m }],
         };
 
     // ── Default state ──────────────────────────────────────────────────────────

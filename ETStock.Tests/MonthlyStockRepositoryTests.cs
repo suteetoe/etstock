@@ -17,20 +17,14 @@ public class MonthlyStockRepositoryTests
     public async Task SaveAsync_InsertsUpdatesAndReloadsMonthlyStock()
     {
         var databaseName = Guid.NewGuid().ToString();
-        int productId;
 
         await using (var db = CreateDb(databaseName))
         {
-            var product = CreateProduct("P001");
-            db.Products.Add(product);
-            await db.SaveChangesAsync();
-            productId = product.Id;
-
             var repository = new MonthlyStockRepository(db);
             await repository.SaveAsync(
-                new MonthlyStockInput(productId, 2026, 6, 10, 5, 2, 1));
+                new MonthlyStockInput("สินค้า A", "ชิ้น", 100m, 150m, 2026, 6, 10, 5, 2, 1));
             var updated = await repository.SaveAsync(
-                new MonthlyStockInput(productId, 2026, 6, 20, 4, 3, 2));
+                new MonthlyStockInput("สินค้า A", "ชิ้น", 100m, 150m, 2026, 6, 20, 4, 3, 2));
 
             Assert.Equal(19, updated.ClosingQty);
             Assert.Single(await db.MonthlyStocks.ToListAsync());
@@ -53,34 +47,46 @@ public class MonthlyStockRepositoryTests
     public async Task GetPeriodAsync_LoadsProductsAndExcludesStockFromOtherPeriods()
     {
         await using var db = CreateDb();
-        var first = CreateProduct("P001");
-        var second = CreateProduct("P002");
-        db.Products.AddRange(first, second);
-        await db.SaveChangesAsync();
         db.MonthlyStocks.AddRange(
             new MonthlyStock
             {
-                ProductId = first.Id,
+                ProductName = "สินค้า A",
+                Unit = "ชิ้น",
+                CostPrice = 100m,
+                SellPrice = 150m,
                 Year = 2026,
                 Month = 6,
                 OpeningQty = 12
             },
             new MonthlyStock
             {
-                ProductId = first.Id,
+                ProductName = "สินค้า A",
+                Unit = "ชิ้น",
+                CostPrice = 100m,
+                SellPrice = 150m,
                 Year = 2026,
                 Month = 5,
                 OpeningQty = 99
+            },
+            new MonthlyStock
+            {
+                ProductName = "สินค้า B",
+                Unit = "กล่อง",
+                CostPrice = 200m,
+                SellPrice = 300m,
+                Year = 2026,
+                Month = 6,
+                OpeningQty = 5
             });
         await db.SaveChangesAsync();
 
         var rows = await new MonthlyStockRepository(db).GetPeriodAsync(2026, 6);
 
         Assert.Equal(2, rows.Count);
-        var firstRow = Assert.Single(rows, row => row.Id == first.Id);
-        Assert.Equal(12, firstRow.MonthlyStock?.OpeningQty);
-        var secondRow = Assert.Single(rows, row => row.Id == second.Id);
-        Assert.Null(secondRow.MonthlyStock);
+        var rowA = Assert.Single(rows, row => row.ProductName == "สินค้า A");
+        Assert.Equal(12, rowA.MonthlyStock?.OpeningQty);
+        var rowB = Assert.Single(rows, row => row.ProductName == "สินค้า B");
+        Assert.Equal(5, rowB.MonthlyStock?.OpeningQty);
     }
 
     [Theory]
@@ -93,12 +99,12 @@ public class MonthlyStockRepositoryTests
         int previousMonth)
     {
         await using var db = CreateDb();
-        var product = CreateProduct("P001");
-        db.Products.Add(product);
-        await db.SaveChangesAsync();
         db.MonthlyStocks.Add(new MonthlyStock
         {
-            ProductId = product.Id,
+            ProductName = "สินค้า A",
+            Unit = "ชิ้น",
+            CostPrice = 100m,
+            SellPrice = 150m,
             Year = previousYear,
             Month = previousMonth,
             OpeningQty = 10,
@@ -124,18 +130,15 @@ public class MonthlyStockRepositoryTests
     public async Task CarryForwardAsync_ChainsClosingAcrossNormalMonthAndYearBoundary()
     {
         var databaseName = Guid.NewGuid().ToString();
-        int productId;
 
         await using (var db = CreateDb(databaseName))
         {
-            var product = CreateProduct("P001");
-            db.Products.Add(product);
-            await db.SaveChangesAsync();
-            productId = product.Id;
-
             db.MonthlyStocks.Add(new MonthlyStock
             {
-                ProductId = productId,
+                ProductName = "สินค้า A",
+                Unit = "ชิ้น",
+                CostPrice = 100m,
+                SellPrice = 150m,
                 Year = 2026,
                 Month = 11,
                 OpeningQty = 10,
@@ -151,7 +154,7 @@ public class MonthlyStockRepositoryTests
             Assert.Equal(13, december.OpeningQty);
 
             await repository.SaveAsync(
-                new MonthlyStockInput(productId, 2026, 12, 13, 7, 4, 1));
+                new MonthlyStockInput("สินค้า A", "ชิ้น", 100m, 150m, 2026, 12, 13, 7, 4, 1));
 
             var january = Assert.Single(
                 await repository.CarryForwardAsync(2027, 1));
@@ -162,7 +165,6 @@ public class MonthlyStockRepositoryTests
         await using (var db = CreateDb(databaseName))
         {
             var rows = await db.MonthlyStocks
-                .Where(stock => stock.ProductId == productId)
                 .OrderBy(stock => stock.Year)
                 .ThenBy(stock => stock.Month)
                 .ToListAsync();
@@ -191,13 +193,13 @@ public class MonthlyStockRepositoryTests
     public async Task CarryForwardAsync_UpdatesOpeningWithoutReplacingCurrentTransactions()
     {
         await using var db = CreateDb();
-        var product = CreateProduct("P001");
-        db.Products.Add(product);
-        await db.SaveChangesAsync();
         db.MonthlyStocks.AddRange(
             new MonthlyStock
             {
-                ProductId = product.Id,
+                ProductName = "สินค้า A",
+                Unit = "ชิ้น",
+                CostPrice = 100m,
+                SellPrice = 150m,
                 Year = 2026,
                 Month = 5,
                 OpeningQty = 10,
@@ -207,7 +209,10 @@ public class MonthlyStockRepositoryTests
             },
             new MonthlyStock
             {
-                ProductId = product.Id,
+                ProductName = "สินค้า A",
+                Unit = "ชิ้น",
+                CostPrice = 100m,
+                SellPrice = 150m,
                 Year = 2026,
                 Month = 6,
                 OpeningQty = 99,
@@ -228,6 +233,40 @@ public class MonthlyStockRepositoryTests
     }
 
     [Fact]
+    public async Task DeleteAsync_RemovesStockByProductNameAndPeriod()
+    {
+        await using var db = CreateDb();
+        db.MonthlyStocks.Add(new MonthlyStock
+        {
+            ProductName = "สินค้า A",
+            Unit = "ชิ้น",
+            CostPrice = 100m,
+            SellPrice = 150m,
+            Year = 2026,
+            Month = 6,
+            OpeningQty = 10
+        });
+        await db.SaveChangesAsync();
+
+        var repository = new MonthlyStockRepository(db);
+        var result = await repository.DeleteAsync("สินค้า A", 2026, 6);
+
+        Assert.True(result);
+        Assert.Empty(await db.MonthlyStocks.ToListAsync());
+    }
+
+    [Fact]
+    public async Task DeleteAsync_ReturnsFalse_WhenNotFound()
+    {
+        await using var db = CreateDb();
+
+        var repository = new MonthlyStockRepository(db);
+        var result = await repository.DeleteAsync("ไม่มีสินค้านี้", 2026, 6);
+
+        Assert.False(result);
+    }
+
+    [Fact]
     public void ClosingQty_CalculatesOpeningPlusBuyMinusSales()
     {
         var stock = new MonthlyStock
@@ -240,13 +279,4 @@ public class MonthlyStockRepositoryTests
 
         Assert.Equal(13, stock.ClosingQty);
     }
-
-    private static Product CreateProduct(string code) => new()
-    {
-        Code = code,
-        Name = $"Product {code}",
-        Unit = "piece",
-        CostPrice = 100,
-        SellPrice = 150
-    };
 }
