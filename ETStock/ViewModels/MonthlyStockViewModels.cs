@@ -20,10 +20,24 @@ public partial class ProductViewModel
         _selectedMonth = today.Month;
     }
 
+    public ProductViewModel(int year, int month)
+    {
+        _selectedYear = year;
+        _selectedMonth = month;
+    }
+
     public ProductViewModel(IMonthlyStockRepository repository)
         : this()
     {
         _repository = repository;
+    }
+
+    public ProductViewModel(IMonthlyStockRepository repository, int year, int month)
+        : this(year, month)
+    {
+        _repository = repository;
+        // Auto-load on startup (fire-and-forget is fine here, errors are shown in StatusMessage)
+        _ = LoadAsync();
     }
 
     public ObservableCollection<MonthlyStockRowViewModel> Rows { get; } = [];
