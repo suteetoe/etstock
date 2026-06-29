@@ -27,7 +27,7 @@
             </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="1" ColumnDefinitions="Auto,100,Auto,80,Auto,Auto,Auto,*" ColumnSpacing="8">
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,100,Auto,80,Auto,Auto,Auto,Auto,*" ColumnSpacing="8">
             <TextBlock Grid.Column="0" Text="Year" VerticalAlignment="Center"/>
             <TextBox Grid.Column="1"
                      Text="{Binding SelectedYear}"
@@ -51,6 +51,10 @@
             <Button Grid.Column="6"
                     Content="Save"
                     Command="{Binding SaveCommand}"
+                    IsEnabled="{Binding !IsBusy}"/>
+            <Button Grid.Column="7"
+                    Content="สร้างใบกำกับภาษีอย่างย่อ"
+                    Command="{Binding GenerateInvoicesCommand}"
                     IsEnabled="{Binding !IsBusy}"/>
         </Grid>
 
