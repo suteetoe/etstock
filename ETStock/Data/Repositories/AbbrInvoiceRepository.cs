@@ -76,6 +76,17 @@ public class AbbrInvoiceRepository(AppDbContext db) : IAbbrInvoiceRepository
         await db.SaveChangesAsync();
     }
 
+    public async Task DeleteByPeriodAsync(int taxYear, int taxMonth, CancellationToken ct = default)
+    {
+        var invoices = await db.AbbrInvoices
+            .Include(i => i.Items)
+            .Where(i => i.TaxYear == taxYear && i.TaxMonth == taxMonth)
+            .ToListAsync(ct);
+
+        db.AbbrInvoices.RemoveRange(invoices);
+        await db.SaveChangesAsync(ct);
+    }
+
     public async Task<AbbrInvoiceSummary> GetPeriodSummaryAsync(int taxYear, int taxMonth)
     {
         var query = db.AbbrInvoices

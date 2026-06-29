@@ -50,6 +50,12 @@ internal sealed class FakeAbbrInvoiceRepository : IAbbrInvoiceRepository
         return Task.CompletedTask;
     }
 
+    public Task DeleteByPeriodAsync(int taxYear, int taxMonth, CancellationToken ct = default)
+    {
+        _store.RemoveAll(i => i.TaxYear == taxYear && i.TaxMonth == taxMonth);
+        return Task.CompletedTask;
+    }
+
     public Task<AbbrInvoiceSummary> GetPeriodSummaryAsync(int taxYear, int taxMonth)
     {
         var matching = _store.Where(i => i.TaxYear == taxYear && i.TaxMonth == taxMonth).ToList();
