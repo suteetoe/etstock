@@ -53,7 +53,7 @@
 2. เรียก agent CLI ให้แก้โค้ด **ภายในขอบเขตไฟล์ที่กำหนดเท่านั้น**
 3. `git add -A && git commit -m "..."`
 4. `git push -u origin <branch>`
-5. `gh pr create` พร้อม title + body ตาม template
+5. `gh pr create --base develop` พร้อม title + body ตาม template (ต้องระบุ `--base develop` เสมอ — default branch ของ repo คือ `main` ถ้าไม่ระบุ PR จะยิงเข้า main)
 
 เป้าหมาย: รับประกันว่าได้ PR ออกมาแน่นอนทุกครั้ง และรูปแบบเหมือนกันหมด ไม่ว่า agent ตัวไหนทำ
 
