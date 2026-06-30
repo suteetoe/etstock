@@ -183,6 +183,12 @@ public partial class InvoiceViewModel : ViewModelBase
         EditItems.Remove(item);
     }
 
+    [RelayCommand]
+    private void ToggleExpand(InvoiceRowViewModel row)
+    {
+        row.IsExpanded = !row.IsExpanded;
+    }
+
     public event Action<PrintPreviewViewModel>? PrintPreviewRequested;
 
     [RelayCommand]
@@ -243,7 +249,7 @@ public partial class InvoiceViewModel : ViewModelBase
     }
 }
 
-public class InvoiceRowViewModel
+public partial class InvoiceRowViewModel : ViewModelBase
 {
     public int Id { get; }
     public string InvoiceNo { get; }
@@ -253,6 +259,10 @@ public class InvoiceRowViewModel
     public decimal TotalAmount { get; }
     public decimal VatAmount { get; }
     public int ItemCount { get; }
+    public IReadOnlyList<InvoiceItemDetailViewModel> Items { get; }
+
+    [ObservableProperty]
+    private bool _isExpanded;
 
     public InvoiceRowViewModel(AbbrInvoice src)
     {
@@ -264,8 +274,13 @@ public class InvoiceRowViewModel
         TotalAmount = src.TotalAmount;
         VatAmount = src.VatAmount;
         ItemCount = src.Items.Count;
+        Items = src.Items
+            .Select(i => new InvoiceItemDetailViewModel(i.ProductName, i.Qty, i.Amount, i.VatAmount))
+            .ToList();
     }
 }
+
+public record InvoiceItemDetailViewModel(string ProductName, decimal Qty, decimal Amount, decimal VatAmount);
 
 public partial class InvoiceItemRowViewModel : ViewModelBase
 {

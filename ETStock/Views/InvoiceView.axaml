@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:ETStock.ViewModels"
+             xmlns:converters="using:ETStock.Converters"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="700"
@@ -135,52 +136,87 @@
                           VerticalScrollBarVisibility="Auto">
                 <StackPanel MinWidth="700">
                     <Border Background="#EEEEEE" Padding="8">
-                        <Grid ColumnDefinitions="*,110,80,110,80,60,120" ColumnSpacing="8">
-                            <TextBlock Grid.Column="0" Text="เลขที่ใบกำกับ" FontWeight="SemiBold"/>
-                            <TextBlock Grid.Column="1" Text="วันที่" FontWeight="SemiBold"/>
-                            <TextBlock Grid.Column="2" Text="เดือน" FontWeight="SemiBold" TextAlignment="Center"/>
-                            <TextBlock Grid.Column="3" Text="ยอดรวม" FontWeight="SemiBold" TextAlignment="Right"/>
-                            <TextBlock Grid.Column="4" Text="VAT" FontWeight="SemiBold" TextAlignment="Right"/>
-                            <TextBlock Grid.Column="5" Text="รายการ" FontWeight="SemiBold" TextAlignment="Center"/>
-                            <TextBlock Grid.Column="6" Text="" FontWeight="SemiBold"/>
+                        <Grid ColumnDefinitions="28,*,110,80,110,80,60,120" ColumnSpacing="8">
+                            <TextBlock Grid.Column="1" Text="เลขที่ใบกำกับ" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Column="2" Text="วันที่" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Column="3" Text="เดือน" FontWeight="SemiBold" TextAlignment="Center"/>
+                            <TextBlock Grid.Column="4" Text="ยอดรวม" FontWeight="SemiBold" TextAlignment="Right"/>
+                            <TextBlock Grid.Column="5" Text="VAT" FontWeight="SemiBold" TextAlignment="Right"/>
+                            <TextBlock Grid.Column="6" Text="รายการ" FontWeight="SemiBold" TextAlignment="Center"/>
+                            <TextBlock Grid.Column="7" Text="" FontWeight="SemiBold"/>
                         </Grid>
                     </Border>
 
                     <ItemsControl ItemsSource="{Binding Invoices}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="vm:InvoiceRowViewModel">
-                                <Border BorderBrush="#E5E5E5" BorderThickness="0,0,0,1" Padding="8">
-                                    <Grid ColumnDefinitions="*,110,80,110,80,60,120" ColumnSpacing="8">
-                                        <TextBlock Grid.Column="0"
-                                                   Text="{Binding InvoiceNo}"
-                                                   VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="1"
-                                                   Text="{Binding InvoiceDate, StringFormat='{}{0:yyyy-MM-dd}'}"
-                                                   VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="2"
-                                                   Text="{Binding TaxMonth}"
-                                                   TextAlignment="Center"
-                                                   VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="3"
-                                                   Text="{Binding TotalAmount, StringFormat='{}{0:N2}'}"
-                                                   TextAlignment="Right"
-                                                   VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="4"
-                                                   Text="{Binding VatAmount, StringFormat='{}{0:N2}'}"
-                                                   TextAlignment="Right"
-                                                   VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="5"
-                                                   Text="{Binding ItemCount}"
-                                                   TextAlignment="Center"
-                                                   VerticalAlignment="Center"/>
-                                        <StackPanel Grid.Column="6" Orientation="Horizontal" Spacing="4">
-                                            <Button Content="พิมพ์"
-                                                    Command="{Binding $parent[UserControl].((vm:InvoiceViewModel)DataContext).PrintCommand}"
+                                <StackPanel>
+                                    <Border BorderBrush="#E5E5E5" BorderThickness="0,0,0,1" Padding="8">
+                                        <Grid ColumnDefinitions="28,*,110,80,110,80,60,120" ColumnSpacing="8">
+                                            <Button Grid.Column="0"
+                                                    Content="{Binding IsExpanded, Converter={x:Static converters:ExpandGlyphConverter.Instance}}"
+                                                    Command="{Binding $parent[UserControl].((vm:InvoiceViewModel)DataContext).ToggleExpandCommand}"
                                                     CommandParameter="{Binding}"
-                                                    Padding="4,2"/>
+                                                    Padding="4,0"/>
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding InvoiceNo}"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="2"
+                                                       Text="{Binding InvoiceDate, StringFormat='{}{0:yyyy-MM-dd}'}"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="3"
+                                                       Text="{Binding TaxMonth}"
+                                                       TextAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="4"
+                                                       Text="{Binding TotalAmount, StringFormat='{}{0:N2}'}"
+                                                       TextAlignment="Right"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="5"
+                                                       Text="{Binding VatAmount, StringFormat='{}{0:N2}'}"
+                                                       TextAlignment="Right"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="6"
+                                                       Text="{Binding ItemCount}"
+                                                       TextAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+                                            <StackPanel Grid.Column="7" Orientation="Horizontal" Spacing="4">
+                                                <Button Content="พิมพ์"
+                                                        Command="{Binding $parent[UserControl].((vm:InvoiceViewModel)DataContext).PrintCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        Padding="4,2"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Detail panel: collapses/expands per invoice -->
+                                    <Border IsVisible="{Binding IsExpanded}"
+                                            Background="#FAFAFA"
+                                            BorderBrush="#E5E5E5"
+                                            BorderThickness="0,0,0,1"
+                                            Padding="28,4,8,8">
+                                        <StackPanel>
+                                            <Grid ColumnDefinitions="*,80,90,90" ColumnSpacing="8">
+                                                <TextBlock Grid.Column="0" Text="ชื่อสินค้า" FontWeight="SemiBold" Opacity="0.7"/>
+                                                <TextBlock Grid.Column="1" Text="จำนวน" FontWeight="SemiBold" Opacity="0.7" TextAlignment="Right"/>
+                                                <TextBlock Grid.Column="2" Text="ยอดก่อน VAT" FontWeight="SemiBold" Opacity="0.7" TextAlignment="Right"/>
+                                                <TextBlock Grid.Column="3" Text="VAT" FontWeight="SemiBold" Opacity="0.7" TextAlignment="Right"/>
+                                            </Grid>
+                                            <ItemsControl ItemsSource="{Binding Items}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="vm:InvoiceItemDetailViewModel">
+                                                        <Grid ColumnDefinitions="*,80,90,90" ColumnSpacing="8" Margin="0,2">
+                                                            <TextBlock Grid.Column="0" Text="{Binding ProductName}"/>
+                                                            <TextBlock Grid.Column="1" Text="{Binding Qty, StringFormat='{}{0:N0}'}" TextAlignment="Right"/>
+                                                            <TextBlock Grid.Column="2" Text="{Binding Amount, StringFormat='{}{0:N2}'}" TextAlignment="Right"/>
+                                                            <TextBlock Grid.Column="3" Text="{Binding VatAmount, StringFormat='{}{0:N2}'}" TextAlignment="Right"/>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
                                         </StackPanel>
-                                    </Grid>
-                                </Border>
+                                    </Border>
+                                </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
