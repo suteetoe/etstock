@@ -16,7 +16,7 @@
 
         <!-- Row 0: Toolbar -->
         <Grid Grid.Row="0"
-              ColumnDefinitions="Auto,90,Auto,60,Auto,Auto,*"
+              ColumnDefinitions="Auto,90,Auto,60,Auto,*"
               ColumnSpacing="8">
             <TextBlock Grid.Column="0" Text="ปี (พ.ศ.)" VerticalAlignment="Center"/>
             <TextBox Grid.Column="1"
@@ -34,98 +34,16 @@
                     Content="โหลด"
                     Command="{Binding LoadCommand}"
                     IsEnabled="{Binding !IsBusy}"/>
-            <Button Grid.Column="5"
-                    Content="เพิ่มใบกำกับ"
-                    Command="{Binding NewCommand}"
-                    IsEnabled="{Binding !IsBusy}"/>
         </Grid>
 
-        <!-- Row 1: Edit Form Panel -->
-        <Border Grid.Row="1"
-                IsVisible="{Binding IsFormOpen}"
-                BorderBrush="#B0B0B0"
-                BorderThickness="1"
-                CornerRadius="4"
-                Padding="12">
-            <StackPanel Spacing="10">
-                <TextBlock FontSize="16" FontWeight="SemiBold"
-                           Text="{Binding EditId, StringFormat='{}ใบกำกับ (id={0})'}" />
-
-                <Grid ColumnDefinitions="120,*,120,*" ColumnSpacing="8" RowDefinitions="Auto" RowSpacing="8">
-                    <TextBlock Grid.Column="0" Text="เลขที่ใบกำกับ" VerticalAlignment="Center"/>
-                    <TextBox Grid.Column="1"
-                             Text="{Binding EditInvoiceNo}"
-                             IsEnabled="{Binding !IsBusy}"/>
-
-                    <TextBlock Grid.Column="2" Text="วันที่ใบกำกับ" VerticalAlignment="Center"/>
-                    <TextBox Grid.Column="3"
-                             Text="{Binding EditInvoiceDate, StringFormat='{}{0:yyyy-MM-dd}'}"
-                             IsEnabled="{Binding !IsBusy}"/>
-                </Grid>
-
-                <!-- Items sub-list -->
-                <Border BorderBrush="#D0D0D0" BorderThickness="1" CornerRadius="3">
-                    <StackPanel>
-                        <Border Background="#EEEEEE" Padding="8">
-                            <Grid ColumnDefinitions="*,80,90,90,40" ColumnSpacing="8">
-                                <TextBlock Grid.Column="0" Text="ชื่อสินค้า" FontWeight="SemiBold"/>
-                                <TextBlock Grid.Column="1" Text="จำนวน" FontWeight="SemiBold" TextAlignment="Right"/>
-                                <TextBlock Grid.Column="2" Text="ยอดก่อน VAT" FontWeight="SemiBold" TextAlignment="Right"/>
-                                <TextBlock Grid.Column="3" Text="VAT" FontWeight="SemiBold" TextAlignment="Right"/>
-                                <TextBlock Grid.Column="4" Text="" FontWeight="SemiBold"/>
-                            </Grid>
-                        </Border>
-
-                        <ItemsControl ItemsSource="{Binding EditItems}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="vm:InvoiceItemRowViewModel">
-                                    <Border BorderBrush="#E5E5E5" BorderThickness="0,0,0,1" Padding="8">
-                                        <Grid ColumnDefinitions="*,80,90,90,40" ColumnSpacing="8">
-                                            <TextBox Grid.Column="0"
-                                                     Text="{Binding ProductName}"/>
-                                            <NumericUpDown Grid.Column="1"
-                                                           Value="{Binding Qty}"
-                                                           Minimum="0"
-                                                           FormatString="0.##"
-                                                           HorizontalContentAlignment="Right"/>
-                                            <NumericUpDown Grid.Column="2"
-                                                           Value="{Binding Amount}"
-                                                           Minimum="0"
-                                                           FormatString="0.##"
-                                                           HorizontalContentAlignment="Right"/>
-                                            <NumericUpDown Grid.Column="3"
-                                                           Value="{Binding VatAmount}"
-                                                           Minimum="0"
-                                                           FormatString="0.##"
-                                                           HorizontalContentAlignment="Right"/>
-                                            <Button Grid.Column="4"
-                                                    Content="ลบ"
-                                                    Command="{Binding $parent[UserControl].((vm:InvoiceViewModel)DataContext).RemoveItemCommand}"
-                                                    CommandParameter="{Binding}"/>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-                </Border>
-
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <Button Content="เพิ่มรายการ"
-                            Command="{Binding AddItemCommand}"
-                            IsEnabled="{Binding !IsBusy}"/>
-                </StackPanel>
-
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <Button Content="บันทึก"
-                            Command="{Binding SaveCommand}"
-                            IsEnabled="{Binding !IsBusy}"/>
-                    <Button Content="ยกเลิก"
-                            Command="{Binding CancelCommand}"
-                            IsEnabled="{Binding !IsBusy}"/>
-                </StackPanel>
-            </StackPanel>
-        </Border>
+        <!-- Row 1: Latest running number (display-only) -->
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,*" ColumnSpacing="8">
+            <TextBlock Grid.Column="0" Text="เล่มที่/เลขที่ล่าสุด" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="1"
+                       Text="{Binding LatestRunningDisplay}"
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center"/>
+        </Grid>
 
         <!-- Row 2: Invoice list -->
         <Border Grid.Row="2"

@@ -1,4 +1,5 @@
 using ETStock.Data.Repositories;
+using ETStock.Services;
 using ETStock.ViewModels;
 using Xunit;
 
@@ -96,6 +97,139 @@ public class MonthlyStockViewModelTests
         SelectedYear = 2026,
         SelectedMonth = 6
     };
+
+    // ── GenerateInvoicesCommand: seed bootstrap + post-generate refresh ─────────
+
+    [Fact]
+    public async Task Constructor_WithInvoiceGenerator_LoadsLatestRunningOnInit()
+    {
+        var repository = new FakeMonthlyStockRepository();
+        repository.SetPeriod(2026, 6, Product());
+        var generator = new FakeInvoiceGeneratorService { LatestRunning = (3, 120) };
+
+        var vm = new ProductViewModel(repository, generator, 2026, 6);
+        await WaitForAsync(() => vm.LatestRunningDisplay != string.Empty);
+
+        Assert.False(vm.NeedsSeed);
+        Assert.Equal("เล่มที่ 3 เลขที่ 00120", vm.LatestRunningDisplay);
+    }
+
+    [Fact]
+    public async Task Constructor_WithInvoiceGenerator_NoLatestRunning_SetsNeedsSeed()
+    {
+        var repository = new FakeMonthlyStockRepository();
+        repository.SetPeriod(2026, 6, Product());
+        var generator = new FakeInvoiceGeneratorService { LatestRunning = null };
+
+        var vm = new ProductViewModel(repository, generator, 2026, 6);
+        await WaitForAsync(() => vm.NeedsSeed && !string.IsNullOrEmpty(vm.StatusMessage));
+
+        Assert.True(vm.NeedsSeed);
+        Assert.Contains("กรุณาระบุเล่มที่และเลขที่เริ่มต้น", vm.StatusMessage);
+    }
+
+    [Fact]
+    public async Task GenerateInvoicesCommand_NoLatestRunning_SeedNotFilled_BlocksAndWarns()
+    {
+        var repository = new FakeMonthlyStockRepository();
+        repository.SetPeriod(2026, 6, Product(
+            new MonthlyStockSnapshot(10, "สินค้า A", 2026, 6, 12, 5, 2, 1)));
+        var generator = new FakeInvoiceGeneratorService { LatestRunning = null };
+
+        var vm = new ProductViewModel(repository, generator, 2026, 6);
+        await WaitForAsync(() => vm.NeedsSeed);
+
+        await vm.GenerateInvoicesCommand.ExecuteAsync(null);
+
+        Assert.False(generator.GenerateAsyncCalled);
+        Assert.Contains("กรุณาระบุเล่มที่และเลขที่เริ่มต้น", vm.StatusMessage);
+    }
+
+    [Fact]
+    public async Task GenerateInvoicesCommand_NoLatestRunning_SeedFilled_PassesSeedStart()
+    {
+        var repository = new FakeMonthlyStockRepository();
+        repository.SetPeriod(2026, 6, Product(
+            new MonthlyStockSnapshot(10, "สินค้า A", 2026, 6, 12, 5, 2, 1)));
+        var generator = new FakeInvoiceGeneratorService
+        {
+            LatestRunning = null,
+            GenerateResult = new GenerateInvoicesResult(1, 107m, 7m),
+        };
+
+        var vm = new ProductViewModel(repository, generator, 2026, 6);
+        await WaitForAsync(() => vm.NeedsSeed);
+        vm.SeedBookNo = 1;
+        vm.SeedRunningNo = 1;
+
+        await vm.GenerateInvoicesCommand.ExecuteAsync(null);
+
+        Assert.True(generator.GenerateAsyncCalled);
+        Assert.Equal((1, 1), generator.LastSeedStart);
+    }
+
+    [Fact]
+    public async Task GenerateInvoicesCommand_AfterSuccess_RefreshesLatestRunningDisplay()
+    {
+        var repository = new FakeMonthlyStockRepository();
+        repository.SetPeriod(2026, 6, Product(
+            new MonthlyStockSnapshot(10, "สินค้า A", 2026, 6, 12, 5, 2, 1)));
+        var generator = new FakeInvoiceGeneratorService
+        {
+            LatestRunning = (1, 5),
+            GenerateResult = new GenerateInvoicesResult(1, 107m, 7m),
+        };
+
+        var vm = new ProductViewModel(repository, generator, 2026, 6);
+        await WaitForAsync(() => !string.IsNullOrEmpty(vm.LatestRunningDisplay));
+
+        // Simulate the running number advancing after generation.
+        generator.LatestRunning = (1, 6);
+
+        await vm.GenerateInvoicesCommand.ExecuteAsync(null);
+
+        Assert.Equal("เล่มที่ 1 เลขที่ 00006", vm.LatestRunningDisplay);
+        Assert.False(vm.NeedsSeed);
+        Assert.Contains("สร้างใบกำกับภาษีอย่างย่อ", vm.StatusMessage);
+    }
+
+    private static async Task WaitForAsync(Func<bool> condition, int timeoutMs = 2000)
+    {
+        var start = DateTime.UtcNow;
+        while (!condition())
+        {
+            if ((DateTime.UtcNow - start).TotalMilliseconds > timeoutMs)
+                throw new TimeoutException("Condition not met within timeout.");
+            await Task.Delay(10);
+        }
+    }
+
+    private sealed class FakeInvoiceGeneratorService : IInvoiceGeneratorService
+    {
+        public (int BookNo, int RunningNo)? LatestRunning { get; set; }
+        public GenerateInvoicesResult? GenerateResult { get; set; }
+        public bool GenerateAsyncCalled { get; private set; }
+        public (int BookNo, int RunningNo)? LastSeedStart { get; private set; }
+
+        public Task<int> GetExistingCountAsync(int taxYear, int taxMonth, CancellationToken ct = default) =>
+            Task.FromResult(0);
+
+        public Task<GenerateInvoicesResult?> GenerateAsync(
+            int taxYear,
+            int taxMonth,
+            IReadOnlyList<PosStockLine> stockLines,
+            bool replaceExisting = false,
+            (int BookNo, int RunningNo)? seedStart = null,
+            CancellationToken ct = default)
+        {
+            GenerateAsyncCalled = true;
+            LastSeedStart = seedStart;
+            return Task.FromResult(GenerateResult);
+        }
+
+        public Task<(int BookNo, int RunningNo)?> GetLatestRunningAsync(CancellationToken ct = default) =>
+            Task.FromResult(LatestRunning);
+    }
 
     private static ProductWithStock Product(
         MonthlyStockSnapshot? stock = null) => new(

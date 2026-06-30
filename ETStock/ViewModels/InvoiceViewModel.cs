@@ -17,13 +17,13 @@ public partial class InvoiceViewModel : ViewModelBase
         var today = DateTime.Today;
         _selectedYear = today.Year + 543;
         _selectedMonth = today.Month;
-        _editInvoiceDate = today;
     }
 
     public InvoiceViewModel(IAbbrInvoiceRepository repository)
         : this()
     {
         _repository = repository;
+        _ = LoadLatestRunningAsync();
     }
 
     public InvoiceViewModel(IAbbrInvoiceRepository repository, IInvoicePrintService? printService)
@@ -31,29 +31,16 @@ public partial class InvoiceViewModel : ViewModelBase
     {
         _repository = repository;
         _printService = printService;
+        _ = LoadLatestRunningAsync();
     }
 
     public ObservableCollection<InvoiceRowViewModel> Invoices { get; } = [];
-
-    public ObservableCollection<InvoiceItemRowViewModel> EditItems { get; } = [];
 
     [ObservableProperty]
     private int _selectedYear;
 
     [ObservableProperty]
     private int _selectedMonth;
-
-    [ObservableProperty]
-    private bool _isFormOpen;
-
-    [ObservableProperty]
-    private string _editInvoiceNo = string.Empty;
-
-    [ObservableProperty]
-    private DateTime _editInvoiceDate;
-
-    [ObservableProperty]
-    private int _editId;
 
     [ObservableProperty]
     private int _summaryCount;
@@ -69,6 +56,9 @@ public partial class InvoiceViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _statusMessage = string.Empty;
+
+    [ObservableProperty]
+    private string _latestRunningDisplay = string.Empty;
 
     [RelayCommand]
     private async Task LoadAsync()
@@ -91,6 +81,8 @@ public partial class InvoiceViewModel : ViewModelBase
             SummaryVat = summary.VatAmount;
 
             StatusMessage = $"โหลดแล้ว {Invoices.Count} ใบ";
+
+            await LoadLatestRunningAsync();
         }
         catch (Exception ex)
         {
@@ -102,85 +94,21 @@ public partial class InvoiceViewModel : ViewModelBase
         }
     }
 
-    [RelayCommand]
-    private void New()
+    private async Task LoadLatestRunningAsync()
     {
-        EditId = 0;
-        EditInvoiceNo = string.Empty;
-        EditInvoiceDate = DateTime.Today;
-        EditItems.Clear();
-        IsFormOpen = true;
-    }
-
-    [RelayCommand]
-    private void Cancel()
-    {
-        IsFormOpen = false;
-        EditItems.Clear();
-    }
-
-    [RelayCommand]
-    private async Task SaveAsync()
-    {
-        if (!CanRun()) return;
-
-        IsBusy = true;
-        StatusMessage = string.Empty;
+        if (_repository is null) return;
 
         try
         {
-            var items = EditItems.Select(i => new AbbrInvoiceItem
-            {
-                ProductName = i.ProductName,
-                Qty = i.Qty,
-                Amount = i.Amount,
-                VatAmount = i.VatAmount,
-            }).ToList();
-
-            var totalAmount = items.Sum(i => i.Amount + i.VatAmount);
-            var vatAmount = items.Sum(i => i.VatAmount);
-
-            var invoice = new AbbrInvoice
-            {
-                Id = EditId,
-                InvoiceNo = EditInvoiceNo,
-                InvoiceDate = EditInvoiceDate,
-                TaxYear = SelectedYear,
-                TaxMonth = SelectedMonth,
-                TotalAmount = totalAmount,
-                VatAmount = vatAmount,
-                Items = items,
-            };
-
-            await _repository!.SaveAsync(invoice);
-            await ReloadAsync();
-
-            IsFormOpen = false;
-            EditItems.Clear();
-            StatusMessage = EditId == 0
-                ? $"เพิ่มใบกำกับ {EditInvoiceNo} แล้ว"
-                : $"บันทึกใบกำกับ {EditInvoiceNo} แล้ว";
+            var latest = await _repository.GetLatestRunningAsync();
+            LatestRunningDisplay = latest is null
+                ? "ยังไม่มีเลขที่ใบกำกับล่าสุด"
+                : $"เล่มที่ {latest.Value.BookNo} เลขที่ {latest.Value.RunningNo:00000}";
         }
-        catch (Exception ex)
+        catch
         {
-            StatusMessage = $"ไม่สามารถบันทึกใบกำกับได้: {ex.Message}";
+            // Display-only indicator; failures here should not block the main load flow.
         }
-        finally
-        {
-            IsBusy = false;
-        }
-    }
-
-    [RelayCommand]
-    private void AddItem()
-    {
-        EditItems.Add(new InvoiceItemRowViewModel());
-    }
-
-    [RelayCommand]
-    private void RemoveItem(InvoiceItemRowViewModel item)
-    {
-        EditItems.Remove(item);
     }
 
     [RelayCommand]
@@ -234,19 +162,6 @@ public partial class InvoiceViewModel : ViewModelBase
 
         return !IsBusy;
     }
-
-    private async Task ReloadAsync()
-    {
-        var invoices = await _repository!.GetByPeriodAsync(SelectedYear, SelectedMonth);
-        Invoices.Clear();
-        foreach (var inv in invoices)
-            Invoices.Add(new InvoiceRowViewModel(inv));
-
-        var summary = await _repository.GetPeriodSummaryAsync(SelectedYear, SelectedMonth);
-        SummaryCount = summary.Count;
-        SummaryTotal = summary.TotalAmount;
-        SummaryVat = summary.VatAmount;
-    }
 }
 
 public partial class InvoiceRowViewModel : ViewModelBase
@@ -281,18 +196,3 @@ public partial class InvoiceRowViewModel : ViewModelBase
 }
 
 public record InvoiceItemDetailViewModel(string ProductName, decimal Qty, decimal Amount, decimal VatAmount);
-
-public partial class InvoiceItemRowViewModel : ViewModelBase
-{
-    [ObservableProperty]
-    private string _productName = string.Empty;
-
-    [ObservableProperty]
-    private decimal _qty;
-
-    [ObservableProperty]
-    private decimal _amount;
-
-    [ObservableProperty]
-    private decimal _vatAmount;
-}

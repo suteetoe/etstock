@@ -123,13 +123,6 @@ public class InvoiceViewModelTests
         Assert.Empty(vm.Invoices);
     }
 
-    [Fact]
-    public void EditItems_StartsEmpty()
-    {
-        var vm = new InvoiceViewModel();
-        Assert.Empty(vm.EditItems);
-    }
-
     // ── LoadCommand ────────────────────────────────────────────────────────────
 
     [Fact]
@@ -190,134 +183,67 @@ public class InvoiceViewModelTests
         Assert.NotEmpty(vm.StatusMessage);
     }
 
-    // ── NewCommand ─────────────────────────────────────────────────────────────
+    // ── LatestRunningDisplay ───────────────────────────────────────────────────
 
     [Fact]
-    public void NewCommand_SetsIsFormOpenTrue()
+    public async Task LoadAsync_SetsLatestRunningDisplay_WhenRepositoryHasValue()
     {
-        var vm = new InvoiceViewModel(new FakeAbbrInvoiceRepository());
-        vm.NewCommand.Execute(null);
-        Assert.True(vm.IsFormOpen);
+        var baseVm = new InvoiceViewModel();
+        int year = baseVm.SelectedYear;
+        int month = baseVm.SelectedMonth;
+
+        var repo = new FakeAbbrInvoiceRepository([
+            new AbbrInvoice
+            {
+                InvoiceNo = "INV-001",
+                InvoiceDate = DateTime.Today,
+                TaxYear = year,
+                TaxMonth = month,
+                TotalAmount = 107m,
+                VatAmount = 7m,
+                BookNo = 3,
+                RunningNo = 42,
+                Items = [],
+            },
+        ]);
+        var vm = new InvoiceViewModel(repo);
+
+        await vm.LoadCommand.ExecuteAsync(null);
+
+        Assert.Equal("เล่มที่ 3 เลขที่ 00042", vm.LatestRunningDisplay);
     }
 
     [Fact]
-    public void NewCommand_ResetsEditId_To_Zero()
-    {
-        var vm = new InvoiceViewModel(new FakeAbbrInvoiceRepository()) { EditId = 99 };
-        vm.NewCommand.Execute(null);
-        Assert.Equal(0, vm.EditId);
-    }
-
-    [Fact]
-    public void NewCommand_ClearsEditInvoiceNo()
-    {
-        var vm = new InvoiceViewModel(new FakeAbbrInvoiceRepository()) { EditInvoiceNo = "INV-XYZ" };
-        vm.NewCommand.Execute(null);
-        Assert.Equal(string.Empty, vm.EditInvoiceNo);
-    }
-
-    [Fact]
-    public void NewCommand_ClearsEditItems()
-    {
-        var vm = new InvoiceViewModel(new FakeAbbrInvoiceRepository());
-        vm.AddItemCommand.Execute(null);
-        vm.AddItemCommand.Execute(null);
-        Assert.Equal(2, vm.EditItems.Count);
-
-        vm.NewCommand.Execute(null);
-
-        Assert.Empty(vm.EditItems);
-    }
-
-    // ── CancelCommand ──────────────────────────────────────────────────────────
-
-    [Fact]
-    public void CancelCommand_SetsIsFormOpenFalse()
-    {
-        var vm = new InvoiceViewModel(new FakeAbbrInvoiceRepository());
-        vm.NewCommand.Execute(null);
-        Assert.True(vm.IsFormOpen);
-
-        vm.CancelCommand.Execute(null);
-
-        Assert.False(vm.IsFormOpen);
-    }
-
-    [Fact]
-    public void CancelCommand_ClearsEditItems()
-    {
-        var vm = new InvoiceViewModel(new FakeAbbrInvoiceRepository());
-        vm.AddItemCommand.Execute(null);
-
-        vm.CancelCommand.Execute(null);
-
-        Assert.Empty(vm.EditItems);
-    }
-
-    // ── AddItemCommand / RemoveItemCommand ─────────────────────────────────────
-
-    [Fact]
-    public void AddItemCommand_AddsBlankRowToEditItems()
-    {
-        var vm = new InvoiceViewModel(new FakeAbbrInvoiceRepository());
-        vm.AddItemCommand.Execute(null);
-        Assert.Single(vm.EditItems);
-    }
-
-    [Fact]
-    public void RemoveItemCommand_RemovesRowFromEditItems()
-    {
-        var vm = new InvoiceViewModel(new FakeAbbrInvoiceRepository());
-        vm.AddItemCommand.Execute(null);
-        var item = vm.EditItems[0];
-
-        vm.RemoveItemCommand.Execute(item);
-
-        Assert.Empty(vm.EditItems);
-    }
-
-    // ── SaveCommand (new invoice) ──────────────────────────────────────────────
-
-    [Fact]
-    public async Task SaveCommand_NewInvoice_AppearsInList()
+    public async Task LoadAsync_SetsNoDataMessage_WhenRepositoryReturnsNull()
     {
         var repo = new FakeAbbrInvoiceRepository();
         var vm = new InvoiceViewModel(repo);
 
-        vm.NewCommand.Execute(null);
-        vm.EditInvoiceNo = "INV-TEST";
-        vm.AddItemCommand.Execute(null);
-        vm.EditItems[0].Amount = 100m;
-        vm.EditItems[0].VatAmount = 7m;
+        await vm.LoadCommand.ExecuteAsync(null);
 
-        await vm.SaveCommand.ExecuteAsync(null);
-
-        Assert.Single(vm.Invoices);
-        Assert.Contains("INV-TEST", vm.StatusMessage);
+        Assert.Equal("ยังไม่มีเลขที่ใบกำกับล่าสุด", vm.LatestRunningDisplay);
     }
+
+    // ── ToggleExpandCommand ────────────────────────────────────────────────────
 
     [Fact]
-    public async Task SaveCommand_AutoCalculatesTotalAmount()
+    public async Task ToggleExpandCommand_TogglesIsExpanded()
     {
-        var repo = new FakeAbbrInvoiceRepository();
+        var baseVm = new InvoiceViewModel();
+        int year = baseVm.SelectedYear;
+        int month = baseVm.SelectedMonth;
+
+        var repo = new FakeAbbrInvoiceRepository([MakeInvoice(year, month, "INV-001")]);
         var vm = new InvoiceViewModel(repo);
+        await vm.LoadCommand.ExecuteAsync(null);
 
-        vm.NewCommand.Execute(null);
-        vm.EditInvoiceNo = "INV-CALC";
+        var row = Assert.Single(vm.Invoices);
+        Assert.False(row.IsExpanded);
 
-        vm.AddItemCommand.Execute(null);
-        vm.EditItems[0].Amount = 100m;
-        vm.EditItems[0].VatAmount = 7m;
+        vm.ToggleExpandCommand.Execute(row);
+        Assert.True(row.IsExpanded);
 
-        vm.AddItemCommand.Execute(null);
-        vm.EditItems[1].Amount = 100m;
-        vm.EditItems[1].VatAmount = 7m;
-
-        await vm.SaveCommand.ExecuteAsync(null);
-
-        var saved = repo.All.First(i => i.InvoiceNo == "INV-CALC");
-        Assert.Equal(214m, saved.TotalAmount);
-        Assert.Equal(14m, saved.VatAmount);
+        vm.ToggleExpandCommand.Execute(row);
+        Assert.False(row.IsExpanded);
     }
-
 }
