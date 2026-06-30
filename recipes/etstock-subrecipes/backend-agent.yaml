@@ -101,27 +101,3 @@ prompt: |
 
   เสร็จแล้วสรุปไฟล์ที่เปลี่ยน, ผล build/test และ path ของ backend-contract ที่เขียนไว้
 
-response:
-  json_schema:
-    type: object
-    properties:
-      summary:
-        type: string
-        description: "สรุปงานที่ทำ"
-      files_changed:
-        type: array
-        items:
-          type: string
-      contract_path:
-        type: string
-        description: "path ของไฟล์สัญญา interface สำหรับ Frontend"
-      build_status:
-        type: string
-      commits:
-        type: array
-        items:
-          type: string
-        description: "commit message ที่ commit ลง branch (prefix feat(be)/chore(db))"
-    required:
-      - summary
-      - build_status

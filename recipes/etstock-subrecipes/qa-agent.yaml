@@ -92,25 +92,3 @@ prompt: |
 
   เขียน test plan + test, รัน dotnet test, แล้วรายงานผลพร้อม verdict (PASS/FAIL)
 
-response:
-  json_schema:
-    type: object
-    properties:
-      verdict:
-        type: string
-        description: "PASS หรือ FAIL"
-      tests_total:
-        type: number
-      tests_passed:
-        type: number
-      bugs:
-        type: array
-        items:
-          type: string
-        description: "บั๊กที่พบ พร้อม severity"
-      report_path:
-        type: string
-    required:
-      - verdict
-      - tests_total
-      - tests_passed

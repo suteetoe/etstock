@@ -96,28 +96,3 @@ prompt: |
 
   ผูกกับ interface ของ Backend ที่ระบุไว้ เสร็จแล้วสรุปหน้าจอ/ไฟล์ที่เปลี่ยน และผล build
 
-response:
-  json_schema:
-    type: object
-    properties:
-      summary:
-        type: string
-      files_changed:
-        type: array
-        items:
-          type: string
-      build_status:
-        type: string
-      commits:
-        type: array
-        items:
-          type: string
-        description: "commit message ที่ commit ลง branch (prefix feat(fe))"
-      qa_hints:
-        type: array
-        items:
-          type: string
-        description: "จุดที่อยากให้ QA โฟกัสทดสอบ"
-    required:
-      - summary
-      - build_status
