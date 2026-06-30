@@ -146,6 +146,18 @@
       "qaVerdict": "n/a",
       "fixRounds": 0,
       "notes": "InvoiceDate remapped to 'timestamp without time zone' (domain-correct fix, no timezone meaning). Migration applied to dev DB (192.168.2.212). 74/75 tests pass — 1 pre-existing unrelated failure in MonthlyStockRepositoryTests untouched by this change. PR #28 merged into develop 2026-06-30."
+    },
+    {
+      "id": "P-RUNNING-NO-B",
+      "title": "Feature: Global running number (5-digit) + book (เล่ม, +1 every 50 invoices) for abbreviated tax invoices — Backend",
+      "group": "backend",
+      "scope": "ETStock/Models/AbbrInvoice.cs,ETStock/Data/Repositories/IAbbrInvoiceRepository.cs,ETStock/Data/Repositories/AbbrInvoiceRepository.cs,ETStock/Services/IInvoiceGeneratorService.cs,ETStock/Services/InvoiceGeneratorService.cs,ETStock/Data/Migrations/20260630050000_AddAbbrInvoiceBookRunningNo.cs,ETStock.Tests/AbbrInvoiceRepositoryTests.cs,ETStock.Tests/InvoiceGeneratorServiceTests.cs",
+      "status": "review",
+      "branch": "backend/abbr-invoice-running-number",
+      "pr": "https://github.com/suteetoe/etstock/pull/29",
+      "qaVerdict": "n/a",
+      "fixRounds": 1,
+      "notes": "PR #29 open. AbbrInvoice gains nullable BookNo/RunningNo. GenerateAsync derives next running number from global MAX(RunningNo), rolls BookNo every 50 invoices, requires seedStart on first-ever use (throws if absent). Fix round 1: reordered DeleteByPeriodAsync before numbering computation so regenerate-period never burns numbers on deleted drafts. 82/83 tests pass — 1 pre-existing unrelated MonthlyStockRepositoryTests failure. Backend/data-layer only; follow-up frontend PR needed for Stock-screen display + seed prompt + removing manual 'เพิ่มใบกำกับ' button in InvoiceView. Awaiting PO review/merge."
     }
   ],
   "prs": {
@@ -167,7 +179,8 @@
     "16": { "url": "https://github.com/suteetoe/etstock/pull/16", "branch": "frontend/phase5-print-preview",        "title": "[Phase 5 FE] PrintPreviewWindow + PrintCommand",                        "featureId": "P5P-F", "status": "open", "fixRounds": 0, "orchestratorVerdict": "PASS", "notes": "Merge second (after PR #15)." },
     "17": { "url": "https://github.com/suteetoe/etstock/pull/17", "branch": "qa/phase5-print-tests",               "title": "[Phase 5 QA] InvoicePrintService + PrintPreviewViewModel tests",        "featureId": "P5P-Q", "status": "open", "fixRounds": 0, "orchestratorVerdict": "PASS", "notes": "Merge third (after PR #16). 79/79 tests pass." },
     "18": { "url": "https://github.com/suteetoe/etstock/pull/18", "branch": "frontend/company-info-topbar-dialog", "title": "[Frontend] Move company info from sidebar to topbar dialog",             "featureId": "P-TOPBAR", "status": "merged", "fixRounds": 0, "mergedAt": "2026-06-25T09:40:00Z", "orchestratorVerdict": "PASS", "notes": "Company info moved to topbar Menu control → CompanyDialog modal. Merged into develop." },
-    "28": { "url": "https://github.com/suteetoe/etstock/pull/28", "branch": "backend/fix-invoicedate-timestamptz",  "title": "fix(be): map AbbrInvoice.InvoiceDate as timestamp without time zone",     "featureId": "P-FIX-INVOICEDATE", "status": "merged", "fixRounds": 0, "mergedAt": "2026-06-30T03:13:39Z", "orchestratorVerdict": "PASS", "notes": "Fixed Npgsql Kind=Unspecified crash on Generate Abbr Invoices. Migration applied to dev DB." }
+    "28": { "url": "https://github.com/suteetoe/etstock/pull/28", "branch": "backend/fix-invoicedate-timestamptz",  "title": "fix(be): map AbbrInvoice.InvoiceDate as timestamp without time zone",     "featureId": "P-FIX-INVOICEDATE", "status": "merged", "fixRounds": 0, "mergedAt": "2026-06-30T03:13:39Z", "orchestratorVerdict": "PASS", "notes": "Fixed Npgsql Kind=Unspecified crash on Generate Abbr Invoices. Migration applied to dev DB." },
+    "29": { "url": "https://github.com/suteetoe/etstock/pull/29", "branch": "backend/abbr-invoice-running-number",  "title": "feat(backend): global running number + book for abbreviated tax invoices", "featureId": "P-RUNNING-NO-B", "status": "open", "fixRounds": 1, "notes": "Backend/data-layer only. Awaiting PO review/merge. Frontend follow-up PR planned next: ProductView display + first-time seed prompt + remove InvoiceView manual 'เพิ่มใบกำกับ' button." }
   },
   "schema": {
     "note": "Initial schema established in Phase 0. Migration: 20260624035619_Initial. No new DB entities in Phase 5 (AbbrInvoiceSummary is a query-result record, not an EF entity).",
