@@ -2,16 +2,20 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ETStock.Data.Repositories;
+using ETStock.Services;
 
 namespace ETStock.ViewModels;
 
 public partial class ProductViewModel
 {
     private readonly IMonthlyStockRepository? _repository;
+    private readonly IInvoiceGeneratorService? _invoiceGenerator;
 
     public event EventHandler? AddProductRequested;
+    public event EventHandler<int>? GenerateInvoicesConfirmRequested;
 
     private TaskCompletionSource<AddProductResult?>? _addProductTcs;
+    private TaskCompletionSource<bool>? _generateConfirmTcs;
 
     public ProductViewModel()
     {
@@ -39,6 +43,17 @@ public partial class ProductViewModel
         // Auto-load on startup (fire-and-forget is fine here, errors are shown in StatusMessage)
         _ = LoadAsync();
     }
+
+    public ProductViewModel(IMonthlyStockRepository repository, IInvoiceGeneratorService invoiceGenerator, int year, int month)
+        : this(year, month)
+    {
+        _repository = repository;
+        _invoiceGenerator = invoiceGenerator;
+        _ = LoadAsync();
+    }
+
+    public void CompleteGenerateInvoicesConfirm(bool confirmed) =>
+        _generateConfirmTcs?.TrySetResult(confirmed);
 
     public ObservableCollection<MonthlyStockRowViewModel> Rows { get; } = [];
 
@@ -185,6 +200,57 @@ public partial class ProductViewModel
     }
 
     public void CompleteAddProduct(AddProductResult? result) => _addProductTcs?.TrySetResult(result);
+
+    [RelayCommand]
+    private async Task GenerateInvoicesAsync()
+    {
+        if (_invoiceGenerator is null) { StatusMessage = "Invoice generator is not available."; return; }
+        if (!CanRun()) return;
+
+        IsBusy = true;
+        StatusMessage = string.Empty;
+
+        try
+        {
+            var existingCount = await _invoiceGenerator.GetExistingCountAsync(SelectedYear, SelectedMonth);
+            bool replaceExisting = false;
+
+            if (existingCount > 0)
+            {
+                _generateConfirmTcs = new TaskCompletionSource<bool>();
+                GenerateInvoicesConfirmRequested?.Invoke(this, existingCount);
+                var confirmed = await _generateConfirmTcs.Task;
+                _generateConfirmTcs = null;
+                if (!confirmed)
+                {
+                    StatusMessage = "ยกเลิกการสร้างใบกำกับ";
+                    return;
+                }
+                replaceExisting = true;
+            }
+
+            var stockLines = Rows
+                .Where(r => r.SellPosQty > 0)
+                .Select(r => new PosStockLine(r.Name, r.SellPosQty, r.SellPrice))
+                .ToList();
+
+            var result = await _invoiceGenerator.GenerateAsync(
+                SelectedYear, SelectedMonth, stockLines, replaceExisting);
+
+            StatusMessage = result is null
+                ? "ไม่มียอดขายหน้าร้านในเดือนนี้ (SellPosQty ทุกรายการเป็น 0)"
+                : $"สร้างใบกำกับภาษีอย่างย่อ {result.InvoiceCount} ใบ สำเร็จ " +
+                  $"(มูลค่ารวม {result.TotalAmount:N2} บาท VAT {result.VatAmount:N2} บาท)";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"ไม่สามารถสร้างใบกำกับได้: {ex.Message}";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
 
     private bool CanRun()
     {
