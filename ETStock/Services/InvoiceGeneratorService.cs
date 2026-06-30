@@ -106,21 +106,33 @@ public class InvoiceGeneratorService(IAbbrInvoiceRepository repo) : IInvoiceGene
 
     private static decimal[] RandomPartition(decimal total, int n, Random rng)
     {
-        if (n == 1) return [total];
+        // qty sold per invoice line must be a whole number, so partition on
+        // integer cut points instead of fractional ones (any sub-1 remainder
+        // of `total` is dropped rather than invoiced).
+        var totalInt = (int)Math.Floor(total);
+        var result = new decimal[n];
 
-        var cuts = new decimal[n - 1];
+        if (totalInt <= 0)
+            return result;
+
+        if (n == 1)
+        {
+            result[0] = totalInt;
+            return result;
+        }
+
+        var cuts = new int[n - 1];
         for (int i = 0; i < n - 1; i++)
-            cuts[i] = Math.Round((decimal)(rng.NextDouble() * (double)total), 2);
+            cuts[i] = rng.Next(0, totalInt + 1);
         Array.Sort(cuts);
 
-        var result = new decimal[n];
-        decimal prev = 0;
+        var prev = 0;
         for (int i = 0; i < n - 1; i++)
         {
             result[i] = cuts[i] - prev;
             prev = cuts[i];
         }
-        result[n - 1] = Math.Round(total - prev, 2);
+        result[n - 1] = totalInt - prev;
         return result;
     }
 }

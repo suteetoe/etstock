@@ -139,6 +139,34 @@ public class InvoiceGeneratorServiceTests
         }
     }
 
+    // TC-3b: partitioned qty per invoice item must always be a whole number
+    [Fact]
+    public async Task GenerateAsync_ItemQty_AlwaysIntegers()
+    {
+        var (svc, db) = CreateService();
+        await using (db)
+        {
+            var lines = new List<PosStockLine>
+            {
+                new("Product A", 17m, 107m),
+                new("Product B", 8m, 214m)
+            };
+
+            var result = await svc.GenerateAsync(2026, 6, lines);
+
+            Assert.NotNull(result);
+
+            var invoices = await db.AbbrInvoices
+                .Include(i => i.Items)
+                .Where(i => i.TaxYear == 2026 && i.TaxMonth == 6)
+                .ToListAsync();
+
+            var allItems = invoices.SelectMany(inv => inv.Items).ToList();
+            Assert.NotEmpty(allItems);
+            Assert.All(allItems, item => Assert.Equal(0m, item.Qty % 1m));
+        }
+    }
+
     // TC-4: invoices and items are persisted to DB
     [Fact]
     public async Task GenerateAsync_SavesInvoicesToDb()

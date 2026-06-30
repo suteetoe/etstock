@@ -178,14 +178,6 @@
                                                     Command="{Binding $parent[UserControl].((vm:InvoiceViewModel)DataContext).PrintCommand}"
                                                     CommandParameter="{Binding}"
                                                     Padding="4,2"/>
-                                            <Button Content="แก้ไข"
-                                                    Command="{Binding $parent[UserControl].((vm:InvoiceViewModel)DataContext).EditCommand}"
-                                                    CommandParameter="{Binding}"
-                                                    Padding="4,2"/>
-                                            <Button Content="ลบ"
-                                                    Command="{Binding $parent[UserControl].((vm:InvoiceViewModel)DataContext).DeleteCommand}"
-                                                    CommandParameter="{Binding}"
-                                                    Padding="4,2"/>
                                         </StackPanel>
                                     </Grid>
                                 </Border>

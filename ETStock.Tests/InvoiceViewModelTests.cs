@@ -303,46 +303,4 @@ public class InvoiceViewModelTests
         Assert.Equal(14m, saved.VatAmount);
     }
 
-    // ── DeleteCommand ──────────────────────────────────────────────────────────
-
-    [Fact]
-    public async Task DeleteCommand_RemovesInvoiceFromList()
-    {
-        var baseVm = new InvoiceViewModel();
-        int year = baseVm.SelectedYear;
-        int month = baseVm.SelectedMonth;
-
-        var repo = new FakeAbbrInvoiceRepository([MakeInvoice(year, month)]);
-        var vm = new InvoiceViewModel(repo);
-        await vm.LoadCommand.ExecuteAsync(null);
-        Assert.Single(vm.Invoices);
-
-        var row = vm.Invoices[0];
-        await vm.DeleteCommand.ExecuteAsync(row);
-
-        Assert.Empty(vm.Invoices);
-    }
-
-    // ── EditCommand ────────────────────────────────────────────────────────────
-
-    [Fact]
-    public async Task EditCommand_PopulatesFormWithExistingData()
-    {
-        var baseVm = new InvoiceViewModel();
-        int year = baseVm.SelectedYear;
-        int month = baseVm.SelectedMonth;
-
-        var repo = new FakeAbbrInvoiceRepository([MakeInvoice(year, month, "INV-EDIT")]);
-        var vm = new InvoiceViewModel(repo);
-        await vm.LoadCommand.ExecuteAsync(null);
-        Assert.Single(vm.Invoices);
-
-        var row = vm.Invoices[0];
-        await vm.EditCommand.ExecuteAsync(row);
-
-        Assert.Equal(row.Id, vm.EditId);
-        Assert.Equal("INV-EDIT", vm.EditInvoiceNo);
-        Assert.Single(vm.EditItems);
-        Assert.True(vm.IsFormOpen);
-    }
 }
