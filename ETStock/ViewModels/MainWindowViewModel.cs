@@ -15,7 +15,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public event EventHandler? OpenCompanyDialogRequested;
 
-    public MainWindowViewModel()
+    public MainWindowViewModel() : this(DateTime.Today.Year, DateTime.Today.Month) { }
+
+    public MainWindowViewModel(int year, int month)
     {
         _serviceScope = Program.Services?.CreateScope();
         var serviceProvider = _serviceScope?.ServiceProvider;
@@ -25,9 +27,6 @@ public partial class MainWindowViewModel : ViewModelBase
 
         var stockRepo = serviceProvider?.GetService<IMonthlyStockRepository>();
         var invoiceGenerator = serviceProvider?.GetService<IInvoiceGeneratorService>();
-        var today = DateTime.Today;
-        var year = today.Year;
-        var month = today.Month;
         StockPage = (stockRepo is not null && invoiceGenerator is not null)
             ? new ProductViewModel(stockRepo, invoiceGenerator, year, month)
             : stockRepo is not null

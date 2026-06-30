@@ -20,12 +20,29 @@ namespace ETStock
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
+                // Avoid duplicate validations from both Avalonia and the CommunityToolkit.
                 // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
                 DisableAvaloniaDataAnnotationValidation();
-                desktop.MainWindow = new MainWindow
+
+                var selectorVm = new PeriodSelectorViewModel();
+                var selectorWindow = new PeriodSelectorWindow { DataContext = selectorVm };
+
+                desktop.MainWindow = selectorWindow;
+
+                selectorWindow.Closed += (_, _) =>
                 {
-                    DataContext = new MainWindowViewModel(),
+                    if (!selectorVm.IsConfirmed)
+                    {
+                        desktop.Shutdown();
+                        return;
+                    }
+
+                    var mainWindow = new MainWindow
+                    {
+                        DataContext = new MainWindowViewModel(selectorVm.SelectedYear, selectorVm.SelectedMonth),
+                    };
+                    desktop.MainWindow = mainWindow;
+                    mainWindow.Show();
                 };
             }
 

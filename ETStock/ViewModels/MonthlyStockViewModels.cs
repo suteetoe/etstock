@@ -40,6 +40,7 @@ public partial class ProductViewModel
         : this(year, month)
     {
         _repository = repository;
+        // Auto-load on startup (fire-and-forget is fine here, errors are shown in StatusMessage)
         _ = LoadAsync();
     }
 
