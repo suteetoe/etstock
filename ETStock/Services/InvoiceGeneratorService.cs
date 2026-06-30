@@ -13,11 +13,15 @@ public class InvoiceGeneratorService(IAbbrInvoiceRepository repo) : IInvoiceGene
         return list.Count;
     }
 
+    public Task<(int BookNo, int RunningNo)?> GetLatestRunningAsync(CancellationToken ct = default)
+        => repo.GetLatestRunningAsync(ct);
+
     public async Task<GenerateInvoicesResult?> GenerateAsync(
         int taxYear,
         int taxMonth,
         IReadOnlyList<PosStockLine> stockLines,
         bool replaceExisting = false,
+        (int BookNo, int RunningNo)? seedStart = null,
         CancellationToken ct = default)
     {
         // 1. filter stockLines that have SellPosQty > 0
@@ -34,6 +38,38 @@ public class InvoiceGeneratorService(IAbbrInvoiceRepository repo) : IInvoiceGene
         var maxInvoices = Math.Min(20, Math.Max(1, (int)Math.Ceiling(totalQty)));
         var n = _rng.Next(1, maxInvoices + 1);
 
+        // 4a. delete existing invoices for this period BEFORE computing the
+        // starting running-number/book-number, so invoices about to be
+        // replaced never influence the new numbering (they would otherwise
+        // permanently burn running numbers / trigger phantom book rollovers
+        // on every regenerate click).
+        if (replaceExisting)
+            await repo.DeleteByPeriodAsync(taxYear, taxMonth, ct);
+
+        // 4b. determine the running-number / book-number starting point
+        var latest = await repo.GetLatestRunningAsync(ct);
+
+        int currentBook;
+        int currentRunningNo;
+        int countInCurrentBook;
+
+        if (latest is not null)
+        {
+            currentBook = latest.Value.BookNo;
+            currentRunningNo = latest.Value.RunningNo + 1;
+            countInCurrentBook = await repo.CountByBookNoAsync(latest.Value.BookNo, ct);
+        }
+        else if (seedStart is not null)
+        {
+            currentBook = seedStart.Value.BookNo;
+            currentRunningNo = seedStart.Value.RunningNo;
+            countInCurrentBook = 0;
+        }
+        else
+        {
+            throw new InvalidOperationException("ไม่พบเลขที่ใบกำกับล่าสุด กรุณาระบุเล่มที่และเลขที่เริ่มต้น");
+        }
+
         // 5. partition each product's qty across N invoice slots
         //    partitions[productIndex][invoiceIndex] = qty for that slot
         var partitions = validLines
@@ -43,7 +79,7 @@ public class InvoiceGeneratorService(IAbbrInvoiceRepository repo) : IInvoiceGene
         // 6. build AbbrInvoice list
         var daysInMonth = DateTime.DaysInMonth(taxYear, taxMonth);
         var invoices = new List<AbbrInvoice>();
-        var seq = 1;
+        var isFirstAssigned = true;
 
         for (int i = 0; i < n; i++)
         {
@@ -75,9 +111,24 @@ public class InvoiceGeneratorService(IAbbrInvoiceRepository repo) : IInvoiceGene
             var day = _rng.Next(1, daysInMonth + 1);
             var invoiceDate = new DateTime(taxYear, taxMonth, day);
 
+            // advance the running number for every invoice after the first one
+            // assigned in this batch (the first uses the starting point as-is)
+            if (!isFirstAssigned)
+                currentRunningNo++;
+            isFirstAssigned = false;
+
+            countInCurrentBook++;
+            if (countInCurrentBook > 50)
+            {
+                currentBook++;
+                countInCurrentBook = 1;
+            }
+
             var invoice = new AbbrInvoice
             {
-                InvoiceNo = $"ABB-{taxYear}{taxMonth:00}-{seq:000}",
+                InvoiceNo = currentRunningNo.ToString("00000"),
+                BookNo = currentBook,
+                RunningNo = currentRunningNo,
                 InvoiceDate = invoiceDate,
                 TaxYear = taxYear,
                 TaxMonth = taxMonth,
@@ -87,18 +138,13 @@ public class InvoiceGeneratorService(IAbbrInvoiceRepository repo) : IInvoiceGene
             };
 
             invoices.Add(invoice);
-            seq++;
         }
 
-        // 7. delete existing invoices if replaceExisting
-        if (replaceExisting)
-            await repo.DeleteByPeriodAsync(taxYear, taxMonth, ct);
-
-        // 8. save all invoices
+        // 7. save all invoices
         foreach (var invoice in invoices)
             await repo.SaveAsync(invoice);
 
-        // 9. return result summary
+        // 8. return result summary
         var totalAmount = invoices.Sum(inv => inv.TotalAmount);
         var totalVat = invoices.Sum(inv => inv.VatAmount);
         return new GenerateInvoicesResult(invoices.Count, totalAmount, totalVat);

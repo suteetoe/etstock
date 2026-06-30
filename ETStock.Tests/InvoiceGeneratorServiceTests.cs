@@ -67,7 +67,7 @@ public class InvoiceGeneratorServiceTests
                 new("Product A", 5m, 107m)
             };
 
-            var result = await svc.GenerateAsync(2026, 6, lines);
+            var result = await svc.GenerateAsync(2026, 6, lines, seedStart: (1, 1));
 
             Assert.NotNull(result);
             Assert.True(result.InvoiceCount >= 1);
@@ -118,7 +118,7 @@ public class InvoiceGeneratorServiceTests
                 new("Product C", 3m, 214m)
             };
 
-            var result = await svc.GenerateAsync(2026, 6, lines);
+            var result = await svc.GenerateAsync(2026, 6, lines, seedStart: (1, 1));
 
             Assert.NotNull(result);
             Assert.True(result.InvoiceCount >= 1);
@@ -152,7 +152,7 @@ public class InvoiceGeneratorServiceTests
                 new("Product B", 8m, 214m)
             };
 
-            var result = await svc.GenerateAsync(2026, 6, lines);
+            var result = await svc.GenerateAsync(2026, 6, lines, seedStart: (1, 1));
 
             Assert.NotNull(result);
 
@@ -180,7 +180,7 @@ public class InvoiceGeneratorServiceTests
                 new("Product B", 3m, 214m)
             };
 
-            var result = await svc.GenerateAsync(2026, 6, lines);
+            var result = await svc.GenerateAsync(2026, 6, lines, seedStart: (1, 1));
 
             Assert.NotNull(result);
             Assert.True(await db.AbbrInvoices.CountAsync() > 0);
@@ -212,7 +212,7 @@ public class InvoiceGeneratorServiceTests
                 new("Product A", 4m, 107m)
             };
 
-            var result = await svc.GenerateAsync(2026, 6, lines, replaceExisting: true);
+            var result = await svc.GenerateAsync(2026, 6, lines, replaceExisting: true, seedStart: (1, 1));
 
             Assert.NotNull(result);
 
@@ -251,7 +251,7 @@ public class InvoiceGeneratorServiceTests
             };
 
             // replaceExisting defaults to false
-            var result = await svc.GenerateAsync(2026, 6, lines, replaceExisting: false);
+            var result = await svc.GenerateAsync(2026, 6, lines, replaceExisting: false, seedStart: (1, 1));
 
             Assert.NotNull(result);
 
@@ -287,6 +287,204 @@ public class InvoiceGeneratorServiceTests
             Assert.Equal(2, count6);
             Assert.Equal(1, count7);
             Assert.Equal(0, count8);
+        }
+    }
+
+    // TC-8: no prior RunningNo rows and no seedStart -> throws InvalidOperationException with exact message
+    [Fact]
+    public async Task GenerateAsync_NoPriorRunningNo_NoSeedStart_Throws()
+    {
+        var (svc, db) = CreateService();
+        await using (db)
+        {
+            var lines = new List<PosStockLine>
+            {
+                new("Product A", 5m, 107m)
+            };
+
+            var ex = await Assert.ThrowsAsync<InvalidOperationException>(
+                () => svc.GenerateAsync(2026, 6, lines));
+
+            Assert.Equal("ไม่พบเลขที่ใบกำกับล่าสุด กรุณาระบุเล่มที่และเลขที่เริ่มต้น", ex.Message);
+        }
+    }
+
+    // TC-9: no prior RunningNo rows but seedStart given -> first invoice gets seedStart's BookNo/RunningNo as-is
+    [Fact]
+    public async Task GenerateAsync_NoPriorRunningNo_WithSeedStart_UsesSeedAsFirstInvoice()
+    {
+        var (svc, db) = CreateService();
+        await using (db)
+        {
+            var lines = new List<PosStockLine>
+            {
+                new("Product A", 1m, 107m)
+            };
+
+            var result = await svc.GenerateAsync(2026, 6, lines, seedStart: (233, 11600));
+
+            Assert.NotNull(result);
+
+            var invoices = await db.AbbrInvoices
+                .Where(i => i.TaxYear == 2026 && i.TaxMonth == 6)
+                .OrderBy(i => i.RunningNo)
+                .ToListAsync();
+
+            Assert.NotEmpty(invoices);
+            Assert.Equal(233, invoices[0].BookNo);
+            Assert.Equal(11600, invoices[0].RunningNo);
+            Assert.Equal("11600", invoices[0].InvoiceNo);
+        }
+    }
+
+    // TC-10: worked example - book 232 full at 50 invoices ending RunningNo 11599 -> next 2 invoices roll to book 233
+    [Fact]
+    public async Task GenerateAsync_BookFull_RollsOverToNextBook()
+    {
+        var (svc, db) = CreateService();
+        await using (db)
+        {
+            var repo = new AbbrInvoiceRepository(db);
+
+            // seed 50 invoices in book 232, RunningNo 11550..11599
+            for (var i = 0; i < 50; i++)
+            {
+                var runningNo = 11550 + i;
+                var inv = MakeInvoice(2025, 1, i + 1);
+                inv.BookNo = 232;
+                inv.RunningNo = runningNo;
+                inv.InvoiceNo = runningNo.ToString("00000");
+                await repo.SaveAsync(inv);
+            }
+
+            // force exactly 2 invoices generated this run
+            var lines = new List<PosStockLine>
+            {
+                new("Product A", 2m, 107m)
+            };
+
+            GenerateInvoicesResult? result = null;
+            List<AbbrInvoice> invoices = [];
+            for (var attempt = 0; attempt < 50 && (result is null || invoices.Count != 2); attempt++)
+            {
+                var existing = await db.AbbrInvoices
+                    .Where(i => i.TaxYear == 2026 && i.TaxMonth == 6)
+                    .ToListAsync();
+                db.AbbrInvoices.RemoveRange(existing);
+                await db.SaveChangesAsync();
+
+                result = await svc.GenerateAsync(2026, 6, lines);
+
+                invoices = await db.AbbrInvoices
+                    .Where(i => i.TaxYear == 2026 && i.TaxMonth == 6)
+                    .OrderBy(i => i.RunningNo)
+                    .ToListAsync();
+            }
+
+            Assert.NotNull(result);
+            Assert.Equal(2, invoices.Count);
+
+            Assert.Equal(233, invoices[0].BookNo);
+            Assert.Equal(11600, invoices[0].RunningNo);
+            Assert.Equal("11600", invoices[0].InvoiceNo);
+
+            Assert.Equal(233, invoices[1].BookNo);
+            Assert.Equal(11601, invoices[1].RunningNo);
+            Assert.Equal("11601", invoices[1].InvoiceNo);
+        }
+    }
+
+    // TC-12: regenerating the same period (replaceExisting=true) when that period holds
+    // the globally-latest invoices must NOT advance the running number / book number,
+    // because the about-to-be-deleted invoices are the only contributors to "latest".
+    // The delete must happen BEFORE GetLatestRunningAsync is evaluated; otherwise every
+    // regenerate click would permanently burn running numbers / trigger phantom rollovers.
+    [Fact]
+    public async Task GenerateAsync_RegenerateSamePeriod_DoesNotAdvanceRunningNo()
+    {
+        var (svc, db) = CreateService();
+        await using (db)
+        {
+            var lines = new List<PosStockLine>
+            {
+                new("Product A", 3m, 107m)
+            };
+
+            // First generation for period 2026/6, seeded at book 1, running 1.
+            var firstResult = await svc.GenerateAsync(2026, 6, lines, seedStart: (1, 1));
+            Assert.NotNull(firstResult);
+
+            var firstInvoices = await db.AbbrInvoices
+                .Where(i => i.TaxYear == 2026 && i.TaxMonth == 6)
+                .OrderBy(i => i.RunningNo)
+                .ToListAsync();
+            Assert.NotEmpty(firstInvoices);
+            var firstMinRunningNo = firstInvoices.Min(i => i.RunningNo);
+            var firstMaxRunningNo = firstInvoices.Max(i => i.RunningNo);
+            var firstBookNo = firstInvoices[0].BookNo;
+
+            // Regenerate the SAME period with replaceExisting=true. Since these are the
+            // only invoices in the DB, after deletion there is no "latest" left, so the
+            // new batch must restart from the same seed point (book 1, running 1) rather
+            // than continuing from the now-deleted invoices' running numbers.
+            var secondResult = await svc.GenerateAsync(2026, 6, lines, replaceExisting: true, seedStart: (1, 1));
+            Assert.NotNull(secondResult);
+
+            var secondInvoices = await db.AbbrInvoices
+                .Where(i => i.TaxYear == 2026 && i.TaxMonth == 6)
+                .OrderBy(i => i.RunningNo)
+                .ToListAsync();
+            Assert.NotEmpty(secondInvoices);
+
+            // Old invoices (by Id) must be gone.
+            var oldIds = firstInvoices.Select(i => i.Id).ToHashSet();
+            Assert.DoesNotContain(secondInvoices, i => oldIds.Contains(i.Id));
+
+            // The regenerated batch must restart from the seed, not continue past the
+            // deleted batch's running numbers.
+            Assert.Equal(firstBookNo, secondInvoices[0].BookNo);
+            Assert.Equal(firstMinRunningNo, secondInvoices[0].RunningNo);
+            Assert.Equal(firstMaxRunningNo, secondInvoices.Max(i => i.RunningNo));
+        }
+    }
+
+    // TC-11: mid-book case - book not yet full -> no rollover, RunningNo continues in same book
+    [Fact]
+    public async Task GenerateAsync_BookNotFull_NoRollover()
+    {
+        var (svc, db) = CreateService();
+        await using (db)
+        {
+            var repo = new AbbrInvoiceRepository(db);
+
+            // seed 10 invoices in book 5, RunningNo 111..120
+            for (var i = 0; i < 10; i++)
+            {
+                var runningNo = 111 + i;
+                var inv = MakeInvoice(2025, 1, i + 1);
+                inv.BookNo = 5;
+                inv.RunningNo = runningNo;
+                inv.InvoiceNo = runningNo.ToString("00000");
+                await repo.SaveAsync(inv);
+            }
+
+            var lines = new List<PosStockLine>
+            {
+                new("Product A", 1m, 107m)
+            };
+
+            var result = await svc.GenerateAsync(2026, 6, lines);
+
+            Assert.NotNull(result);
+
+            var invoices = await db.AbbrInvoices
+                .Where(i => i.TaxYear == 2026 && i.TaxMonth == 6)
+                .OrderBy(i => i.RunningNo)
+                .ToListAsync();
+
+            Assert.NotEmpty(invoices);
+            Assert.Equal(5, invoices[0].BookNo);
+            Assert.Equal(121, invoices[0].RunningNo);
         }
     }
 }

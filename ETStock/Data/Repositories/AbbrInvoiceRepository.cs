@@ -102,4 +102,25 @@ public class AbbrInvoiceRepository(AppDbContext db) : IAbbrInvoiceRepository
 
         return new AbbrInvoiceSummary(count, totalAmount, vatAmount);
     }
+
+    public async Task<(int BookNo, int RunningNo)?> GetLatestRunningAsync(CancellationToken ct = default)
+    {
+        var latest = await db.AbbrInvoices
+            .AsNoTracking()
+            .Where(i => i.RunningNo != null)
+            .OrderByDescending(i => i.RunningNo)
+            .FirstOrDefaultAsync(ct);
+
+        if (latest is null)
+            return null;
+
+        return (latest.BookNo!.Value, latest.RunningNo!.Value);
+    }
+
+    public async Task<int> CountByBookNoAsync(int bookNo, CancellationToken ct = default)
+    {
+        return await db.AbbrInvoices
+            .AsNoTracking()
+            .CountAsync(i => i.BookNo == bookNo, ct);
+    }
 }
