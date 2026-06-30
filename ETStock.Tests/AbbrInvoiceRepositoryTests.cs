@@ -53,6 +53,23 @@ public class AbbrInvoiceRepositoryTests
     }
 
     [Fact]
+    public async Task SaveAsync_UnspecifiedInvoiceDate_DoesNotThrow()
+    {
+        await using var db = CreateDb();
+
+        var invoice = CreateInvoice(2566, 1, itemCount: 1);
+        Assert.Equal(DateTimeKind.Unspecified, invoice.InvoiceDate.Kind);
+
+        var repo = new AbbrInvoiceRepository(db);
+
+        // Npgsql enforces DateTimeKind for timestamptz; InMemory guards the entity/repository path.
+        var exception = await Record.ExceptionAsync(() => repo.SaveAsync(invoice));
+
+        Assert.Null(exception);
+        Assert.True(invoice.Id > 0);
+    }
+
+    [Fact]
     public async Task GetByPeriodAsync_ReturnsMatchingPeriod()
     {
         await using var db = CreateDb();
