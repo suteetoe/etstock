@@ -3,6 +3,8 @@ public class AbbrInvoice
 {
     public int Id { get; set; }
     public string InvoiceNo { get; set; } = string.Empty; // เลขที่ใบกำกับ
+    public int? BookNo { get; set; }     // เล่มที่
+    public int? RunningNo { get; set; }  // เลขที่ (running, 5 digits)
     public DateTime InvoiceDate { get; set; }
     public int TaxYear { get; set; }    // ปีภาษี (พ.ศ.)
     public int TaxMonth { get; set; }   // เดือนภาษี 1-12

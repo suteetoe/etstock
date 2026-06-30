@@ -20,5 +20,11 @@ public interface IInvoiceGeneratorService
         int taxMonth,
         IReadOnlyList<PosStockLine> stockLines,
         bool replaceExisting = false,
+        (int BookNo, int RunningNo)? seedStart = null,
         CancellationToken ct = default);
+
+    /// <summary>
+    /// คืนค่า (BookNo, RunningNo) ล่าสุด (ทุกงวด) สำหรับให้ UI แสดงผลก่อน generate — null ถ้ายังไม่มี
+    /// </summary>
+    Task<(int BookNo, int RunningNo)?> GetLatestRunningAsync(CancellationToken ct = default);
 }

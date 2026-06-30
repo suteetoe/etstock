@@ -66,6 +66,23 @@ internal sealed class FakeAbbrInvoiceRepository : IAbbrInvoiceRepository
         return Task.FromResult(summary);
     }
 
+    public Task<(int BookNo, int RunningNo)?> GetLatestRunningAsync(CancellationToken ct = default)
+    {
+        var latest = _store
+            .Where(i => i.RunningNo != null)
+            .OrderByDescending(i => i.RunningNo)
+            .FirstOrDefault();
+
+        (int BookNo, int RunningNo)? result = latest is null
+            ? null
+            : (latest.BookNo!.Value, latest.RunningNo!.Value);
+
+        return Task.FromResult(result);
+    }
+
+    public Task<int> CountByBookNoAsync(int bookNo, CancellationToken ct = default) =>
+        Task.FromResult(_store.Count(i => i.BookNo == bookNo));
+
     public IReadOnlyList<AbbrInvoice> All => _store.AsReadOnly();
 }
 

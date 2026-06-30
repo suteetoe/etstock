@@ -198,4 +198,80 @@ public class AbbrInvoiceRepositoryTests
         Assert.Equal(0m, summary.TotalAmount);
         Assert.Equal(0m, summary.VatAmount);
     }
+
+    [Fact]
+    public async Task GetLatestRunningAsync_NoInvoices_ReturnsNull()
+    {
+        await using var db = CreateDb();
+        var repo = new AbbrInvoiceRepository(db);
+
+        var latest = await repo.GetLatestRunningAsync();
+
+        Assert.Null(latest);
+    }
+
+    [Fact]
+    public async Task GetLatestRunningAsync_NoRunningNoSet_ReturnsNull()
+    {
+        await using var db = CreateDb();
+        var repo = new AbbrInvoiceRepository(db);
+
+        // legacy invoices with no BookNo/RunningNo
+        await repo.SaveAsync(CreateInvoice(2566, 1));
+        await repo.SaveAsync(CreateInvoice(2566, 2));
+
+        var latest = await repo.GetLatestRunningAsync();
+
+        Assert.Null(latest);
+    }
+
+    [Fact]
+    public async Task GetLatestRunningAsync_ReturnsMaxRunningNoRow()
+    {
+        await using var db = CreateDb();
+        var repo = new AbbrInvoiceRepository(db);
+
+        var inv1 = CreateInvoice(2566, 1);
+        inv1.BookNo = 1;
+        inv1.RunningNo = 100;
+        await repo.SaveAsync(inv1);
+
+        var inv2 = CreateInvoice(2566, 2);
+        inv2.BookNo = 2;
+        inv2.RunningNo = 250;
+        await repo.SaveAsync(inv2);
+
+        // a legacy invoice with no RunningNo must be ignored
+        await repo.SaveAsync(CreateInvoice(2566, 3));
+
+        var latest = await repo.GetLatestRunningAsync();
+
+        Assert.NotNull(latest);
+        Assert.Equal(2, latest.Value.BookNo);
+        Assert.Equal(250, latest.Value.RunningNo);
+    }
+
+    [Fact]
+    public async Task CountByBookNoAsync_ReturnsCountForBook()
+    {
+        await using var db = CreateDb();
+        var repo = new AbbrInvoiceRepository(db);
+
+        for (var i = 0; i < 3; i++)
+        {
+            var inv = CreateInvoice(2566, 1);
+            inv.BookNo = 10;
+            inv.RunningNo = 100 + i;
+            await repo.SaveAsync(inv);
+        }
+
+        var inv4 = CreateInvoice(2566, 1);
+        inv4.BookNo = 11;
+        inv4.RunningNo = 200;
+        await repo.SaveAsync(inv4);
+
+        Assert.Equal(3, await repo.CountByBookNoAsync(10));
+        Assert.Equal(1, await repo.CountByBookNoAsync(11));
+        Assert.Equal(0, await repo.CountByBookNoAsync(99));
+    }
 }
