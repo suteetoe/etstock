@@ -36,6 +36,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .Property(i => i.TotalAmount).HasPrecision(18, 4);
         modelBuilder.Entity<AbbrInvoice>()
             .Property(i => i.VatAmount).HasPrecision(18, 4);
+        modelBuilder.Entity<AbbrInvoice>()
+            .Property(i => i.InvoiceDate).HasColumnType("timestamp without time zone");
 
         modelBuilder.Entity<AbbrInvoiceItem>()
             .Property(i => i.Amount).HasPrecision(18, 4);
