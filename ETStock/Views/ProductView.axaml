@@ -28,12 +28,6 @@
         </Grid>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
-            <Button Content="Load period"
-                    Command="{Binding LoadCommand}"
-                    IsEnabled="{Binding !IsBusy}"/>
-            <Button Content="Carry forward"
-                    Command="{Binding CarryForwardCommand}"
-                    IsEnabled="{Binding !IsBusy}"/>
             <Button Content="Save"
                     Command="{Binding SaveCommand}"
                     IsEnabled="{Binding !IsBusy}"/>

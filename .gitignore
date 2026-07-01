@@ -379,3 +379,4 @@ Directory.Build.Override.props
 .codegraph/
 .goose/memory/
 .claude
+.codex
