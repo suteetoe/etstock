@@ -56,10 +56,40 @@ public partial class InvoiceViewModel : ViewModelBase
     private string _statusMessage = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NeedsSeed))]
     private int _currentBookNo;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NeedsSeed))]
     private int _currentDocNo;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NeedsSeed))]
+    private bool _hasLoadedLatest;
+
+    public bool NeedsSeed => HasLoadedLatest && CurrentBookNo == 0 && CurrentDocNo == 0;
+
+    [ObservableProperty]
+    private int _seedBookNo = 1;
+
+    [ObservableProperty]
+    private int _seedRunningNo = 1;
+
+    public event Action<int, int>? SeedConfirmed;
+
+    [RelayCommand]
+    private void ConfirmSeed()
+    {
+        if (SeedBookNo < 1 || SeedRunningNo < 1)
+        {
+            StatusMessage = "กรุณาระบุเล่มที่และเลขที่เริ่มต้นให้ถูกต้อง (ต้องมากกว่า 0)";
+            return;
+        }
+        CurrentBookNo = SeedBookNo;
+        CurrentDocNo = SeedRunningNo;
+        SeedConfirmed?.Invoke(SeedBookNo, SeedRunningNo);
+        StatusMessage = $"บันทึกเลขเริ่มต้น เล่มที่ {SeedBookNo} เลขที่ {SeedRunningNo:00000} — กลับไปที่แท็บ Stock เพื่อสร้างใบกำกับ";
+    }
 
     [RelayCommand]
     private async Task LoadAsync()
@@ -108,7 +138,7 @@ public partial class InvoiceViewModel : ViewModelBase
             {
                 CurrentBookNo = 0;
                 CurrentDocNo = 0;
-                StatusMessage = "ยังไม่มีเลขที่ใบกำกับล่าสุดในระบบ กรุณาระบุเล่มที่และเลขที่เริ่มต้น";
+                StatusMessage = "ยังไม่มีเลขที่ใบกำกับในระบบ";
             }
             else
             {
@@ -119,6 +149,10 @@ public partial class InvoiceViewModel : ViewModelBase
         catch
         {
             // Display-only indicator; failures here should not block the main load flow.
+        }
+        finally
+        {
+            HasLoadedLatest = true;
         }
     }
 

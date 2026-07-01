@@ -76,6 +76,7 @@ public partial class MainWindowViewModel : ViewModelBase
         InvoicePage.SelectedMonth = month;
 
         StockPage.InvoicesGenerated += InvoicePage.RequestLatestRunningRefresh;
+        InvoicePage.SeedConfirmed += StockPage.SetSeed;
 
         // Sequential initial load to avoid DbContext concurrency errors
         _ = ApplyPeriodAsync(year, month);
