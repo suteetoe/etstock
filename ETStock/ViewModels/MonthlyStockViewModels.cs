@@ -10,13 +10,19 @@ public partial class ProductViewModel
 {
     private readonly IMonthlyStockRepository? _repository;
     private readonly IInvoiceGeneratorService? _invoiceGenerator;
+    private readonly IExcelImportService? _excelImporter;
 
     public event EventHandler? AddProductRequested;
     public event EventHandler<int>? GenerateInvoicesConfirmRequested;
     public event Action? InvoicesGenerated;
+    public event EventHandler? ImportExcelRequested;
+    public event EventHandler<int>? ImportExcelConfirmRequested;
 
     private TaskCompletionSource<AddProductResult?>? _addProductTcs;
     private TaskCompletionSource<bool>? _generateConfirmTcs;
+    private TaskCompletionSource<string?>? _importExcelTcs;
+    private TaskCompletionSource<bool>? _importExcelConfirmTcs;
+    private IReadOnlyList<ExcelImportRecord>? _pendingImportRecords;
 
     public ProductViewModel()
     {
@@ -48,6 +54,14 @@ public partial class ProductViewModel
     {
         _repository = repository;
         _invoiceGenerator = invoiceGenerator;
+    }
+
+    public ProductViewModel(IMonthlyStockRepository repository, IInvoiceGeneratorService invoiceGenerator, IExcelImportService excelImporter, int year, int month)
+        : this(year, month)
+    {
+        _repository = repository;
+        _invoiceGenerator = invoiceGenerator;
+        _excelImporter = excelImporter;
     }
 
     public void CompleteGenerateInvoicesConfirm(bool confirmed) =>
@@ -199,6 +213,62 @@ public partial class ProductViewModel
 
     public void CompleteAddProduct(AddProductResult? result) => _addProductTcs?.TrySetResult(result);
 
+    public void CompleteImportExcel(string? path) => _importExcelTcs?.TrySetResult(path);
+    public void CompleteImportExcelConfirm(bool confirmed) => _importExcelConfirmTcs?.TrySetResult(confirmed);
+
+    [RelayCommand]
+    private async Task ImportFromExcelAsync()
+    {
+        if (_excelImporter is null) { StatusMessage = "Excel import service is not available."; return; }
+        if (IsBusy) return;
+
+        IsBusy = true;
+        StatusMessage = string.Empty;
+
+        try
+        {
+            _importExcelTcs = new TaskCompletionSource<string?>();
+            ImportExcelRequested?.Invoke(this, EventArgs.Empty);
+            var filePath = await _importExcelTcs.Task;
+            _importExcelTcs = null;
+
+            if (string.IsNullOrEmpty(filePath))
+            {
+                StatusMessage = string.Empty;
+                return;
+            }
+
+            _pendingImportRecords = _excelImporter.ReadStockMaster(filePath);
+
+            _importExcelConfirmTcs = new TaskCompletionSource<bool>();
+            ImportExcelConfirmRequested?.Invoke(this, _pendingImportRecords.Count);
+            var confirmed = await _importExcelConfirmTcs.Task;
+            _importExcelConfirmTcs = null;
+
+            if (!confirmed)
+            {
+                StatusMessage = "ยกเลิกการนำเข้าข้อมูล";
+                return;
+            }
+
+            Rows.Clear();
+            foreach (var record in _pendingImportRecords)
+                Rows.Add(new MonthlyStockRowViewModel(record));
+            RefreshLineNumbers();
+
+            StatusMessage = $"นำเข้าข้อมูลสำเร็จ {_pendingImportRecords.Count} รายการ — กด Save เพื่อบันทึก";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"ไม่สามารถนำเข้าข้อมูลได้: {ex.Message}";
+        }
+        finally
+        {
+            _pendingImportRecords = null;
+            IsBusy = false;
+        }
+    }
+
     [RelayCommand]
     private async Task GenerateInvoicesAsync()
     {
@@ -309,6 +379,19 @@ public partial class MonthlyStockRowViewModel : ViewModelBase
         _buyQty = stock?.BuyQty ?? 0;
         _sellFullQty = stock?.SellFullQty ?? 0;
         _sellPosQty = stock?.SellPosQty ?? 0;
+    }
+
+    public MonthlyStockRowViewModel(ExcelImportRecord record)
+    {
+        Name = record.ProductName;
+        Unit = string.Empty;
+        StockId = 0;
+        _costPrice = record.CostPrice;
+        _sellPrice = record.SellPrice;
+        _openingQty = record.OpeningQty;
+        _buyQty = 0;
+        _sellFullQty = 0;
+        _sellPosQty = 0;
     }
 
     public int StockId { get; }
