@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ETStock.Data.Repositories;
 using ETStock.Services;
@@ -14,11 +15,40 @@ public partial class MainWindowViewModel : ViewModelBase
     public InvoiceViewModel InvoicePage { get; }
 
     public event EventHandler? OpenCompanyDialogRequested;
+    public event EventHandler? OpenPeriodSelectorRequested;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(PeriodLabel))]
+    private int _selectedYear;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(PeriodLabel))]
+    private int _selectedMonth;
+
+    public string PeriodLabel => $"ปี {SelectedYear}  เดือน {SelectedMonth:00}";
+
+    partial void OnSelectedYearChanged(int value)
+    {
+        StockPage.SelectedYear = value;
+        InvoicePage.SelectedYear = value;
+    }
+
+    partial void OnSelectedMonthChanged(int value)
+    {
+        StockPage.SelectedMonth = value;
+        InvoicePage.SelectedMonth = value;
+    }
+
+    [RelayCommand]
+    private void OpenPeriodSelector() => OpenPeriodSelectorRequested?.Invoke(this, EventArgs.Empty);
 
     public MainWindowViewModel() : this(DateTime.Today.Year, DateTime.Today.Month) { }
 
     public MainWindowViewModel(int year, int month)
     {
+        _selectedYear = year;
+        _selectedMonth = month;
+
         _serviceScope = Program.Services?.CreateScope();
         var serviceProvider = _serviceScope?.ServiceProvider;
 
@@ -39,7 +69,21 @@ public partial class MainWindowViewModel : ViewModelBase
             ? new InvoiceViewModel(invoiceRepo, printService)
             : new InvoiceViewModel();
 
+        InvoicePage.SelectedYear = year;
+        InvoicePage.SelectedMonth = month;
+
         StockPage.InvoicesGenerated += InvoicePage.RequestLatestRunningRefresh;
+
+        // Sequential initial load to avoid DbContext concurrency errors
+        _ = ApplyPeriodAsync(year, month);
+    }
+
+    public async Task ApplyPeriodAsync(int year, int month)
+    {
+        SelectedYear = year;
+        SelectedMonth = month;
+        await StockPage.LoadCommand.ExecuteAsync(null);
+        await InvoicePage.LoadCommand.ExecuteAsync(null);
     }
 
     [RelayCommand]

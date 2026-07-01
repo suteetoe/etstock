@@ -12,32 +12,10 @@
         <vm:InvoiceViewModel/>
     </Design.DataContext>
 
-    <Grid RowDefinitions="Auto,Auto,*,Auto,Auto" RowSpacing="8" Margin="12">
+    <Grid RowDefinitions="Auto,*,Auto,Auto" RowSpacing="8" Margin="12">
 
-        <!-- Row 0: Toolbar -->
-        <Grid Grid.Row="0"
-              ColumnDefinitions="Auto,90,Auto,60,Auto,*"
-              ColumnSpacing="8">
-            <TextBlock Grid.Column="0" Text="ปี (พ.ศ.)" VerticalAlignment="Center"/>
-            <TextBox Grid.Column="1"
-                     Text="{Binding SelectedYear}"
-                     IsEnabled="{Binding !IsBusy}"
-                     HorizontalContentAlignment="Right"/>
-
-            <TextBlock Grid.Column="2" Text="เดือน" VerticalAlignment="Center"/>
-            <TextBox Grid.Column="3"
-                     Text="{Binding SelectedMonth}"
-                     IsEnabled="{Binding !IsBusy}"
-                     HorizontalContentAlignment="Right"/>
-
-            <Button Grid.Column="4"
-                    Content="โหลด"
-                    Command="{Binding LoadCommand}"
-                    IsEnabled="{Binding !IsBusy}"/>
-        </Grid>
-
-        <!-- Row 1: BookNo / DocNo editable fields -->
-        <Grid Grid.Row="1" ColumnDefinitions="Auto,80,Auto,100,*" ColumnSpacing="8">
+        <!-- Row 0: BookNo / DocNo + Load -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,80,Auto,100,Auto,*" ColumnSpacing="8">
             <TextBlock Grid.Column="0" Text="เล่มที่" VerticalAlignment="Center"/>
             <TextBox Grid.Column="1"
                      Text="{Binding CurrentBookNo}"
@@ -48,10 +26,14 @@
                      Text="{Binding CurrentDocNo}"
                      IsEnabled="{Binding !IsBusy}"
                      HorizontalContentAlignment="Right"/>
+            <Button Grid.Column="4"
+                    Content="โหลด"
+                    Command="{Binding LoadCommand}"
+                    IsEnabled="{Binding !IsBusy}"/>
         </Grid>
 
-        <!-- Row 2: Invoice list -->
-        <Border Grid.Row="2"
+        <!-- Row 1: Invoice list -->
+        <Border Grid.Row="1"
                 BorderBrush="#D0D0D0"
                 BorderThickness="1"
                 CornerRadius="4">
@@ -147,8 +129,8 @@
             </ScrollViewer>
         </Border>
 
-        <!-- Row 3: Summary footer -->
-        <Border Grid.Row="3"
+        <!-- Row 2: Summary footer -->
+        <Border Grid.Row="2"
                 Background="#F5F5F5"
                 BorderBrush="#D0D0D0"
                 BorderThickness="1"
@@ -168,8 +150,8 @@
             </StackPanel>
         </Border>
 
-        <!-- Row 4: Status bar -->
-        <Grid Grid.Row="4" ColumnDefinitions="*,Auto">
+        <!-- Row 3: Status bar -->
+        <Grid Grid.Row="3" ColumnDefinitions="*,Auto">
             <TextBlock Grid.Column="0"
                        Text="{Binding StatusMessage}"
                        FontStyle="Italic"

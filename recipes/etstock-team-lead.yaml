@@ -1,18 +1,18 @@
 version: "1.0.0"
-title: "ETStock — Lead"
+title: "ETStock — Orchestrator"
 description: >
-  Lead agent ของโปรเจกต์ ETStock (ระบบช่วยออกใบกำกับภาษีอย่างย่อสำหรับร้านค้าปลีก,
+  Orchestrator agent ของโปรเจกต์ ETStock (ระบบช่วยออกใบกำกับภาษีอย่างย่อสำหรับร้านค้าปลีก,
   Avalonia 11.3 / .NET 10 / MVVM / PostgreSQL). รับคำสั่ง (story/feature) จาก Product Owner
   แล้ว **วิเคราะห์ความต้องการ → เขียน brief → delegate** ให้ลูกทีม Backend / Frontend / QA
   เขียนโค้ดผ่าน sub-recipes พร้อมตรวจรับงานตาม Definition of Done.
-  รายละเอียดบทบาท Lead ฉบับเต็มอยู่ใน .agents/agents/lead-agent.md
+
 
 # ─────────────────────────────────────────────────────────────
 # โมเดล / provider (ปรับให้ตรงกับ config ของทีม)
 # ─────────────────────────────────────────────────────────────
 settings:
   goose_provider: "claude-acp"
-  goose_model: "opus"   # << ปรับเป็นโมเดลที่ทีมตั้งค่าไว้ใน goose
+  goose_model: "sonet"   # << ปรับเป็นโมเดลที่ทีมตั้งค่าไว้ใน goose
   temperature: 0.2
 
 # ─────────────────────────────────────────────────────────────

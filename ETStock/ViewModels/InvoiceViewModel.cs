@@ -15,7 +15,7 @@ public partial class InvoiceViewModel : ViewModelBase
     public InvoiceViewModel()
     {
         var today = DateTime.Today;
-        _selectedYear = today.Year + 543;
+        _selectedYear = today.Year;
         _selectedMonth = today.Month;
     }
 
@@ -23,7 +23,6 @@ public partial class InvoiceViewModel : ViewModelBase
         : this()
     {
         _repository = repository;
-        _ = LoadLatestRunningAsync();
     }
 
     public InvoiceViewModel(IAbbrInvoiceRepository repository, IInvoicePrintService? printService)
@@ -31,7 +30,6 @@ public partial class InvoiceViewModel : ViewModelBase
     {
         _repository = repository;
         _printService = printService;
-        _ = LoadLatestRunningAsync();
     }
 
     public ObservableCollection<InvoiceRowViewModel> Invoices { get; } = [];

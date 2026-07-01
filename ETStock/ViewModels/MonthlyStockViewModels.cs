@@ -41,8 +41,6 @@ public partial class ProductViewModel
         : this(year, month)
     {
         _repository = repository;
-        // Auto-load on startup (fire-and-forget is fine here, errors are shown in StatusMessage)
-        _ = LoadAsync();
     }
 
     public ProductViewModel(IMonthlyStockRepository repository, IInvoiceGeneratorService invoiceGenerator, int year, int month)
@@ -50,7 +48,6 @@ public partial class ProductViewModel
     {
         _repository = repository;
         _invoiceGenerator = invoiceGenerator;
-        _ = LoadAsync();
     }
 
     public void CompleteGenerateInvoicesConfirm(bool confirmed) =>

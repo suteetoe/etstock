@@ -14,7 +14,7 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <Grid RowDefinitions="44,*">
+    <Grid RowDefinitions="44,Auto,*">
         <!-- TopBar -->
         <Border Grid.Row="0" Background="#12121C" Padding="12,0">
             <DockPanel>
@@ -29,8 +29,16 @@
             </DockPanel>
         </Border>
 
+        <!-- Global period selector -->
+        <Border Grid.Row="1" Background="#F0F0F5" BorderBrush="#D0D0D0" BorderThickness="0,0,0,1" Padding="16,6">
+            <Button Content="{Binding PeriodLabel}"
+                    Command="{Binding OpenPeriodSelectorCommand}"
+                    HorizontalAlignment="Right"
+                    Padding="12,4"/>
+        </Border>
+
         <!-- Tab area -->
-        <TabControl Grid.Row="1">
+        <TabControl Grid.Row="2">
             <TabItem Header="Stock">
                 <views:ProductView DataContext="{Binding StockPage}" Margin="16"/>
             </TabItem>
