@@ -32,6 +32,7 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<AppDbConte
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseNpgsql(connectionString)
+            .UseSnakeCaseNamingConvention()
             .Options;
         return new AppDbContext(options);
     }

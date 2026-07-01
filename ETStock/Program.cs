@@ -29,7 +29,7 @@ internal sealed class Program
             .ConfigureServices((ctx, services) =>
             {
                 var connectionString = GetDatabaseConnectionString(ctx.Configuration);
-                services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+                services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString).UseSnakeCaseNamingConvention());
                 services.AddScoped<ICompanyRepository, CompanyRepository>();
                 services.AddScoped<IMonthlyStockRepository, MonthlyStockRepository>();
                 services.AddScoped<IAbbrInvoiceRepository, AbbrInvoiceRepository>();
