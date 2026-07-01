@@ -47,7 +47,7 @@
                           VerticalScrollBarVisibility="Auto">
                 <StackPanel MinWidth="1300">
                     <Border Background="#EEEEEE" Padding="8">
-                        <Grid ColumnDefinitions="50,190,90,90,90,90,90,110,90,110,150"
+                        <Grid ColumnDefinitions="40,*,90,90,90,90,90,110,90,110,150"
                               ColumnSpacing="8">
                             <TextBlock Grid.Column="0" Text="#" FontWeight="SemiBold"/>
                             <TextBlock Grid.Column="1" Text="ชื่อสินค้า" FontWeight="SemiBold"/>
@@ -79,7 +79,7 @@
                                 <Border BorderBrush="#E5E5E5"
                                         BorderThickness="0,0,0,1"
                                         Padding="8">
-                                    <Grid ColumnDefinitions="50,190,90,90,90,90,90,110,90,110,150"
+                                    <Grid ColumnDefinitions="40,*,90,90,90,90,90,110,90,110,150"
                                           ColumnSpacing="8">
                                         <TextBlock Grid.Column="0" Text="{Binding LineNumber}" VerticalAlignment="Center"/>
                                         <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center"/>
