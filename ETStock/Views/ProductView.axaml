@@ -34,9 +34,6 @@
             <Button Content="สร้างใบกำกับภาษีอย่างย่อ"
                     Command="{Binding GenerateInvoicesCommand}"
                     IsEnabled="{Binding !IsBusy}"/>
-            <Button Content="นำเข้ายอดคงเหลือใหม่"
-                    Command="{Binding ImportFromExcelCommand}"
-                    IsEnabled="{Binding !IsBusy}"/>
         </StackPanel>
 
         <Border Grid.Row="2"
@@ -44,11 +41,14 @@
                 BorderThickness="1"
                 CornerRadius="4">
             <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                          VerticalScrollBarVisibility="Auto">
-                <StackPanel MinWidth="1300">
-                    <Border Background="#EEEEEE" Padding="8">
-                        <Grid ColumnDefinitions="40,*,90,90,90,90,90,110,90,110,150"
-                              ColumnSpacing="8">
+                          VerticalScrollBarVisibility="Disabled">
+                <Grid RowDefinitions="Auto,*,Auto" MinWidth="1300">
+
+                    <!-- Sticky Header -->
+                    <Border Grid.Row="0" Background="#EEEEEE" Padding="8">
+                        <Grid ColumnDefinitions="*,18">
+                            <Grid ColumnDefinitions="40,*,90,90,90,90,90,110,90,110,150"
+                                  ColumnSpacing="8">
                             <TextBlock Grid.Column="0" Text="#" FontWeight="SemiBold"/>
                             <TextBlock Grid.Column="1" Text="ชื่อสินค้า" FontWeight="SemiBold"/>
                             <TextBlock Grid.Column="2" Text="ยอดยกมา" FontWeight="SemiBold" TextAlignment="Right"/>
@@ -60,77 +60,104 @@
                             <TextBlock Grid.Column="8" Text="ราคาขาย" FontWeight="SemiBold" TextAlignment="Right"/>
                             <TextBlock Grid.Column="9" Text="จำนวนเงิน" FontWeight="SemiBold" TextAlignment="Right"/>
                             <TextBlock Grid.Column="10" Text="มูลค่าสินค้าคงเหลือ" FontWeight="SemiBold" TextAlignment="Right"/>
+                            </Grid>
                         </Grid>
                     </Border>
 
-                    <ListBox ItemsSource="{Binding Rows}"
-                             SelectedItem="{Binding SelectedRow}"
-                             SelectionMode="Single"
-                             Background="Transparent"
-                             BorderThickness="0">
-                        <ListBox.ItemContainerTheme>
-                            <ControlTheme TargetType="ListBoxItem">
-                                <Setter Property="Padding" Value="0"/>
-                                <Setter Property="Background" Value="Transparent"/>
-                            </ControlTheme>
-                        </ListBox.ItemContainerTheme>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate x:DataType="vm:MonthlyStockRowViewModel">
-                                <Border BorderBrush="#E5E5E5"
-                                        BorderThickness="0,0,0,1"
-                                        Padding="8">
-                                    <Grid ColumnDefinitions="40,*,90,90,90,90,90,110,90,110,150"
-                                          ColumnSpacing="8">
-                                        <TextBlock Grid.Column="0" Text="{Binding LineNumber}" VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="2"
-                                                   Text="{Binding OpeningQty, StringFormat={}{0:N2}}"
-                                                   TextAlignment="Right"
-                                                   VerticalAlignment="Center"/>
-                                        <NumericUpDown Grid.Column="3"
-                                                       Value="{Binding BuyQty}"
-                                                       Minimum="0"
-                                                       FormatString="0.##"
-                                                       HorizontalContentAlignment="Right"/>
-                                        <NumericUpDown Grid.Column="4"
-                                                       Value="{Binding SellPosQty}"
-                                                       Minimum="0"
-                                                       FormatString="0.##"
-                                                       HorizontalContentAlignment="Right"/>
-                                        <NumericUpDown Grid.Column="5"
-                                                       Value="{Binding SellFullQty}"
-                                                       Minimum="0"
-                                                       FormatString="0.##"
-                                                       HorizontalContentAlignment="Right"/>
-                                        <TextBlock Grid.Column="6"
-                                                   Text="{Binding ClosingQty, StringFormat={}{0:N2}}"
-                                                   FontWeight="SemiBold"
-                                                   TextAlignment="Right"
-                                                   VerticalAlignment="Center"/>
-                                        <NumericUpDown Grid.Column="7"
-                                                       Value="{Binding CostPrice}"
-                                                       Minimum="0"
-                                                       FormatString="0.##"
-                                                       HorizontalContentAlignment="Right"/>
-                                        <NumericUpDown Grid.Column="8"
-                                                       Value="{Binding SellPrice}"
-                                                       Minimum="0"
-                                                       FormatString="0.##"
-                                                       HorizontalContentAlignment="Right"/>
-                                        <TextBlock Grid.Column="9"
-                                                   Text="{Binding SalesAmount, StringFormat={}{0:N2}}"
-                                                   TextAlignment="Right"
-                                                   VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="10"
-                                                   Text="{Binding ClosingValue, StringFormat={}{0:N2}}"
-                                                   TextAlignment="Right"
-                                                   VerticalAlignment="Center"/>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </StackPanel>
+                    <!-- Scrollable Rows (vertical only) -->
+                    <ScrollViewer Grid.Row="1"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Auto">
+                        <ListBox ItemsSource="{Binding Rows}"
+                                 SelectedItem="{Binding SelectedRow}"
+                                 SelectionMode="Single"
+                                 Background="Transparent"
+                                 BorderThickness="0">
+                            <ListBox.ItemContainerTheme>
+                                <ControlTheme TargetType="ListBoxItem">
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                </ControlTheme>
+                            </ListBox.ItemContainerTheme>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate x:DataType="vm:MonthlyStockRowViewModel">
+                                    <Border BorderBrush="#E5E5E5"
+                                            BorderThickness="0,0,0,1"
+                                            Padding="8">
+                                        <Grid ColumnDefinitions="40,*,90,90,90,90,90,110,90,110,150"
+                                              ColumnSpacing="8">
+                                            <TextBlock Grid.Column="0" Text="{Binding LineNumber}" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="2"
+                                                       Text="{Binding OpeningQty, StringFormat={}{0:N2}}"
+                                                       TextAlignment="Right"
+                                                       VerticalAlignment="Center"/>
+                                            <NumericUpDown Grid.Column="3"
+                                                           Value="{Binding BuyQty}"
+                                                           Minimum="0"
+                                                           FormatString="0.##"
+                                                           HorizontalContentAlignment="Right"/>
+                                            <NumericUpDown Grid.Column="4"
+                                                           Value="{Binding SellPosQty}"
+                                                           Minimum="0"
+                                                           FormatString="0.##"
+                                                           HorizontalContentAlignment="Right"/>
+                                            <NumericUpDown Grid.Column="5"
+                                                           Value="{Binding SellFullQty}"
+                                                           Minimum="0"
+                                                           FormatString="0.##"
+                                                           HorizontalContentAlignment="Right"/>
+                                            <TextBlock Grid.Column="6"
+                                                       Text="{Binding ClosingQty, StringFormat={}{0:N2}}"
+                                                       FontWeight="SemiBold"
+                                                       TextAlignment="Right"
+                                                       VerticalAlignment="Center"/>
+                                            <NumericUpDown Grid.Column="7"
+                                                           Value="{Binding CostPrice}"
+                                                           Minimum="0"
+                                                           FormatString="0.##"
+                                                           HorizontalContentAlignment="Right"/>
+                                            <NumericUpDown Grid.Column="8"
+                                                           Value="{Binding SellPrice}"
+                                                           Minimum="0"
+                                                           FormatString="0.##"
+                                                           HorizontalContentAlignment="Right"/>
+                                            <TextBlock Grid.Column="9"
+                                                       Text="{Binding SalesAmount, StringFormat={}{0:N2}}"
+                                                       TextAlignment="Right"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="10"
+                                                       Text="{Binding ClosingValue, StringFormat={}{0:N2}}"
+                                                       TextAlignment="Right"
+                                                       VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </ScrollViewer>
+
+                    <!-- Sticky Footer -->
+                    <Border Grid.Row="2" Background="#EEEEEE" Padding="8" BorderBrush="#D0D0D0" BorderThickness="0,1,0,0">
+                        <Grid ColumnDefinitions="*,18">
+                            <Grid ColumnDefinitions="40,*,90,90,90,90,90,110,90,110,150"
+                                  ColumnSpacing="8">
+                            <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="รวม" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="9"
+                                       Text="{Binding TotalSalesAmount, StringFormat={}{0:N2}}"
+                                       FontWeight="Bold"
+                                       TextAlignment="Right"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="10"
+                                       Text="{Binding TotalClosingValue, StringFormat={}{0:N2}}"
+                                       FontWeight="Bold"
+                                       TextAlignment="Right"
+                                       VerticalAlignment="Center"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                </Grid>
             </ScrollViewer>
         </Border>
 

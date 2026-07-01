@@ -14,12 +14,15 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <Grid RowDefinitions="20,Auto,*">
+    <Grid RowDefinitions="22,Auto,*">
         <!-- Menu bar -->
         <Menu Grid.Row="0">
             <MenuItem Header="การตั้งค่า">
                 <MenuItem Header="ข้อมูลบริษัท"
                           Command="{Binding OpenCompanyDialogCommand}"/>
+                <MenuItem Header="นำเข้ายอดคงเหลือใหม่"
+                          Command="{Binding StockPage.ImportFromExcelCommand}"
+                          IsEnabled="{Binding !StockPage.IsBusy}"/>
             </MenuItem>
         </Menu>
 

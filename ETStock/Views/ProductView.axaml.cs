@@ -1,7 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
-using Avalonia.Platform.Storage;
 using ETStock.ViewModels;
 
 namespace ETStock.Views;
@@ -22,8 +21,6 @@ public partial class ProductView : UserControl
         {
             _vm.AddProductRequested -= OnAddProductRequested;
             _vm.GenerateInvoicesConfirmRequested -= OnGenerateInvoicesConfirmRequested;
-            _vm.ImportExcelRequested -= OnImportExcelRequested;
-            _vm.ImportExcelConfirmRequested -= OnImportExcelConfirmRequested;
         }
 
         _vm = DataContext as ProductViewModel;
@@ -32,8 +29,6 @@ public partial class ProductView : UserControl
         {
             _vm.AddProductRequested += OnAddProductRequested;
             _vm.GenerateInvoicesConfirmRequested += OnGenerateInvoicesConfirmRequested;
-            _vm.ImportExcelRequested += OnImportExcelRequested;
-            _vm.ImportExcelConfirmRequested += OnImportExcelConfirmRequested;
         }
     }
 
@@ -95,69 +90,4 @@ public partial class ProductView : UserControl
         _vm.CompleteGenerateInvoicesConfirm(confirmed);
     }
 
-    private async void OnImportExcelRequested(object? sender, EventArgs e)
-    {
-        var topLevel = TopLevel.GetTopLevel(this) as Window;
-        if (topLevel is null || _vm is null) { _vm?.CompleteImportExcel(null); return; }
-
-        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-        {
-            Title = "เลือกไฟล์ Excel ยอดยกมา",
-            AllowMultiple = false,
-            FileTypeFilter =
-            [
-                new FilePickerFileType("Excel files") { Patterns = ["*.xlsx", "*.xls"] }
-            ]
-        });
-
-        var path = files.Count > 0 ? files[0].TryGetLocalPath() : null;
-        _vm.CompleteImportExcel(path);
-    }
-
-    private async void OnImportExcelConfirmRequested(object? sender, int rowCount)
-    {
-        var topLevel = TopLevel.GetTopLevel(this) as Window;
-        if (topLevel is null || _vm is null) { _vm?.CompleteImportExcelConfirm(false); return; }
-
-        var dialog = new Window
-        {
-            Title = "ยืนยันการนำเข้าข้อมูล",
-            Width = 440,
-            Height = 170,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            CanResize = false
-        };
-
-        bool confirmed = false;
-        var okBtn = new Button { Content = "ยืนยันนำเข้า", HorizontalAlignment = HorizontalAlignment.Center };
-        var cancelBtn = new Button { Content = "ยกเลิก", HorizontalAlignment = HorizontalAlignment.Center };
-        okBtn.Click += (_, _) => { confirmed = true; dialog.Close(); };
-        cancelBtn.Click += (_, _) => { dialog.Close(); };
-
-        dialog.Content = new StackPanel
-        {
-            Margin = new Avalonia.Thickness(20),
-            Spacing = 12,
-            Children =
-            {
-                new TextBlock
-                {
-                    Text = $"พบ {rowCount} รายการจากไฟล์ Excel\n" +
-                           "ระบบจะล้างรายการในตารางและนำข้อมูลใหม่ใส่แทน\n" +
-                           "ต้องการดำเนินการต่อหรือไม่?",
-                    TextWrapping = TextWrapping.Wrap
-                },
-                new StackPanel
-                {
-                    Orientation = Orientation.Horizontal,
-                    Spacing = 12,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    Children = { okBtn, cancelBtn }
-                }
-            }
-        };
-
-        await dialog.ShowDialog(topLevel);
-        _vm.CompleteImportExcelConfirm(confirmed);
-    }
 }

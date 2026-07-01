@@ -28,17 +28,28 @@ public partial class ProductViewModel
 
     public void SetSeed(int bookNo, int runningNo) => _seed = (bookNo, runningNo);
 
+    public decimal TotalSalesAmount => Rows.Sum(r => r.SalesAmount);
+    public decimal TotalClosingValue => Rows.Sum(r => r.ClosingValue);
+
+    private void RecalcTotals()
+    {
+        OnPropertyChanged(nameof(TotalSalesAmount));
+        OnPropertyChanged(nameof(TotalClosingValue));
+    }
+
     public ProductViewModel()
     {
         var today = DateTime.Today;
         _selectedYear = today.Year;
         _selectedMonth = today.Month;
+        Rows.CollectionChanged += (_, _) => RecalcTotals();
     }
 
     public ProductViewModel(int year, int month)
     {
         _selectedYear = year;
         _selectedMonth = month;
+        Rows.CollectionChanged += (_, _) => RecalcTotals();
     }
 
     public ProductViewModel(IMonthlyStockRepository repository)
@@ -382,7 +393,10 @@ public partial class ProductViewModel
                     or nameof(MonthlyStockRowViewModel.SellFullQty)
                     or nameof(MonthlyStockRowViewModel.CostPrice)
                     or nameof(MonthlyStockRowViewModel.SellPrice))
+                {
                     _hasUnsavedChanges = true;
+                    RecalcTotals();
+                }
             };
         _hasUnsavedChanges = false;
     }
