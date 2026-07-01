@@ -17,6 +17,7 @@ public partial class ProductViewModel
     public event Action? InvoicesGenerated;
     public event EventHandler? ImportExcelRequested;
     public event EventHandler<int>? ImportExcelConfirmRequested;
+    public event EventHandler<MonthlyStockRowViewModel>? ScrollToRowRequested;
 
     private TaskCompletionSource<AddProductResult?>? _addProductTcs;
     private TaskCompletionSource<bool>? _generateConfirmTcs;
@@ -98,6 +99,24 @@ public partial class ProductViewModel
 
     [ObservableProperty]
     private MonthlyStockRowViewModel? _selectedRow;
+
+    [ObservableProperty]
+    private string _searchText = string.Empty;
+
+    [RelayCommand]
+    private void SearchProduct()
+    {
+        if (string.IsNullOrWhiteSpace(SearchText)) return;
+        var found = Rows.FirstOrDefault(r => r.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+        if (found is null)
+        {
+            StatusMessage = $"ไม่พบสินค้า '{SearchText}'";
+            return;
+        }
+        SelectedRow = found;
+        ScrollToRowRequested?.Invoke(this, found);
+        StatusMessage = string.Empty;
+    }
 
     [RelayCommand]
     private async Task LoadAsync()

@@ -21,6 +21,7 @@ public partial class ProductView : UserControl
         {
             _vm.AddProductRequested -= OnAddProductRequested;
             _vm.GenerateInvoicesConfirmRequested -= OnGenerateInvoicesConfirmRequested;
+            _vm.ScrollToRowRequested -= OnScrollToRowRequested;
         }
 
         _vm = DataContext as ProductViewModel;
@@ -29,7 +30,13 @@ public partial class ProductView : UserControl
         {
             _vm.AddProductRequested += OnAddProductRequested;
             _vm.GenerateInvoicesConfirmRequested += OnGenerateInvoicesConfirmRequested;
+            _vm.ScrollToRowRequested += OnScrollToRowRequested;
         }
+    }
+
+    private void OnScrollToRowRequested(object? sender, MonthlyStockRowViewModel row)
+    {
+        ProductListBox.ScrollIntoView(row);
     }
 
     private async void OnAddProductRequested(object? sender, EventArgs e)

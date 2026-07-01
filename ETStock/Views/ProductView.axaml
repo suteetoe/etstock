@@ -28,6 +28,14 @@
         </Grid>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+            <TextBox Text="{Binding SearchText}"
+                     Watermark="ค้นหาชื่อสินค้า..."
+                     Width="220"
+                     VerticalAlignment="Center">
+                <TextBox.KeyBindings>
+                    <KeyBinding Gesture="Enter" Command="{Binding SearchProductCommand}"/>
+                </TextBox.KeyBindings>
+            </TextBox>
             <Button Content="Save"
                     Command="{Binding SaveCommand}"
                     IsEnabled="{Binding !IsBusy}"/>
@@ -68,7 +76,8 @@
                     <ScrollViewer Grid.Row="1"
                                   HorizontalScrollBarVisibility="Disabled"
                                   VerticalScrollBarVisibility="Auto">
-                        <ListBox ItemsSource="{Binding Rows}"
+                        <ListBox x:Name="ProductListBox"
+                                 ItemsSource="{Binding Rows}"
                                  SelectedItem="{Binding SelectedRow}"
                                  SelectionMode="Single"
                                  Background="Transparent"
