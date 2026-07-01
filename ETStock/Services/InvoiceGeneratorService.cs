@@ -81,6 +81,13 @@ public class InvoiceGeneratorService(IAbbrInvoiceRepository repo) : IInvoiceGene
         var invoices = new List<AbbrInvoice>();
         var isFirstAssigned = true;
 
+        // Pre-generate and sort days so running numbers align with dates
+        // (lower running number ↔ earlier date).
+        var sortedDays = Enumerable.Range(0, n)
+            .Select(_ => _rng.Next(1, daysInMonth + 1))
+            .OrderBy(d => d)
+            .ToArray();
+
         for (int i = 0; i < n; i++)
         {
             var items = new List<AbbrInvoiceItem>();
@@ -108,8 +115,7 @@ public class InvoiceGeneratorService(IAbbrInvoiceRepository repo) : IInvoiceGene
             if (items.Count == 0)
                 continue;
 
-            var day = _rng.Next(1, daysInMonth + 1);
-            var invoiceDate = new DateTime(taxYear, taxMonth, day);
+            var invoiceDate = new DateTime(taxYear, taxMonth, sortedDays[i]);
 
             // advance the running number for every invoice after the first one
             // assigned in this batch (the first uses the starting point as-is)

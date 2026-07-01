@@ -24,6 +24,7 @@ public partial class ProductViewModel
     private TaskCompletionSource<bool>? _importExcelConfirmTcs;
     private IReadOnlyList<ExcelImportRecord>? _pendingImportRecords;
     private (int BookNo, int RunningNo)? _seed;
+    private bool _hasUnsavedChanges;
 
     public void SetSeed(int bookNo, int runningNo) => _seed = (bookNo, runningNo);
 
@@ -258,6 +259,7 @@ public partial class ProductViewModel
             foreach (var record in _pendingImportRecords)
                 Rows.Add(new MonthlyStockRowViewModel(record));
             RefreshLineNumbers();
+            _hasUnsavedChanges = true;
 
             StatusMessage = $"นำเข้าข้อมูลสำเร็จ {_pendingImportRecords.Count} รายการ — กด Save เพื่อบันทึก";
         }
@@ -283,6 +285,7 @@ public partial class ProductViewModel
 
         try
         {
+            // Step 1: check for existing invoices this period — confirm with user before replacing
             var existingCount = await _invoiceGenerator.GetExistingCountAsync(SelectedYear, SelectedMonth);
             bool replaceExisting = false;
 
@@ -300,6 +303,16 @@ public partial class ProductViewModel
                 replaceExisting = true;
             }
 
+            // Step 2: auto-save if there are unsaved changes
+            if (_hasUnsavedChanges)
+            {
+                StatusMessage = "กำลังบันทึกข้อมูลสต๊อก...";
+                foreach (var row in Rows)
+                    await _repository!.SaveAsync(row.ToInput(SelectedYear, SelectedMonth));
+                await LoadRowsAsync();
+            }
+
+            // Step 3: generate invoices
             var stockLines = Rows
                 .Where(r => r.SellPosQty > 0)
                 .Select(r => new PosStockLine(r.Name, r.SellPosQty, r.SellPrice))
@@ -360,6 +373,18 @@ public partial class ProductViewModel
         }
 
         RefreshLineNumbers();
+
+        foreach (var row in Rows)
+            row.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName is nameof(MonthlyStockRowViewModel.BuyQty)
+                    or nameof(MonthlyStockRowViewModel.SellPosQty)
+                    or nameof(MonthlyStockRowViewModel.SellFullQty)
+                    or nameof(MonthlyStockRowViewModel.CostPrice)
+                    or nameof(MonthlyStockRowViewModel.SellPrice))
+                    _hasUnsavedChanges = true;
+            };
+        _hasUnsavedChanges = false;
     }
 
     private void RefreshLineNumbers()

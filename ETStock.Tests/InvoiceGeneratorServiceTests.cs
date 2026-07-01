@@ -441,10 +441,48 @@ public class InvoiceGeneratorServiceTests
             Assert.DoesNotContain(secondInvoices, i => oldIds.Contains(i.Id));
 
             // The regenerated batch must restart from the seed, not continue past the
-            // deleted batch's running numbers.
+            // deleted batch's running numbers. (The new batch may generate more or fewer
+            // invoices than the first, so we only assert the starting point.)
             Assert.Equal(firstBookNo, secondInvoices[0].BookNo);
             Assert.Equal(firstMinRunningNo, secondInvoices[0].RunningNo);
-            Assert.Equal(firstMaxRunningNo, secondInvoices.Max(i => i.RunningNo));
+        }
+    }
+
+    // TC-13: invoice dates must be non-decreasing as RunningNo increases
+    [Fact]
+    public async Task GenerateAsync_InvoiceDates_NonDecreasingWithRunningNo()
+    {
+        var (svc, db) = CreateService();
+        await using (db)
+        {
+            var lines = new List<PosStockLine>
+            {
+                new("Product A", 20m, 107m)
+            };
+
+            List<AbbrInvoice> invoices = [];
+            for (var attempt = 0; attempt < 50 && invoices.Count < 2; attempt++)
+            {
+                db.AbbrInvoices.RemoveRange(db.AbbrInvoices.ToList());
+                await db.SaveChangesAsync();
+
+                await svc.GenerateAsync(2026, 6, lines, seedStart: (1, 1));
+
+                invoices = await db.AbbrInvoices
+                    .Where(i => i.TaxYear == 2026 && i.TaxMonth == 6)
+                    .OrderBy(i => i.RunningNo)
+                    .ToListAsync();
+            }
+
+            if (invoices.Count < 2) return;
+
+            for (int i = 0; i < invoices.Count - 1; i++)
+            {
+                Assert.True(
+                    invoices[i].InvoiceDate <= invoices[i + 1].InvoiceDate,
+                    $"RunningNo {invoices[i].RunningNo} date {invoices[i].InvoiceDate:yyyy-MM-dd} " +
+                    $"is after RunningNo {invoices[i + 1].RunningNo} date {invoices[i + 1].InvoiceDate:yyyy-MM-dd}");
+            }
         }
     }
 

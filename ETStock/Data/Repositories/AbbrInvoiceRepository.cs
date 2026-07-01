@@ -11,7 +11,7 @@ public class AbbrInvoiceRepository(AppDbContext db) : IAbbrInvoiceRepository
             .AsNoTracking()
             .Include(i => i.Items)
             .Where(i => i.TaxYear == taxYear && i.TaxMonth == taxMonth)
-            .OrderByDescending(i => i.InvoiceDate)
+            .OrderBy(i => i.RunningNo)
             .ToListAsync();
     }
 
