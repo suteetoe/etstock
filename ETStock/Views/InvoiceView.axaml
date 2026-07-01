@@ -14,23 +14,61 @@
 
     <Grid RowDefinitions="Auto,*,Auto,Auto" RowSpacing="8" Margin="12">
 
-        <!-- Row 0: BookNo / DocNo + Load -->
-        <Grid Grid.Row="0" ColumnDefinitions="Auto,80,Auto,100,Auto,*" ColumnSpacing="8">
-            <TextBlock Grid.Column="0" Text="เล่มที่" VerticalAlignment="Center"/>
-            <TextBox Grid.Column="1"
-                     Text="{Binding CurrentBookNo}"
-                     IsEnabled="{Binding !IsBusy}"
-                     HorizontalContentAlignment="Right"/>
-            <TextBlock Grid.Column="2" Text="เลขที่" VerticalAlignment="Center"/>
-            <TextBox Grid.Column="3"
-                     Text="{Binding CurrentDocNo}"
-                     IsEnabled="{Binding !IsBusy}"
-                     HorizontalContentAlignment="Right"/>
-            <Button Grid.Column="4"
-                    Content="โหลด"
-                    Command="{Binding LoadCommand}"
-                    IsEnabled="{Binding !IsBusy}"/>
-        </Grid>
+        <!-- Row 0: current running state + seed form (conditional) -->
+        <StackPanel Grid.Row="0" Spacing="6">
+
+            <!-- toolbar: Load button + latest running number (hidden when seed needed) -->
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Content="โหลด"
+                        Command="{Binding LoadCommand}"
+                        IsEnabled="{Binding !IsBusy}"/>
+                <TextBlock Text="เล่มที่ล่าสุด"
+                           VerticalAlignment="Center"
+                           IsVisible="{Binding !NeedsSeed}"/>
+                <TextBlock Text="{Binding CurrentBookNo}"
+                           VerticalAlignment="Center"
+                           IsVisible="{Binding !NeedsSeed}"/>
+                <TextBlock Text="  เลขที่ล่าสุด"
+                           VerticalAlignment="Center"
+                           IsVisible="{Binding !NeedsSeed}"/>
+                <TextBlock Text="{Binding CurrentDocNo, StringFormat='{}{0:00000}'}"
+                           VerticalAlignment="Center"
+                           IsVisible="{Binding !NeedsSeed}"/>
+            </StackPanel>
+
+            <!-- seed form: visible once when no running numbers exist in DB -->
+            <Border IsVisible="{Binding NeedsSeed}"
+                    Background="#FFF8E1"
+                    BorderBrush="Orange"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="10,6">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="ยังไม่มีเลขที่ใบกำกับในระบบ — ระบุเลขเริ่มต้น:"
+                               VerticalAlignment="Center"
+                               Foreground="DarkOrange"
+                               FontWeight="SemiBold"/>
+                    <TextBlock Text="เล่มที่" VerticalAlignment="Center"/>
+                    <NumericUpDown Value="{Binding SeedBookNo}"
+                                   Minimum="1"
+                                   Width="80"
+                                   FormatString="0"
+                                   HorizontalContentAlignment="Right"
+                                   IsEnabled="{Binding !IsBusy}"/>
+                    <TextBlock Text="เลขที่เริ่มต้น" VerticalAlignment="Center"/>
+                    <NumericUpDown Value="{Binding SeedRunningNo}"
+                                   Minimum="1"
+                                   Width="100"
+                                   FormatString="0"
+                                   HorizontalContentAlignment="Right"
+                                   IsEnabled="{Binding !IsBusy}"/>
+                    <Button Content="ยืนยัน"
+                            Command="{Binding ConfirmSeedCommand}"
+                            IsEnabled="{Binding !IsBusy}"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
 
         <!-- Row 1: Invoice list -->
         <Border Grid.Row="1"

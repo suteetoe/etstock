@@ -224,7 +224,8 @@ public class InvoiceViewModelTests
 
         Assert.Equal(0, vm.CurrentBookNo);
         Assert.Equal(0, vm.CurrentDocNo);
-        Assert.Contains("กรุณาระบุเล่มที่และเลขที่เริ่มต้น", vm.StatusMessage);
+        Assert.Contains("ยังไม่มีเลขที่ใบกำกับในระบบ", vm.StatusMessage);
+        Assert.True(vm.NeedsSeed);
     }
 
     // ── ToggleExpandCommand ────────────────────────────────────────────────────
