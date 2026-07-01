@@ -36,13 +36,18 @@
                     IsEnabled="{Binding !IsBusy}"/>
         </Grid>
 
-        <!-- Row 1: Latest running number (display-only) -->
-        <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,*" ColumnSpacing="8">
-            <TextBlock Grid.Column="0" Text="เล่มที่/เลขที่ล่าสุด" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="1"
-                       Text="{Binding LatestRunningDisplay}"
-                       FontWeight="SemiBold"
-                       VerticalAlignment="Center"/>
+        <!-- Row 1: BookNo / DocNo editable fields -->
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,80,Auto,100,*" ColumnSpacing="8">
+            <TextBlock Grid.Column="0" Text="เล่มที่" VerticalAlignment="Center"/>
+            <TextBox Grid.Column="1"
+                     Text="{Binding CurrentBookNo}"
+                     IsEnabled="{Binding !IsBusy}"
+                     HorizontalContentAlignment="Right"/>
+            <TextBlock Grid.Column="2" Text="เลขที่" VerticalAlignment="Center"/>
+            <TextBox Grid.Column="3"
+                     Text="{Binding CurrentDocNo}"
+                     IsEnabled="{Binding !IsBusy}"
+                     HorizontalContentAlignment="Right"/>
         </Grid>
 
         <!-- Row 2: Invoice list -->

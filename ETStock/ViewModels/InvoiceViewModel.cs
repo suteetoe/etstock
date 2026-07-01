@@ -58,7 +58,10 @@ public partial class InvoiceViewModel : ViewModelBase
     private string _statusMessage = string.Empty;
 
     [ObservableProperty]
-    private string _latestRunningDisplay = string.Empty;
+    private int _currentBookNo;
+
+    [ObservableProperty]
+    private int _currentDocNo;
 
     [RelayCommand]
     private async Task LoadAsync()
@@ -94,16 +97,26 @@ public partial class InvoiceViewModel : ViewModelBase
         }
     }
 
-    private async Task LoadLatestRunningAsync()
+    public void RequestLatestRunningRefresh() => _ = LoadLatestRunningAsync();
+
+    internal async Task LoadLatestRunningAsync()
     {
         if (_repository is null) return;
 
         try
         {
             var latest = await _repository.GetLatestRunningAsync();
-            LatestRunningDisplay = latest is null
-                ? "ยังไม่มีเลขที่ใบกำกับล่าสุด"
-                : $"เล่มที่ {latest.Value.BookNo} เลขที่ {latest.Value.RunningNo:00000}";
+            if (latest is null)
+            {
+                CurrentBookNo = 0;
+                CurrentDocNo = 0;
+                StatusMessage = "ยังไม่มีเลขที่ใบกำกับล่าสุดในระบบ กรุณาระบุเล่มที่และเลขที่เริ่มต้น";
+            }
+            else
+            {
+                CurrentBookNo = latest.Value.BookNo;
+                CurrentDocNo = latest.Value.RunningNo;
+            }
         }
         catch
         {

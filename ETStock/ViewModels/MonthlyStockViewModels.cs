@@ -13,6 +13,7 @@ public partial class ProductViewModel
 
     public event EventHandler? AddProductRequested;
     public event EventHandler<int>? GenerateInvoicesConfirmRequested;
+    public event Action? InvoicesGenerated;
 
     private TaskCompletionSource<AddProductResult?>? _addProductTcs;
     private TaskCompletionSource<bool>? _generateConfirmTcs;
@@ -50,7 +51,6 @@ public partial class ProductViewModel
         _repository = repository;
         _invoiceGenerator = invoiceGenerator;
         _ = LoadAsync();
-        _ = LoadLatestRunningAsync();
     }
 
     public void CompleteGenerateInvoicesConfirm(bool confirmed) =>
@@ -72,45 +72,6 @@ public partial class ProductViewModel
 
     [ObservableProperty]
     private MonthlyStockRowViewModel? _selectedRow;
-
-    [ObservableProperty]
-    private string _latestRunningDisplay = string.Empty;
-
-    [ObservableProperty]
-    private bool _needsSeed;
-
-    [ObservableProperty]
-    private int _seedBookNo;
-
-    [ObservableProperty]
-    private int _seedRunningNo;
-
-    private (int BookNo, int RunningNo)? _latestRunning;
-
-    private async Task LoadLatestRunningAsync()
-    {
-        if (_invoiceGenerator is null) return;
-
-        try
-        {
-            _latestRunning = await _invoiceGenerator.GetLatestRunningAsync();
-            if (_latestRunning is null)
-            {
-                NeedsSeed = true;
-                LatestRunningDisplay = string.Empty;
-                StatusMessage = "ยังไม่มีเลขที่ใบกำกับล่าสุดในระบบ กรุณาระบุเล่มที่และเลขที่เริ่มต้นก่อนสร้างใบกำกับ";
-            }
-            else
-            {
-                NeedsSeed = false;
-                LatestRunningDisplay = $"เล่มที่ {_latestRunning.Value.BookNo} เลขที่ {_latestRunning.Value.RunningNo:00000}";
-            }
-        }
-        catch (Exception ex)
-        {
-            StatusMessage = $"ไม่สามารถโหลดเลขที่ใบกำกับล่าสุดได้: {ex.Message}";
-        }
-    }
 
     [RelayCommand]
     private async Task LoadAsync()
@@ -247,19 +208,6 @@ public partial class ProductViewModel
         if (_invoiceGenerator is null) { StatusMessage = "Invoice generator is not available."; return; }
         if (!CanRun()) return;
 
-        const string seedRequiredMessage = "ยังไม่มีเลขที่ใบกำกับล่าสุดในระบบ กรุณาระบุเล่มที่และเลขที่เริ่มต้นก่อนสร้างใบกำกับ";
-
-        (int BookNo, int RunningNo)? seedStart = null;
-        if (_latestRunning is null)
-        {
-            if (SeedBookNo <= 0 || SeedRunningNo <= 0)
-            {
-                StatusMessage = seedRequiredMessage;
-                return;
-            }
-            seedStart = (SeedBookNo, SeedRunningNo);
-        }
-
         IsBusy = true;
         StatusMessage = string.Empty;
 
@@ -288,7 +236,7 @@ public partial class ProductViewModel
                 .ToList();
 
             var result = await _invoiceGenerator.GenerateAsync(
-                SelectedYear, SelectedMonth, stockLines, replaceExisting, seedStart);
+                SelectedYear, SelectedMonth, stockLines, replaceExisting, seedStart: null);
 
             StatusMessage = result is null
                 ? "ไม่มียอดขายหน้าร้านในเดือนนี้ (SellPosQty ทุกรายการเป็น 0)"
@@ -296,11 +244,11 @@ public partial class ProductViewModel
                   $"(มูลค่ารวม {result.TotalAmount:N2} บาท VAT {result.VatAmount:N2} บาท)";
 
             if (result is not null)
-            {
-                var successMessage = StatusMessage;
-                await LoadLatestRunningAsync();
-                StatusMessage = successMessage;
-            }
+                InvoicesGenerated?.Invoke();
+        }
+        catch (InvalidOperationException ex) when (ex.Message.Contains("ไม่พบเลขที่ใบกำกับล่าสุด"))
+        {
+            StatusMessage = "ยังไม่มีเลขที่ใบกำกับล่าสุด — กรุณาไปที่แท็บ 'ABB List' แล้วระบุเล่มที่/เลขที่เริ่มต้น";
         }
         catch (Exception ex)
         {
