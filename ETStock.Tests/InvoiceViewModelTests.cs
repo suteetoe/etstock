@@ -183,10 +183,10 @@ public class InvoiceViewModelTests
         Assert.NotEmpty(vm.StatusMessage);
     }
 
-    // ── LatestRunningDisplay ───────────────────────────────────────────────────
+    // ── CurrentBookNo / CurrentDocNo ───────────────────────────────────────────
 
     [Fact]
-    public async Task LoadAsync_SetsLatestRunningDisplay_WhenRepositoryHasValue()
+    public async Task LoadAsync_PopulatesCurrentBookNoAndDocNo_WhenRepositoryHasValue()
     {
         var baseVm = new InvoiceViewModel();
         int year = baseVm.SelectedYear;
@@ -210,18 +210,21 @@ public class InvoiceViewModelTests
 
         await vm.LoadCommand.ExecuteAsync(null);
 
-        Assert.Equal("เล่มที่ 3 เลขที่ 00042", vm.LatestRunningDisplay);
+        Assert.Equal(3, vm.CurrentBookNo);
+        Assert.Equal(42, vm.CurrentDocNo);
     }
 
     [Fact]
-    public async Task LoadAsync_SetsNoDataMessage_WhenRepositoryReturnsNull()
+    public async Task LoadAsync_LeavesBothZero_WhenRepositoryReturnsNull()
     {
         var repo = new FakeAbbrInvoiceRepository();
         var vm = new InvoiceViewModel(repo);
 
         await vm.LoadCommand.ExecuteAsync(null);
 
-        Assert.Equal("ยังไม่มีเลขที่ใบกำกับล่าสุด", vm.LatestRunningDisplay);
+        Assert.Equal(0, vm.CurrentBookNo);
+        Assert.Equal(0, vm.CurrentDocNo);
+        Assert.Contains("กรุณาระบุเล่มที่และเลขที่เริ่มต้น", vm.StatusMessage);
     }
 
     // ── ToggleExpandCommand ────────────────────────────────────────────────────

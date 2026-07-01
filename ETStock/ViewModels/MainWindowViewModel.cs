@@ -38,6 +38,8 @@ public partial class MainWindowViewModel : ViewModelBase
         InvoicePage = invoiceRepo is not null
             ? new InvoiceViewModel(invoiceRepo, printService)
             : new InvoiceViewModel();
+
+        StockPage.InvoicesGenerated += InvoicePage.RequestLatestRunningRefresh;
     }
 
     [RelayCommand]
