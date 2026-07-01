@@ -57,11 +57,14 @@ public partial class MainWindowViewModel : ViewModelBase
 
         var stockRepo = serviceProvider?.GetService<IMonthlyStockRepository>();
         var invoiceGenerator = serviceProvider?.GetService<IInvoiceGeneratorService>();
-        StockPage = (stockRepo is not null && invoiceGenerator is not null)
-            ? new ProductViewModel(stockRepo, invoiceGenerator, year, month)
-            : stockRepo is not null
-                ? new ProductViewModel(stockRepo, year, month)
-                : new ProductViewModel(year, month);
+        var excelImporter = serviceProvider?.GetService<IExcelImportService>();
+        StockPage = (stockRepo is not null && invoiceGenerator is not null && excelImporter is not null)
+            ? new ProductViewModel(stockRepo, invoiceGenerator, excelImporter, year, month)
+            : (stockRepo is not null && invoiceGenerator is not null)
+                ? new ProductViewModel(stockRepo, invoiceGenerator, year, month)
+                : stockRepo is not null
+                    ? new ProductViewModel(stockRepo, year, month)
+                    : new ProductViewModel(year, month);
 
         var invoiceRepo = serviceProvider?.GetService<IAbbrInvoiceRepository>();
         var printService = serviceProvider?.GetService<IInvoicePrintService>();

@@ -34,6 +34,9 @@
             <Button Content="สร้างใบกำกับภาษีอย่างย่อ"
                     Command="{Binding GenerateInvoicesCommand}"
                     IsEnabled="{Binding !IsBusy}"/>
+            <Button Content="นำเข้ายอดคงเหลือใหม่"
+                    Command="{Binding ImportFromExcelCommand}"
+                    IsEnabled="{Binding !IsBusy}"/>
         </StackPanel>
 
         <Border Grid.Row="2"
