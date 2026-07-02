@@ -1,14 +1,11 @@
 using Avalonia.Controls;
-using Avalonia.Threading;
-using MuPDFCore;
-using System.Diagnostics;
+using Avalonia.Interactivity;
 using System.IO;
 
 namespace ETStock.Views;
 
 public partial class PdfPreviewWindow : Window
 {
-    private byte[] _pdfBytes = [];
     private string _tempPdfPath = string.Empty;
 
     public PdfPreviewWindow()
@@ -18,66 +15,39 @@ public partial class PdfPreviewWindow : Window
 
     public PdfPreviewWindow(byte[] pdfBytes) : this()
     {
-        _pdfBytes = pdfBytes;
         _tempPdfPath = Path.Combine(Path.GetTempPath(), $"etstock_invoice_{Guid.NewGuid():N}.pdf");
+        File.WriteAllBytes(_tempPdfPath, pdfBytes);
 
-        Opened += (_, _) => Dispatcher.UIThread.Post(InitializePreview);
-        Closed += (_, _) => Renderer.ReleaseResources();
+        Opened += OnOpened;
+        Closed += OnClosed;
     }
 
-    private void InitializePreview()
+    private void OnOpened(object? sender, EventArgs e)
     {
-        Renderer.Initialize(
-            _pdfBytes,
-            InputFileTypes.PDF,
-            offset: 0,
-            length: -1,
-            threadCount: 0,
-            pageNumber: 0,
-            resolutionMultiplier: 1.5,
-            includeAnnotations: true,
-            ocrLanguage: null);
-
-        Renderer.Contain();
+        WebView.Source = new Uri(_tempPdfPath);
     }
 
-    private void ZoomIn_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void OnClosed(object? sender, EventArgs e)
     {
-        Renderer.ZoomStep(1, null);
-    }
-
-    private void ZoomOut_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        Renderer.ZoomStep(-1, null);
-    }
-
-    private void FitPage_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        Renderer.Contain();
-    }
-
-    private void Print_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        File.WriteAllBytes(_tempPdfPath, _pdfBytes);
-
         try
         {
-            Process.Start(new ProcessStartInfo(_tempPdfPath)
+            if (File.Exists(_tempPdfPath))
             {
-                UseShellExecute = true,
-                Verb = "print"
-            });
+                File.Delete(_tempPdfPath);
+            }
         }
         catch
         {
-            Process.Start(new ProcessStartInfo(_tempPdfPath)
-            {
-                UseShellExecute = true
-            });
+            // Ignore best-effort temp cleanup failures.
         }
     }
 
-    private void Close_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void Print_Click(object? sender, RoutedEventArgs e)
+    {
+        WebView.ShowPrintUI();
+    }
+
+    private void Close_Click(object? sender, RoutedEventArgs e)
     {
         Close();
     }

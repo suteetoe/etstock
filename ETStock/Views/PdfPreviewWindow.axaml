@@ -1,6 +1,5 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:pdf="using:MuPDFCore.MuPDFRenderer"
         x:Class="ETStock.Views.PdfPreviewWindow"
         Title="พรีวิวใบกำกับภาษีอย่างย่อ"
         Width="760"
@@ -16,12 +15,6 @@
                 BorderThickness="0,0,0,1"
                 Padding="10">
             <DockPanel LastChildFill="False">
-                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="6">
-                    <Button Content="-" Width="36" Click="ZoomOut_Click"/>
-                    <Button Content="+" Width="36" Click="ZoomIn_Click"/>
-                    <Button Content="พอดีหน้า" Click="FitPage_Click"/>
-                </StackPanel>
-
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8">
                     <Button Content="พิมพ์" Classes="accent" Click="Print_Click"/>
                     <Button Content="ปิด" Click="Close_Click"/>
@@ -30,10 +23,7 @@
         </Border>
 
         <Border Grid.Row="1" Margin="14" Background="#E5E7EB">
-            <pdf:PDFRenderer x:Name="Renderer"
-                             Background="#E5E7EB"
-                             PageBackground="White"
-                             ZoomEnabled="True"/>
+            <NativeWebView x:Name="WebView" />
         </Border>
     </Grid>
 </Window>
