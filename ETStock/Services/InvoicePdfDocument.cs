@@ -212,3 +212,28 @@ internal sealed class InvoicePdfDocument : IDocument
         return sb.ToString();
     }
 }
+
+internal sealed class MultiInvoicePdfDocument : IDocument
+{
+    private readonly IReadOnlyList<InvoiceDocumentModel> _docs;
+
+    static MultiInvoicePdfDocument()
+    {
+        QuestPDF.Settings.License = LicenseType.Community;
+    }
+
+    public MultiInvoicePdfDocument(IReadOnlyList<InvoiceDocumentModel> docs) => _docs = docs;
+
+    public DocumentMetadata GetMetadata() =>
+        new() { Title = "ใบกำกับภาษีอย่างย่อรวม" };
+
+    public DocumentSettings GetSettings() => DocumentSettings.Default;
+
+    public void Compose(IDocumentContainer container)
+    {
+        foreach (var doc in _docs)
+        {
+            new InvoicePdfDocument(doc).Compose(container);
+        }
+    }
+}

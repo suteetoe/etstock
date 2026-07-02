@@ -22,6 +22,37 @@ public sealed class InvoicePrintService : IInvoicePrintService
 
         var company = await _companyRepo.GetAsync(ct) ?? new Company();
 
+        return Build(invoice, company);
+    }
+
+    public async Task<byte[]> GeneratePdfAsync(int invoiceId, CancellationToken ct = default)
+    {
+        var doc = await BuildAsync(invoiceId, ct);
+        return await Task.Run(() => new InvoicePdfDocument(doc).GeneratePdf(), ct);
+    }
+
+    public async Task<byte[]> GenerateAllPdfAsync(int taxYear, int taxMonth, CancellationToken ct = default)
+    {
+        var invoices = await _invoiceRepo.GetByPeriodAsync(taxYear, taxMonth);
+        ct.ThrowIfCancellationRequested();
+
+        if (invoices.Count == 0)
+        {
+            return Array.Empty<byte>();
+        }
+
+        var company = await _companyRepo.GetAsync(ct) ?? new Company();
+        ct.ThrowIfCancellationRequested();
+
+        var docs = invoices
+            .Select(invoice => Build(invoice, company))
+            .ToList();
+
+        return await Task.Run(() => new MultiInvoicePdfDocument(docs).GeneratePdf(), ct);
+    }
+
+    private static InvoiceDocumentModel Build(AbbrInvoice invoice, Company company)
+    {
         var lines = invoice.Items
             .Select(item => new InvoiceDocumentLine(
                 item.ProductName,
@@ -49,11 +80,5 @@ public sealed class InvoicePrintService : IInvoicePrintService
             subTotal + vatTotal,
             invoice.BookNo,
             invoice.RunningNo);
-    }
-
-    public async Task<byte[]> GeneratePdfAsync(int invoiceId, CancellationToken ct = default)
-    {
-        var doc = await BuildAsync(invoiceId, ct);
-        return await Task.Run(() => new InvoicePdfDocument(doc).GeneratePdf(), ct);
     }
 }
