@@ -5,6 +5,8 @@ namespace ETStock.Views;
 
 public partial class InvoiceView : UserControl
 {
+    private InvoiceViewModel? _vm;
+
     public InvoiceView()
     {
         InitializeComponent();
@@ -13,8 +15,13 @@ public partial class InvoiceView : UserControl
 
     private void OnDataContextChanged(object? sender, EventArgs e)
     {
-        if (DataContext is InvoiceViewModel vm)
-            vm.PrintPreviewRequested += OnPrintPreviewRequested;
+        if (_vm is not null)
+            _vm.PrintPreviewRequested -= OnPrintPreviewRequested;
+
+        _vm = DataContext as InvoiceViewModel;
+
+        if (_vm is not null)
+            _vm.PrintPreviewRequested += OnPrintPreviewRequested;
     }
 
     private async void OnPrintPreviewRequested(PrintPreviewViewModel previewVm)

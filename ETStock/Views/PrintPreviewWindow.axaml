@@ -10,43 +10,43 @@
 
     <Grid RowDefinitions="*,Auto" Margin="16">
 
-        <ScrollViewer Grid.Row="0">
+        <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Disabled">
             <StackPanel Spacing="6" MaxWidth="760">
 
                 <!-- Company header -->
                 <TextBlock Text="{Binding Doc.CompanyName}" FontSize="18" FontWeight="Bold"/>
                 <TextBlock Text="{Binding Doc.CompanyTaxId, StringFormat='เลขผู้เสียภาษี: {0}'}"/>
                 <TextBlock Text="{Binding Doc.CompanyAddress}"/>
-                <TextBlock>
-                    <Run Text="สาขา: "/>
-                    <Run Text="{Binding Doc.CompanyBranch}"/>
-                    <Run Text=" ("/>
-                    <Run Text="{Binding Doc.CompanyBranchCode}"/>
-                    <Run Text=")"/>
-                </TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="สาขา: "/>
+                    <TextBlock Text="{Binding Doc.CompanyBranch}"/>
+                    <TextBlock Text=" ("/>
+                    <TextBlock Text="{Binding Doc.CompanyBranchCode}"/>
+                    <TextBlock Text=")"/>
+                </StackPanel>
 
                 <Separator Margin="0,4"/>
 
                 <!-- Invoice header -->
                 <TextBlock Text="ใบกำกับภาษีอย่างย่อ" FontSize="15" FontWeight="SemiBold"/>
-                <WrapPanel Orientation="Horizontal">
-                    <TextBlock Margin="0,0,16,0">
-                        <Run FontWeight="SemiBold" Text="เลขที่: "/>
-                        <Run Text="{Binding Doc.InvoiceNo}"/>
-                    </TextBlock>
-                    <TextBlock Margin="0,0,16,0">
-                        <Run FontWeight="SemiBold" Text="วันที่: "/>
-                        <Run Text="{Binding Doc.InvoiceDate, StringFormat='{}{0:dd/MM/yyyy}'}"/>
-                    </TextBlock>
-                    <TextBlock Margin="0,0,16,0">
-                        <Run FontWeight="SemiBold" Text="ปี (พ.ศ.): "/>
-                        <Run Text="{Binding Doc.TaxYear}"/>
-                    </TextBlock>
-                    <TextBlock>
-                        <Run FontWeight="SemiBold" Text="เดือน: "/>
-                        <Run Text="{Binding Doc.TaxMonth}"/>
-                    </TextBlock>
-                </WrapPanel>
+                <StackPanel Orientation="Horizontal" Spacing="16">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontWeight="SemiBold" Text="เลขที่: "/>
+                        <TextBlock Text="{Binding Doc.InvoiceNo}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontWeight="SemiBold" Text="วันที่: "/>
+                        <TextBlock Text="{Binding Doc.InvoiceDate, StringFormat='{}{0:dd/MM/yyyy}'}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontWeight="SemiBold" Text="ปี (พ.ศ.): "/>
+                        <TextBlock Text="{Binding Doc.TaxYear}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontWeight="SemiBold" Text="เดือน: "/>
+                        <TextBlock Text="{Binding Doc.TaxMonth}"/>
+                    </StackPanel>
+                </StackPanel>
 
                 <!-- Items table -->
                 <Border BorderBrush="#C0C0C0" BorderThickness="1" CornerRadius="3" Margin="0,8,0,0">

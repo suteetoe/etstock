@@ -1,3 +1,6 @@
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.Input;
 using ETStock.Models;
 using System.Diagnostics;
@@ -21,11 +24,25 @@ public partial class PrintPreviewViewModel : ViewModelBase
     private void Close() => CloseRequested?.Invoke();
 
     [RelayCommand]
-    private void Print()
+    private async Task PrintAsync()
     {
         var html = BuildHtml(Doc);
-        var tempPath = Path.ChangeExtension(Path.GetTempFileName(), ".html");
-        File.WriteAllText(tempPath, html, Encoding.UTF8);
+        var tempPath = Path.Combine(Path.GetTempPath(), $"etstock_print_{Guid.NewGuid():N}.html");
+        await File.WriteAllTextAsync(tempPath, html, Encoding.UTF8);
+
+        var uri = new Uri("file:///" + tempPath.Replace('\\', '/'));
+
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            var launcher = TopLevel.GetTopLevel(desktop.MainWindow)?.Launcher;
+            if (launcher is not null)
+            {
+                await launcher.LaunchUriAsync(uri);
+                return;
+            }
+        }
+
+        // Fallback: open directly via shell (non-blocking spawn)
         Process.Start(new ProcessStartInfo(tempPath) { UseShellExecute = true });
     }
 
