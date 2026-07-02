@@ -190,6 +190,40 @@ public partial class InvoiceViewModel : ViewModelBase
         }
     }
 
+    [RelayCommand]
+    private async Task PrintAllAsync()
+    {
+        if (_printService is null)
+        {
+            StatusMessage = "ไม่สามารถพิมพ์ได้: บริการพิมพ์ไม่พร้อม";
+            return;
+        }
+
+        IsBusy = true;
+        StatusMessage = string.Empty;
+        try
+        {
+            var pdfBytes = await _printService.GenerateAllPdfAsync(SelectedYear, SelectedMonth);
+
+            if (pdfBytes.Length == 0)
+            {
+                StatusMessage = "ไม่พบข้อมูลใบกำกับภาษีในงวดนั้น";
+                return;
+            }
+
+            PdfPreviewRequested?.Invoke(pdfBytes);
+            StatusMessage = $"สร้าง PDF ทั้งหมดแล้ว สำหรับงวด {SelectedMonth}/{SelectedYear}";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"ไม่สามารถสร้าง PDF ได้: {ex.Message}";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
     private bool CanRun()
     {
         if (_repository is null)

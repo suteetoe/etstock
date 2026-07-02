@@ -126,6 +126,102 @@ public class InvoicePrintServiceTests
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => svc.BuildAsync(999));
     }
+
+    // ── GenerateAllPdfAsync ────────────────────────────────────────────────────
+
+    private static AbbrInvoice MakePeriodInvoice(int id, string invoiceNo, int taxYear = 2568, int taxMonth = 6) => new()
+    {
+        Id = id,
+        InvoiceNo = invoiceNo,
+        InvoiceDate = new DateTime(2025, 6, 1),
+        TaxYear = taxYear,
+        TaxMonth = taxMonth,
+        TotalAmount = 107m,
+        VatAmount = 7m,
+        Items =
+        [
+            new AbbrInvoiceItem
+            {
+                ProductName = "สินค้า ก",
+                Qty = 2m,
+                Amount = 100m,
+                VatAmount = 7m,
+            },
+        ],
+    };
+
+    [Fact]
+    public async Task GenerateAllPdfAsync_NoInvoices_ReturnsEmptyArray()
+    {
+        var svc = new InvoicePrintService(
+            new FakeAbbrInvoiceRepository(),
+            new FakeCompanyRepository(MakeCompany()));
+
+        var result = await svc.GenerateAllPdfAsync(2568, 6);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public async Task GenerateAllPdfAsync_OneInvoice_ReturnsNonEmptyPdf()
+    {
+        var svc = new InvoicePrintService(
+            new FakeAbbrInvoiceRepository([MakePeriodInvoice(1, "TF-001")]),
+            new FakeCompanyRepository(MakeCompany()));
+
+        var result = await svc.GenerateAllPdfAsync(2568, 6);
+
+        Assert.NotEmpty(result);
+        // PDF files always start with the %PDF header magic
+        var header = System.Text.Encoding.ASCII.GetString(result, 0, Math.Min(5, result.Length));
+        Assert.StartsWith("%PDF", header);
+    }
+
+    [Fact]
+    public async Task GenerateAllPdfAsync_MultipleInvoices_ReturnsMultiPagePdf()
+    {
+        var invoices = new[]
+        {
+            MakePeriodInvoice(1, "TF-001"),
+            MakePeriodInvoice(2, "TF-002"),
+            MakePeriodInvoice(3, "TF-003"),
+        };
+        var svc = new InvoicePrintService(
+            new FakeAbbrInvoiceRepository(invoices),
+            new FakeCompanyRepository(MakeCompany()));
+
+        var result = await svc.GenerateAllPdfAsync(2568, 6);
+
+        Assert.NotEmpty(result);
+        var header = System.Text.Encoding.ASCII.GetString(result, 0, Math.Min(5, result.Length));
+        Assert.StartsWith("%PDF", header);
+        // Count pages by counting the /Type /Page dictionary entries in the PDF bytes.
+        var text = System.Text.Encoding.Latin1.GetString(result);
+        var pageCount = System.Text.RegularExpressions.Regex.Count(text, @"/Type\s*/Page[^s]");
+        Assert.Equal(3, pageCount);
+    }
+
+    [Fact]
+    public async Task GenerateAllPdfAsync_FiltersByTaxPeriod()
+    {
+        // Invoices in different periods — only matching period should be rendered
+        var invoices = new[]
+        {
+            MakePeriodInvoice(1, "TF-001", 2568, 6),
+            MakePeriodInvoice(2, "TF-002", 2568, 7),   // different month
+            MakePeriodInvoice(3, "TF-003", 2567, 6),   // different year
+        };
+        var svc = new InvoicePrintService(
+            new FakeAbbrInvoiceRepository(invoices),
+            new FakeCompanyRepository(MakeCompany()));
+
+        var result = await svc.GenerateAllPdfAsync(2568, 6);
+
+        Assert.NotEmpty(result);
+        var text = System.Text.Encoding.Latin1.GetString(result);
+        var pageCount = System.Text.RegularExpressions.Regex.Count(text, @"/Type\s*/Page[^s]");
+        Assert.Equal(1, pageCount);
+    }
 }
 
 public class PrintPreviewViewModelTests

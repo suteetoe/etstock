@@ -22,6 +22,9 @@
                 <Button Content="โหลด"
                         Command="{Binding LoadCommand}"
                         IsEnabled="{Binding !IsBusy}"/>
+                <Button Content="พิมพ์ทั้งหมด"
+                        Command="{Binding PrintAllCommand}"
+                        IsEnabled="{Binding !IsBusy}"/>
                 <TextBlock Text="เล่มที่ล่าสุด"
                            VerticalAlignment="Center"
                            IsVisible="{Binding !NeedsSeed}"/>
