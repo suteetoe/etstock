@@ -1,5 +1,6 @@
 using ETStock.Data.Repositories;
 using ETStock.Models;
+using ETStock.Services;
 using ETStock.ViewModels;
 using Xunit;
 
@@ -84,6 +85,35 @@ internal sealed class FakeAbbrInvoiceRepository : IAbbrInvoiceRepository
         Task.FromResult(_store.Count(i => i.BookNo == bookNo));
 
     public IReadOnlyList<AbbrInvoice> All => _store.AsReadOnly();
+}
+
+/// <summary>
+/// Fake IInvoicePrintService for ViewModel tests.
+/// GenerateAllPdfAsync returns a fixed byte array or empty depending on configuration.
+/// </summary>
+internal sealed class FakeInvoicePrintService : IInvoicePrintService
+{
+    private readonly byte[] _allPdfBytes;
+    public int GenerateAllCalls { get; private set; }
+    public (int Year, int Month)? LastGenerateAllArgs { get; private set; }
+
+    public FakeInvoicePrintService(byte[]? allPdfBytes = null)
+    {
+        _allPdfBytes = allPdfBytes ?? [];
+    }
+
+    public Task<InvoiceDocumentModel> BuildAsync(int invoiceId, CancellationToken ct = default) =>
+        throw new NotImplementedException();
+
+    public Task<byte[]> GeneratePdfAsync(int invoiceId, CancellationToken ct = default) =>
+        throw new NotImplementedException();
+
+    public Task<byte[]> GenerateAllPdfAsync(int taxYear, int taxMonth, CancellationToken ct = default)
+    {
+        GenerateAllCalls++;
+        LastGenerateAllArgs = (taxYear, taxMonth);
+        return Task.FromResult(_allPdfBytes);
+    }
 }
 
 public class InvoiceViewModelTests
@@ -249,5 +279,68 @@ public class InvoiceViewModelTests
 
         vm.ToggleExpandCommand.Execute(row);
         Assert.False(row.IsExpanded);
+    }
+
+    // ── PrintAllCommand ────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task PrintAllCommand_NoInvoices_SetsWarningStatus()
+    {
+        var repo = new FakeAbbrInvoiceRepository();
+        var printSvc = new FakeInvoicePrintService([]); // empty PDF bytes
+        var vm = new InvoiceViewModel(repo, printSvc);
+
+        await vm.PrintAllCommand.ExecuteAsync(null);
+
+        Assert.Contains("ไม่พบข้อมูลใบกำกับภาษีในงวดนั้น", vm.StatusMessage);
+        Assert.Equal(1, printSvc.GenerateAllCalls);
+    }
+
+    [Fact]
+    public async Task PrintAllCommand_HasInvoices_RaisesPdfPreviewRequested()
+    {
+        var repo = new FakeAbbrInvoiceRepository();
+        var pdfBytes = new byte[] { 0x25, 0x50, 0x44, 0x46, 0x2D }; // "%PDF-"
+        var printSvc = new FakeInvoicePrintService(pdfBytes);
+        var vm = new InvoiceViewModel(repo, printSvc);
+
+        byte[]? receivedBytes = null;
+        vm.PdfPreviewRequested += bytes => receivedBytes = bytes;
+
+        await vm.PrintAllCommand.ExecuteAsync(null);
+
+        Assert.NotNull(receivedBytes);
+        Assert.Equal(pdfBytes, receivedBytes);
+        Assert.DoesNotContain("ไม่พบข้อมูล", vm.StatusMessage);
+        Assert.Equal(1, printSvc.GenerateAllCalls);
+    }
+
+    [Fact]
+    public async Task PrintAllCommand_PassesSelectedPeriodToService()
+    {
+        var repo = new FakeAbbrInvoiceRepository();
+        var printSvc = new FakeInvoicePrintService(new byte[] { 1, 2, 3 });
+        var vm = new InvoiceViewModel(repo, printSvc)
+        {
+            SelectedYear = 2568,
+            SelectedMonth = 6,
+        };
+        vm.PdfPreviewRequested += _ => { };
+
+        await vm.PrintAllCommand.ExecuteAsync(null);
+
+        Assert.NotNull(printSvc.LastGenerateAllArgs);
+        Assert.Equal((2568, 6), printSvc.LastGenerateAllArgs!.Value);
+    }
+
+    [Fact]
+    public async Task PrintAllCommand_NoPrintService_SetsErrorStatus()
+    {
+        var repo = new FakeAbbrInvoiceRepository();
+        var vm = new InvoiceViewModel(repo); // no printService
+
+        await vm.PrintAllCommand.ExecuteAsync(null);
+
+        Assert.Contains("ไม่พร้อม", vm.StatusMessage);
     }
 }
