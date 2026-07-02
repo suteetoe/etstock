@@ -5,100 +5,119 @@
         x:Class="ETStock.Views.PrintPreviewWindow"
         x:DataType="vm:PrintPreviewViewModel"
         Title="พรีวิวใบกำกับภาษีอย่างย่อ"
-        Width="820" Height="640"
+        Width="560" Height="740"
         WindowStartupLocation="CenterOwner">
 
-    <Grid RowDefinitions="*,Auto" Margin="16">
+    <Grid RowDefinitions="*,Auto" Margin="20">
 
         <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Disabled">
-            <StackPanel Spacing="6" MaxWidth="760">
+            <Border BorderBrush="#C8C8C8" BorderThickness="1" CornerRadius="3" Padding="18"
+                    MaxWidth="500" Background="White">
+                <StackPanel Spacing="4">
 
-                <!-- Company header -->
-                <TextBlock Text="{Binding Doc.CompanyName}" FontSize="18" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Doc.CompanyTaxId, StringFormat='เลขผู้เสียภาษี: {0}'}"/>
-                <TextBlock Text="{Binding Doc.CompanyAddress}"/>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="สาขา: "/>
-                    <TextBlock Text="{Binding Doc.CompanyBranch}"/>
-                    <TextBlock Text=" ("/>
-                    <TextBlock Text="{Binding Doc.CompanyBranchCode}"/>
-                    <TextBlock Text=")"/>
+                    <!-- Company header -->
+                    <TextBlock Text="{Binding Doc.CompanyName}" FontSize="14" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding Doc.CompanyAddress}" FontSize="10" Opacity="0.75"/>
+                    <TextBlock Text="{Binding Doc.CompanyTaxId, StringFormat='เลขประจำตัวผู้เสียภาษี {0}'}"
+                               FontSize="10" Opacity="0.75"/>
+
+                    <Separator Margin="0,6"/>
+
+                    <!-- Document title -->
+                    <TextBlock Text="ใบเสร็จรับเงิน / ใบกำกับภาษี (อย่างย่อ)"
+                               FontSize="13" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <TextBlock Text="TAX INVOICE"
+                               FontSize="10" HorizontalAlignment="Center" Opacity="0.7"/>
+
+                    <Separator Margin="0,4"/>
+
+                    <!-- Book / Running / Date -->
+                    <Grid ColumnDefinitions="*,Auto" Margin="0,2">
+                        <StackPanel Grid.Column="0" Spacing="2">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBlock FontWeight="SemiBold" Text="เล่มที่:" Width="52"/>
+                                <TextBlock Text="{Binding Doc.BookNo}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBlock FontWeight="SemiBold" Text="เลขที่:" Width="52"/>
+                                <TextBlock Text="{Binding Doc.InvoiceNo}"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Top">
+                            <TextBlock FontWeight="SemiBold" Text="วันที่:"/>
+                            <TextBlock Text="{Binding Doc.InvoiceDate, StringFormat='{}{0:dd/MM/yyyy}'}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Items table -->
+                    <Border BorderBrush="#888" BorderThickness="1" Margin="0,8,0,0">
+                        <StackPanel>
+                            <!-- Header row -->
+                            <Border Background="#C8C8C8" Padding="6,4">
+                                <Grid ColumnDefinitions="24,*,50,70,70" ColumnSpacing="6">
+                                    <TextBlock Grid.Column="0" Text="ลำดับ"        FontWeight="Bold" TextAlignment="Center" FontSize="10"/>
+                                    <TextBlock Grid.Column="1" Text="รายการสินค้า" FontWeight="Bold" FontSize="10"/>
+                                    <TextBlock Grid.Column="2" Text="จำนวน"        FontWeight="Bold" TextAlignment="Right"  FontSize="10"/>
+                                    <TextBlock Grid.Column="3" Text="ราคา/หน่วย"   FontWeight="Bold" TextAlignment="Right"  FontSize="10"/>
+                                    <TextBlock Grid.Column="4" Text="จำนวนเงิน"    FontWeight="Bold" TextAlignment="Right"  FontSize="10"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Data rows -->
+                            <ItemsControl ItemsSource="{Binding Doc.Lines}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="models:InvoiceDocumentLine">
+                                        <Border BorderBrush="#CCCCCC" BorderThickness="0,0,0,1" Padding="6,4">
+                                            <Grid ColumnDefinitions="24,*,50,70,70" ColumnSpacing="6">
+                                                <TextBlock Grid.Column="1" Text="{Binding ProductName}"
+                                                           TextWrapping="Wrap" FontSize="10"/>
+                                                <TextBlock Grid.Column="2"
+                                                           Text="{Binding Qty, StringFormat='{}{0:N0}'}"
+                                                           TextAlignment="Right" FontSize="10"/>
+                                                <TextBlock Grid.Column="3"
+                                                           Text="{Binding UnitPrice, StringFormat='{}{0:N2}'}"
+                                                           TextAlignment="Right" FontSize="10"/>
+                                                <TextBlock Grid.Column="4"
+                                                           Text="{Binding LineTotal, StringFormat='{}{0:N2}'}"
+                                                           TextAlignment="Right" FontSize="10"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <!-- Total footer row -->
+                            <Border Background="#F0F0F0" BorderBrush="#888" BorderThickness="0,1,0,0" Padding="6,5">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Grid.Column="0"
+                                               Text="รวมทั้งสิ้น (ราคารวมภาษีมูลค่าเพิ่มแล้ว)"
+                                               FontSize="9.5" VerticalAlignment="Center" Opacity="0.75"/>
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding Doc.GrandTotal, StringFormat='{}{0:N2}'}"
+                                               FontWeight="Bold" FontSize="13" Width="80" TextAlignment="Right"/>
+                                </Grid>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Signature placeholder -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"
+                                Margin="0,12,0,0" Spacing="6">
+                        <TextBlock Text="ลงชื่อ" FontSize="10"/>
+                        <TextBlock Text="............................................" FontSize="10"/>
+                        <TextBlock Text="ผู้รับเงิน" FontSize="10"/>
+                    </StackPanel>
+                    <TextBlock Text="{Binding Doc.InvoiceDate, StringFormat='วันที่ {0:dd/MM/yyyy}'}"
+                               FontSize="10"/>
+
                 </StackPanel>
-
-                <Separator Margin="0,4"/>
-
-                <!-- Invoice header -->
-                <TextBlock Text="ใบกำกับภาษีอย่างย่อ" FontSize="15" FontWeight="SemiBold"/>
-                <StackPanel Orientation="Horizontal" Spacing="16">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock FontWeight="SemiBold" Text="เลขที่: "/>
-                        <TextBlock Text="{Binding Doc.InvoiceNo}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock FontWeight="SemiBold" Text="วันที่: "/>
-                        <TextBlock Text="{Binding Doc.InvoiceDate, StringFormat='{}{0:dd/MM/yyyy}'}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock FontWeight="SemiBold" Text="ปี (พ.ศ.): "/>
-                        <TextBlock Text="{Binding Doc.TaxYear}"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock FontWeight="SemiBold" Text="เดือน: "/>
-                        <TextBlock Text="{Binding Doc.TaxMonth}"/>
-                    </StackPanel>
-                </StackPanel>
-
-                <!-- Items table -->
-                <Border BorderBrush="#C0C0C0" BorderThickness="1" CornerRadius="3" Margin="0,8,0,0">
-                    <StackPanel>
-                        <Border Background="#EEEEEE" Padding="8,6">
-                            <Grid ColumnDefinitions="*,80,110,80" ColumnSpacing="8">
-                                <TextBlock Grid.Column="0" Text="ชื่อสินค้า" FontWeight="SemiBold"/>
-                                <TextBlock Grid.Column="1" Text="จำนวน" FontWeight="SemiBold" TextAlignment="Right"/>
-                                <TextBlock Grid.Column="2" Text="ยอดก่อน VAT" FontWeight="SemiBold" TextAlignment="Right"/>
-                                <TextBlock Grid.Column="3" Text="VAT" FontWeight="SemiBold" TextAlignment="Right"/>
-                            </Grid>
-                        </Border>
-                        <ItemsControl ItemsSource="{Binding Doc.Lines}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="models:InvoiceDocumentLine">
-                                    <Border BorderBrush="#E5E5E5" BorderThickness="0,0,0,1" Padding="8,6">
-                                        <Grid ColumnDefinitions="*,80,110,80" ColumnSpacing="8">
-                                            <TextBlock Grid.Column="0" Text="{Binding ProductName}" VerticalAlignment="Center" TextWrapping="Wrap"/>
-                                            <TextBlock Grid.Column="1" Text="{Binding Qty, StringFormat='{}{0:N2}'}" TextAlignment="Right" VerticalAlignment="Center"/>
-                                            <TextBlock Grid.Column="2" Text="{Binding Amount, StringFormat='{}{0:N2}'}" TextAlignment="Right" VerticalAlignment="Center"/>
-                                            <TextBlock Grid.Column="3" Text="{Binding VatAmount, StringFormat='{}{0:N2}'}" TextAlignment="Right" VerticalAlignment="Center"/>
-                                        </Grid>
-                                    </Border>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
-                </Border>
-
-                <!-- Totals -->
-                <StackPanel HorizontalAlignment="Right" Spacing="4" Margin="0,8,0,4">
-                    <StackPanel Orientation="Horizontal" Spacing="12">
-                        <TextBlock Text="ยอดก่อน VAT:" Width="130" TextAlignment="Right"/>
-                        <TextBlock Text="{Binding Doc.SubTotal, StringFormat='{}{0:N2} บาท'}" FontWeight="SemiBold" Width="120" TextAlignment="Right"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Spacing="12">
-                        <TextBlock Text="VAT:" Width="130" TextAlignment="Right"/>
-                        <TextBlock Text="{Binding Doc.VatTotal, StringFormat='{}{0:N2} บาท'}" FontWeight="SemiBold" Width="120" TextAlignment="Right"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Spacing="12">
-                        <TextBlock Text="ยอดรวมทั้งสิ้น:" Width="130" TextAlignment="Right" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding Doc.GrandTotal, StringFormat='{}{0:N2} บาท'}" FontWeight="Bold" FontSize="15" Width="120" TextAlignment="Right"/>
-                    </StackPanel>
-                </StackPanel>
-
-            </StackPanel>
+            </Border>
         </ScrollViewer>
 
         <!-- Action buttons -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8"
                     HorizontalAlignment="Right" Margin="0,12,0,0">
-            <Button Content="พิมพ์ (เปิดหน้าต่างพิมพ์)"
+            <Button Content="เปิด PDF / พิมพ์ (เปิดเบราว์เซอร์)"
                     Command="{Binding PrintCommand}"
                     Classes="accent"/>
             <Button Content="ปิด"

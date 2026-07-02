@@ -162,7 +162,7 @@ public partial class InvoiceViewModel : ViewModelBase
         row.IsExpanded = !row.IsExpanded;
     }
 
-    public event Action<PrintPreviewViewModel>? PrintPreviewRequested;
+    public event Action<byte[]>? PdfPreviewRequested;
 
     [RelayCommand]
     private async Task PrintAsync(InvoiceRowViewModel row)
@@ -177,13 +177,12 @@ public partial class InvoiceViewModel : ViewModelBase
         StatusMessage = string.Empty;
         try
         {
-            var doc = await _printService.BuildAsync(row.Id);
-            var vm = new PrintPreviewViewModel(doc);
-            PrintPreviewRequested?.Invoke(vm);
+            var pdfBytes = await _printService.GeneratePdfAsync(row.Id);
+            PdfPreviewRequested?.Invoke(pdfBytes);
         }
         catch (Exception ex)
         {
-            StatusMessage = $"ไม่สามารถสร้างพรีวิวได้: {ex.Message}";
+            StatusMessage = $"ไม่สามารถสร้าง PDF ได้: {ex.Message}";
         }
         finally
         {

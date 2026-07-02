@@ -16,17 +16,17 @@ public partial class InvoiceView : UserControl
     private void OnDataContextChanged(object? sender, EventArgs e)
     {
         if (_vm is not null)
-            _vm.PrintPreviewRequested -= OnPrintPreviewRequested;
+            _vm.PdfPreviewRequested -= OnPdfPreviewRequested;
 
         _vm = DataContext as InvoiceViewModel;
 
         if (_vm is not null)
-            _vm.PrintPreviewRequested += OnPrintPreviewRequested;
+            _vm.PdfPreviewRequested += OnPdfPreviewRequested;
     }
 
-    private async void OnPrintPreviewRequested(PrintPreviewViewModel previewVm)
+    private async void OnPdfPreviewRequested(byte[] pdfBytes)
     {
-        var window = new PrintPreviewWindow(previewVm);
+        var window = new PdfPreviewWindow(pdfBytes);
         if (TopLevel.GetTopLevel(this) is Window parent)
             await window.ShowDialog(parent);
         else

@@ -1,5 +1,6 @@
 using ETStock.Data.Repositories;
 using ETStock.Models;
+using QuestPDF.Fluent;
 
 namespace ETStock.Services;
 
@@ -45,6 +46,14 @@ public sealed class InvoicePrintService : IInvoicePrintService
             lines,
             subTotal,
             vatTotal,
-            subTotal + vatTotal);
+            subTotal + vatTotal,
+            invoice.BookNo,
+            invoice.RunningNo);
+    }
+
+    public async Task<byte[]> GeneratePdfAsync(int invoiceId, CancellationToken ct = default)
+    {
+        var doc = await BuildAsync(invoiceId, ct);
+        return await Task.Run(() => new InvoicePdfDocument(doc).GeneratePdf(), ct);
     }
 }

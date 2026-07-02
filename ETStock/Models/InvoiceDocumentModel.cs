@@ -4,7 +4,11 @@ public record InvoiceDocumentLine(
     string ProductName,
     decimal Qty,
     decimal Amount,
-    decimal VatAmount);
+    decimal VatAmount)
+{
+    public decimal LineTotal => Amount + VatAmount;
+    public decimal UnitPrice => Qty != 0m ? Math.Round(LineTotal / Qty, 2) : 0m;
+}
 
 public record InvoiceDocumentModel(
     string CompanyName,
@@ -19,4 +23,6 @@ public record InvoiceDocumentModel(
     IReadOnlyList<InvoiceDocumentLine> Lines,
     decimal SubTotal,
     decimal VatTotal,
-    decimal GrandTotal);
+    decimal GrandTotal,
+    int? BookNo = null,
+    int? RunningNo = null);
