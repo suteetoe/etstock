@@ -19,24 +19,22 @@
 
             <!-- toolbar: Load button + latest running number (hidden when seed needed) -->
             <StackPanel Orientation="Horizontal" Spacing="8">
-                <Button Content="โหลด"
-                        Command="{Binding LoadCommand}"
-                        IsEnabled="{Binding !IsBusy}"/>
-                <Button Content="พิมพ์ทั้งหมด"
-                        Command="{Binding PrintAllCommand}"
-                        IsEnabled="{Binding !IsBusy}"/>
-                <TextBlock Text="เล่มที่ล่าสุด"
+             
+                <TextBlock Text="เล่มที่"
                            VerticalAlignment="Center"
                            IsVisible="{Binding !NeedsSeed}"/>
                 <TextBlock Text="{Binding CurrentBookNo}"
                            VerticalAlignment="Center"
                            IsVisible="{Binding !NeedsSeed}"/>
-                <TextBlock Text="  เลขที่ล่าสุด"
+                <TextBlock Text="  เลขที่"
                            VerticalAlignment="Center"
                            IsVisible="{Binding !NeedsSeed}"/>
                 <TextBlock Text="{Binding CurrentDocNo, StringFormat='{}{0:00000}'}"
                            VerticalAlignment="Center"
-                           IsVisible="{Binding !NeedsSeed}"/>
+                           IsVisible="{Binding !NeedsSeed}"/>             
+                <Button Content="พิมพ์ทั้งหมด"
+                        Command="{Binding PrintAllCommand}"
+                        IsEnabled="{Binding !IsBusy}"/>
             </StackPanel>
 
             <!-- seed form: visible once when no running numbers exist in DB -->
