@@ -39,6 +39,9 @@
             <Button Content="Save"
                     Command="{Binding SaveCommand}"
                     IsEnabled="{Binding !IsBusy}"/>
+            <Button Content="ส่งออกเป็น Excel"
+                    Command="{Binding ExportExcelCommand}"
+                    IsEnabled="{Binding !IsBusy}"/>
             <Button Content="สร้างใบกำกับภาษีอย่างย่อ"
                     Command="{Binding GenerateInvoicesCommand}"
                     IsEnabled="{Binding !IsBusy}"/>

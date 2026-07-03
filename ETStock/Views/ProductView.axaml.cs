@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Platform.Storage;
 using ETStock.ViewModels;
 
 namespace ETStock.Views;
@@ -22,6 +23,7 @@ public partial class ProductView : UserControl
             _vm.AddProductRequested -= OnAddProductRequested;
             _vm.GenerateInvoicesConfirmRequested -= OnGenerateInvoicesConfirmRequested;
             _vm.ScrollToRowRequested -= OnScrollToRowRequested;
+            _vm.ExportExcelRequested -= OnExportExcelRequested;
         }
 
         _vm = DataContext as ProductViewModel;
@@ -31,6 +33,7 @@ public partial class ProductView : UserControl
             _vm.AddProductRequested += OnAddProductRequested;
             _vm.GenerateInvoicesConfirmRequested += OnGenerateInvoicesConfirmRequested;
             _vm.ScrollToRowRequested += OnScrollToRowRequested;
+            _vm.ExportExcelRequested += OnExportExcelRequested;
         }
     }
 
@@ -46,6 +49,29 @@ public partial class ProductView : UserControl
         var dialog = new AddProductDialog();
         var result = await dialog.ShowDialog<AddProductResult?>(topLevel);
         _vm.CompleteAddProduct(result);
+    }
+
+    private async void OnExportExcelRequested(object? sender, EventArgs e)
+    {
+        var topLevel = TopLevel.GetTopLevel(this) as Window;
+        if (topLevel is null || _vm is null) { _vm?.CompleteExportExcel(null); return; }
+
+        var defaultName = $"Stock_{_vm.SelectedYear}_{_vm.SelectedMonth:00}.xlsx";
+        var file = await topLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "บันทึกไฟล์ Excel",
+            SuggestedFileName = defaultName,
+            DefaultExtension = "xlsx",
+            FileTypeChoices =
+            [
+                new FilePickerFileType("Excel")
+                {
+                    Patterns = ["*.xlsx"]
+                }
+            ]
+        });
+
+        _vm.CompleteExportExcel(file?.Path.LocalPath);
     }
 
     private async void OnGenerateInvoicesConfirmRequested(object? sender, int existingCount)
