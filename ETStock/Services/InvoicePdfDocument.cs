@@ -60,6 +60,9 @@ internal sealed class InvoicePdfDocument : IDocument
             col.Item().Text(_doc.CompanyAddress).FontSize(9.5f);
 
         col.Item().Text($"เลขประจำตัวผู้เสียภาษี {_doc.CompanyTaxId}").FontSize(9.5f);
+
+        if (!string.IsNullOrWhiteSpace(_doc.CompanyPhone))
+            col.Item().Text($"โทร. {_doc.CompanyPhone}").FontSize(9.5f);
     }
 
     private static void ComposeTitle(ColumnDescriptor col)

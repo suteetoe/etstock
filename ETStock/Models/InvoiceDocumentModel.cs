@@ -25,4 +25,5 @@ public record InvoiceDocumentModel(
     decimal VatTotal,
     decimal GrandTotal,
     int? BookNo = null,
-    int? RunningNo = null);
+    int? RunningNo = null,
+    string CompanyPhone = "");

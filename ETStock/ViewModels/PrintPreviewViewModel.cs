@@ -82,6 +82,8 @@ public partial class PrintPreviewViewModel : ViewModelBase
         if (!string.IsNullOrWhiteSpace(doc.CompanyAddress))
             sb.Append($"<div class='co-info'>{H(doc.CompanyAddress)}</div>");
         sb.Append($"<div class='co-info'>เลขประจำตัวผู้เสียภาษี {H(doc.CompanyTaxId)}</div>");
+        if (!string.IsNullOrWhiteSpace(doc.CompanyPhone))
+            sb.Append($"<div class='co-info'>โทร. {H(doc.CompanyPhone)}</div>");
 
         // ─── Document title ──────────────────────────────────────────────
         sb.Append("<div class='title'>");

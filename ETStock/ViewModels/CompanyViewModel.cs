@@ -21,6 +21,7 @@ public partial class CompanyViewModel : ViewModelBase
     [ObservableProperty] private string _address = string.Empty;
     [ObservableProperty] private string _branchName = string.Empty;
     [ObservableProperty] private string _branchCode = "00000";
+    [ObservableProperty] private string _phoneNumber = string.Empty;
     [ObservableProperty] private string _invoicePrefix = string.Empty;
     [ObservableProperty] private string _vatRate = "7";
     [ObservableProperty] private bool _isBusy;
@@ -42,6 +43,7 @@ public partial class CompanyViewModel : ViewModelBase
                 Address = company.Address;
                 BranchName = company.BranchName;
                 BranchCode = company.BranchCode;
+                PhoneNumber = company.PhoneNumber;
                 InvoicePrefix = company.InvoicePrefix;
                 VatRate = (company.VatRate * 100).ToString("0.##");
             }
@@ -74,6 +76,7 @@ public partial class CompanyViewModel : ViewModelBase
                 Address = Address,
                 BranchName = BranchName,
                 BranchCode = BranchCode,
+                PhoneNumber = PhoneNumber,
                 InvoicePrefix = InvoicePrefix,
                 VatRate = vatPct / 100m
             };
