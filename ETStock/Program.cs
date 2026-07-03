@@ -36,6 +36,7 @@ internal sealed class Program
                 services.AddScoped<IInvoicePrintService, InvoicePrintService>();
                 services.AddScoped<IInvoiceGeneratorService, InvoiceGeneratorService>();
                 services.AddSingleton<IExcelImportService, ExcelImportService>();
+                services.AddSingleton<IExcelExportService, ExcelExportService>();
             })
             .Build();
 
