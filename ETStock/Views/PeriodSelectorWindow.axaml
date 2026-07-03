@@ -3,6 +3,7 @@
         xmlns:vm="using:ETStock.ViewModels"
         x:Class="ETStock.Views.PeriodSelectorWindow"
         x:DataType="vm:PeriodSelectorViewModel"
+        Icon="avares://ETStock/Assets/etstock.ico"
         Title="เลือกงวด (ปี / เดือน)"
         Width="400" Height="180"
         WindowStartupLocation="CenterScreen"

@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="ETStock.Views.PdfPreviewWindow"
+        Icon="avares://ETStock/Assets/etstock.ico"
         Title="พรีวิวใบกำกับภาษีอย่างย่อ"
         Width="760"
         Height="900"

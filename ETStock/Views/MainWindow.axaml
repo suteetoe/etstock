@@ -7,7 +7,8 @@
         mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="680"
         x:Class="ETStock.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Title="ETStock — ระบบออกใบกำกับภาษีอย่างย่อ"
+        Icon="avares://ETStock/Assets/etstock.ico"
+        Title="ET Stock"
         Width="1024" Height="680">
 
     <Design.DataContext>

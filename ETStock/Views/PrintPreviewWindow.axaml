@@ -4,6 +4,7 @@
         xmlns:models="using:ETStock.Models"
         x:Class="ETStock.Views.PrintPreviewWindow"
         x:DataType="vm:PrintPreviewViewModel"
+        Icon="avares://ETStock/Assets/etstock.ico"
         Title="พรีวิวใบกำกับภาษีอย่างย่อ"
         Width="560" Height="740"
         WindowStartupLocation="CenterOwner">

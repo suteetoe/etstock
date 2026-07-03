@@ -3,6 +3,7 @@
         xmlns:vm="using:ETStock.ViewModels"
         x:Class="ETStock.Views.AddProductDialog"
         x:DataType="vm:AddProductDialogViewModel"
+        Icon="avares://ETStock/Assets/etstock.ico"
         Title="เพิ่มสินค้า"
         Width="360" Height="280"
         WindowStartupLocation="CenterOwner"

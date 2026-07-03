@@ -4,6 +4,7 @@
         xmlns:views="using:ETStock.Views"
         x:Class="ETStock.Views.CompanyDialog"
         x:DataType="vm:CompanyViewModel"
+        Icon="avares://ETStock/Assets/etstock.ico"
         Title="ตั้งค่าข้อมูลบริษัท"
         Width="700" Height="520"
         WindowStartupLocation="CenterOwner"
