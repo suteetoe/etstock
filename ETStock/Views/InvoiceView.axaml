@@ -20,13 +20,13 @@
             <!-- toolbar: Load button + latest running number (hidden when seed needed) -->
             <DockPanel LastChildFill="False">
              
-                <TextBlock Text="เล่มที่"
+                <TextBlock Text="เล่มที่ "
                            VerticalAlignment="Center"
                            IsVisible="{Binding !NeedsSeed}"/>
                 <TextBlock Text="{Binding CurrentBookNo}"
                            VerticalAlignment="Center"
                            IsVisible="{Binding !NeedsSeed}"/>
-                <TextBlock Text="  เลขที่"
+                <TextBlock Text="  เลขที่ "
                            VerticalAlignment="Center"
                            IsVisible="{Binding !NeedsSeed}"/>
                 <TextBlock Text="{Binding CurrentDocNo, StringFormat='{}{0:00000}'}"

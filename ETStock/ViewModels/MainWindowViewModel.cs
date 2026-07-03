@@ -1,3 +1,4 @@
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ETStock.Data.Repositories;
@@ -25,7 +26,8 @@ public partial class MainWindowViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(PeriodLabel))]
     private int _selectedMonth;
 
-    public string PeriodLabel => $"ปี {SelectedYear}  เดือน {SelectedMonth:00}";
+    public string PeriodLabel =>
+        $"{CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(SelectedMonth)} {SelectedYear + 543}";
 
     partial void OnSelectedYearChanged(int value)
     {
