@@ -98,9 +98,14 @@ internal sealed class InvoicePdfDocument : IDocument
              .Padding(3);
 
         static IContainer DataCell(IContainer c) =>
-            c.Border(1).BorderColor("#888888")
+            c.BorderLeft(1).BorderRight(1).BorderColor("#888888")
              .Padding(3)
-             .MinHeight(16);
+             .MinHeight(14);
+
+        static IContainer FooterCell(IContainer c) =>
+            c.BorderLeft(1).BorderRight(1).BorderTop(1).BorderBottom(1).BorderColor("#888888")
+             .Padding(3)
+             .MinHeight(14);
 
         col.Item().PaddingTop(4).Table(table =>
         {
@@ -142,17 +147,17 @@ internal sealed class InvoicePdfDocument : IDocument
                     table.Cell().Element(DataCell).Text("");
 
             // ── Footer row ───────────────────────────────────────────────
-            table.Cell().ColumnSpan(2).Element(DataCell)
+            table.Cell().ColumnSpan(2).Element(FooterCell)
                 .AlignCenter()
                 .Text(ThaiAmountInWords(_doc.GrandTotal)).Bold().FontSize(10);
 
-            table.Cell().ColumnSpan(2).Element(DataCell).Column(c =>
+            table.Cell().ColumnSpan(2).Element(FooterCell).Column(c =>
             {
                 c.Item().AlignCenter().Text("รวมทั้งสิ้น").FontSize(8.5f);
                 c.Item().AlignCenter().Text("(ราคารวมภาษีมูลค่าเพิ่มแล้ว)").FontSize(7.5f);
             });
 
-            table.Cell().Element(DataCell)
+            table.Cell().Element(FooterCell)
                 .AlignRight()
                 .Text(_doc.GrandTotal.ToString("N2")).Bold().FontSize(10);
         });
