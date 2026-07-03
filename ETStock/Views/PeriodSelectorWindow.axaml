@@ -17,14 +17,14 @@
                     <NumericUpDown Value="{Binding SelectedYear}"
                                    Minimum="2000" Maximum="2100"
                                    FormatString="0"
-                                   ShowButtonSpinner="True"/>
+                                   ShowButtonSpinner="false" AllowSpin="false" />
                 </StackPanel>
                 <StackPanel Grid.Column="2" Spacing="4">
                     <TextBlock Text="เดือน (Month)" FontWeight="SemiBold"/>
                     <NumericUpDown Value="{Binding SelectedMonth}"
                                    Minimum="1" Maximum="12"
                                    FormatString="0"
-                                   ShowButtonSpinner="True"/>
+                                   ShowButtonSpinner="false" AllowSpin="false"/>
                 </StackPanel>
             </Grid>
         </StackPanel>

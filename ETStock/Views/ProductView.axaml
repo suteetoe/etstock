@@ -108,17 +108,17 @@
                                                            Value="{Binding BuyQty}"
                                                            Minimum="0"
                                                            FormatString="0.##"
-                                                           HorizontalContentAlignment="Right"/>
+                                                           HorizontalContentAlignment="Right"  ShowButtonSpinner="false" AllowSpin="false"  />
                                             <NumericUpDown Grid.Column="4"
                                                            Value="{Binding SellPosQty}"
                                                            Minimum="0"
                                                            FormatString="0.##"
-                                                           HorizontalContentAlignment="Right"/>
+                                                           HorizontalContentAlignment="Right"  ShowButtonSpinner="false" AllowSpin="false"  />
                                             <NumericUpDown Grid.Column="5"
                                                            Value="{Binding SellFullQty}"
                                                            Minimum="0"
                                                            FormatString="0.##"
-                                                           HorizontalContentAlignment="Right"/>
+                                                           HorizontalContentAlignment="Right"  ShowButtonSpinner="false" AllowSpin="false"  />
                                             <TextBlock Grid.Column="6"
                                                        Text="{Binding ClosingQty, StringFormat={}{0:N2}}"
                                                        FontWeight="SemiBold"
@@ -128,12 +128,12 @@
                                                            Value="{Binding CostPrice}"
                                                            Minimum="0"
                                                            FormatString="0.##"
-                                                           HorizontalContentAlignment="Right"/>
+                                                           HorizontalContentAlignment="Right"  ShowButtonSpinner="false" AllowSpin="false"  />
                                             <NumericUpDown Grid.Column="8"
                                                            Value="{Binding SellPrice}"
                                                            Minimum="0"
                                                            FormatString="0.##"
-                                                           HorizontalContentAlignment="Right"/>
+                                                           HorizontalContentAlignment="Right"  ShowButtonSpinner="false" AllowSpin="false"  />
                                             <TextBlock Grid.Column="9"
                                                        Text="{Binding SalesAmount, StringFormat={}{0:N2}}"
                                                        TextAlignment="Right"
