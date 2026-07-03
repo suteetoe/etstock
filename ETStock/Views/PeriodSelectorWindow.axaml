@@ -4,29 +4,17 @@
         x:Class="ETStock.Views.PeriodSelectorWindow"
         x:DataType="vm:PeriodSelectorViewModel"
         Title="เลือกงวด (ปี / เดือน)"
-        Width="400" Height="220"
+        Width="400" Height="180"
         WindowStartupLocation="CenterScreen"
         CanResize="False"
         ShowInTaskbar="True">
 
     <Grid RowDefinitions="*,Auto" Margin="16">
-        <StackPanel Grid.Row="0" Spacing="12">
-            <Grid ColumnDefinitions="*,16,*">
-                <StackPanel Grid.Column="0" Spacing="4">
-                    <TextBlock Text="ปี (Year)" FontWeight="SemiBold"/>
-                    <NumericUpDown Value="{Binding SelectedYear}"
-                                   Minimum="2000" Maximum="2100"
-                                   FormatString="0"
-                                   ShowButtonSpinner="false" AllowSpin="false" />
-                </StackPanel>
-                <StackPanel Grid.Column="2" Spacing="4">
-                    <TextBlock Text="เดือน (Month)" FontWeight="SemiBold"/>
-                    <NumericUpDown Value="{Binding SelectedMonth}"
-                                   Minimum="1" Maximum="12"
-                                   FormatString="0"
-                                   ShowButtonSpinner="false" AllowSpin="false"/>
-                </StackPanel>
-            </Grid>
+        <StackPanel Grid.Row="0" Spacing="8">
+            <TextBlock Text="เลือกเดือน / ปี" FontWeight="SemiBold"/>
+            <DatePicker SelectedDate="{Binding SelectedDate}"
+                        DayVisible="False"
+                        HorizontalAlignment="Stretch"/>
         </StackPanel>
 
         <Grid Grid.Row="1" ColumnDefinitions="*,8,*" Margin="0,16,0,0">

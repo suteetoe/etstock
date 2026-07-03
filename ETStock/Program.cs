@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Globalization;
+using System.Threading;
 
 namespace ETStock;
 
@@ -19,6 +21,13 @@ internal sealed class Program
     [STAThread]
     public static void Main(string[] args)
     {
+        var culture = new CultureInfo("th-TH");
+        culture.DateTimeFormat.Calendar = new ThaiBuddhistCalendar();
+        Thread.CurrentThread.CurrentCulture = culture;
+        Thread.CurrentThread.CurrentUICulture = culture;
+        CultureInfo.DefaultThreadCurrentCulture = culture;
+        CultureInfo.DefaultThreadCurrentUICulture = culture;
+
         var host = Host.CreateDefaultBuilder(args)
             .ConfigureAppConfiguration(config =>
             {

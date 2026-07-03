@@ -7,18 +7,30 @@ public partial class PeriodSelectorViewModel : ViewModelBase
 {
     public PeriodSelectorViewModel()
     {
-        var today = DateTime.Today;
+        var today = DateTimeOffset.Now;
+        _selectedDate = today;
         _selectedYear = today.Year;
         _selectedMonth = today.Month;
     }
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ConfirmCommand))]
+    private DateTimeOffset? _selectedDate;
+
+    [ObservableProperty]
     private int _selectedYear;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(ConfirmCommand))]
     private int _selectedMonth;
+
+    partial void OnSelectedDateChanged(DateTimeOffset? value)
+    {
+        if (value.HasValue)
+        {
+            SelectedYear = value.Value.Year;
+            SelectedMonth = value.Value.Month;
+        }
+    }
 
     public bool IsConfirmed { get; private set; }
 
@@ -35,7 +47,5 @@ public partial class PeriodSelectorViewModel : ViewModelBase
     [RelayCommand]
     private void Cancel() => CancelRequested?.Invoke(this, EventArgs.Empty);
 
-    private bool CanConfirm() =>
-        SelectedYear >= 2000 && SelectedYear <= 2100 &&
-        SelectedMonth >= 1 && SelectedMonth <= 12;
+    private bool CanConfirm() => SelectedDate.HasValue;
 }
