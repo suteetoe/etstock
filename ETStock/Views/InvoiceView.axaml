@@ -18,7 +18,7 @@
         <StackPanel Grid.Row="0" Spacing="6">
 
             <!-- toolbar: Load button + latest running number (hidden when seed needed) -->
-            <StackPanel Orientation="Horizontal" Spacing="8">
+            <DockPanel LastChildFill="False">
              
                 <TextBlock Text="เล่มที่"
                            VerticalAlignment="Center"
@@ -33,9 +33,10 @@
                            VerticalAlignment="Center"
                            IsVisible="{Binding !NeedsSeed}"/>             
                 <Button Content="พิมพ์ทั้งหมด"
+                        DockPanel.Dock="Right"
                         Command="{Binding PrintAllCommand}"
                         IsEnabled="{Binding !IsBusy}"/>
-            </StackPanel>
+            </DockPanel>
 
             <!-- seed form: visible once when no running numbers exist in DB -->
             <Border IsVisible="{Binding NeedsSeed}"
