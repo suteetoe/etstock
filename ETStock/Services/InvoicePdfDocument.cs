@@ -54,15 +54,15 @@ internal sealed class InvoicePdfDocument : IDocument
         string branch = string.IsNullOrWhiteSpace(_doc.CompanyBranch)
             ? "" : $" ({_doc.CompanyBranch})";
 
-        col.Item().Text($"{_doc.CompanyName}{branch}").Bold().FontSize(12);
+        col.Item().PaddingBottom(-2).Text($"{_doc.CompanyName}{branch}").Bold().FontSize(12);
 
         if (!string.IsNullOrWhiteSpace(_doc.CompanyAddress))
-            col.Item().Text(_doc.CompanyAddress).FontSize(9.5f);
+            col.Item().PaddingBottom(-2).Text(_doc.CompanyAddress).FontSize(9.5f);
 
         if (!string.IsNullOrWhiteSpace(_doc.CompanyPhone))
-            col.Item().Text($"โทร. {_doc.CompanyPhone}").FontSize(9.5f);
+            col.Item().PaddingBottom(-2).Text($"โทร. {_doc.CompanyPhone}").FontSize(9.5f);
 
-        col.Item().Text($"เลขประจำตัวผู้เสียภาษี {_doc.CompanyTaxId}").FontSize(9.5f);
+        col.Item().PaddingBottom(-2).Text($"เลขประจำตัวผู้เสียภาษี {_doc.CompanyTaxId}").FontSize(9.5f);
 
        
     }
@@ -99,13 +99,13 @@ internal sealed class InvoicePdfDocument : IDocument
 
         static IContainer DataCell(IContainer c) =>
             c.BorderLeft(1).BorderRight(1).BorderColor("#888888")
-             .Padding(3)
+             .PaddingVertical(1).PaddingHorizontal(3)
              .MinHeight(14);
 
         static IContainer FooterCell(IContainer c) =>
             c.BorderLeft(1).BorderRight(1).BorderTop(1).BorderBottom(1).BorderColor("#888888")
              .Padding(3)
-             .MinHeight(14);
+             .MinHeight(10);
 
         col.Item().PaddingTop(4).Table(table =>
         {
