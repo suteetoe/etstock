@@ -98,6 +98,85 @@ public class MonthlyStockViewModelTests
         SelectedMonth = 6
     };
 
+    private static ProductViewModel CreateViewModelWithExporter(
+        IMonthlyStockRepository repository,
+        IExcelExportService excelExporter) => new(
+        repository,
+        new FakeInvoiceGeneratorService(null),
+        new FakeExcelImportService(),
+        excelExporter,
+        2026,
+        6);
+
+    [Fact]
+    public void TotalCost_EqualsSalesQtyTimesCostPrice()
+    {
+        var product = new ProductWithStock("สินค้า A", "ชิ้น", 80m, 150m,
+            new MonthlyStockSnapshot(1, "สินค้า A", 2026, 6, 0, 0, 5, 2));
+        var row = new MonthlyStockRowViewModel(product);
+
+        // SalesQty = 5+2 = 7, CostPrice = 80 → TotalCost = 560
+        Assert.Equal(7m * 80m, row.TotalCost);
+    }
+
+    [Fact]
+    public async Task ExportExcel_WritesFileWhenPathProvided()
+    {
+        var repository = new FakeMonthlyStockRepository();
+        repository.SetPeriod(2026, 6, Product());
+        var fakeExporter = new FakeExcelExportService();
+        var viewModel = CreateViewModelWithExporter(repository, fakeExporter);
+
+        await viewModel.LoadCommand.ExecuteAsync(null);
+
+        var testPath = Path.Combine(Path.GetTempPath(), $"test_{Guid.NewGuid()}.xlsx");
+        viewModel.ExportExcelRequested += (_, _) => viewModel.CompleteExportExcel(testPath);
+
+        await viewModel.ExportExcelCommand.ExecuteAsync(null);
+
+        Assert.Equal(1, fakeExporter.WriteStockCallCount);
+        Assert.Equal(testPath, fakeExporter.LastFilePath);
+    }
+
+    [Fact]
+    public async Task ExportExcel_CancelDoesNotExport()
+    {
+        var repository = new FakeMonthlyStockRepository();
+        repository.SetPeriod(2026, 6, Product());
+        var fakeExporter = new FakeExcelExportService();
+        var viewModel = CreateViewModelWithExporter(repository, fakeExporter);
+
+        await viewModel.LoadCommand.ExecuteAsync(null);
+
+        viewModel.ExportExcelRequested += (_, _) => viewModel.CompleteExportExcel(null);
+
+        await viewModel.ExportExcelCommand.ExecuteAsync(null);
+
+        Assert.Equal(0, fakeExporter.WriteStockCallCount);
+    }
+
+    [Fact]
+    public async Task ExportExcel_SavesUnsavedChangesBeforeExport()
+    {
+        var repository = new FakeMonthlyStockRepository();
+        repository.SetPeriod(2026, 6, Product());
+        var fakeExporter = new FakeExcelExportService();
+        var viewModel = CreateViewModelWithExporter(repository, fakeExporter);
+
+        await viewModel.LoadCommand.ExecuteAsync(null);
+
+        var row = Assert.Single(viewModel.Rows);
+        row.BuyQty = 99; // triggers _hasUnsavedChanges = true
+
+        var testPath = Path.Combine(Path.GetTempPath(), $"test_{Guid.NewGuid()}.xlsx");
+        viewModel.ExportExcelRequested += (_, _) => viewModel.CompleteExportExcel(testPath);
+
+        await viewModel.ExportExcelCommand.ExecuteAsync(null);
+
+        Assert.NotEmpty(repository.SavedInputs);
+        Assert.Equal(1, fakeExporter.WriteStockCallCount);
+    }
+
     [Fact]
     public async Task GenerateInvoicesCommand_OnSuccess_FiresInvoicesGeneratedEvent()
     {
@@ -128,6 +207,29 @@ public class MonthlyStockViewModelTests
         100m,
         150m,
         stock);
+
+    private sealed class FakeExcelExportService : IExcelExportService
+    {
+        public IReadOnlyList<MonthlyStockRowViewModel>? LastRows { get; private set; }
+        public int LastYear { get; private set; }
+        public int LastMonth { get; private set; }
+        public string? LastFilePath { get; private set; }
+        public int WriteStockCallCount { get; private set; }
+
+        public void WriteStock(IReadOnlyList<MonthlyStockRowViewModel> rows, int year, int month, string filePath)
+        {
+            LastRows = rows;
+            LastYear = year;
+            LastMonth = month;
+            LastFilePath = filePath;
+            WriteStockCallCount++;
+        }
+    }
+
+    private sealed class FakeExcelImportService : IExcelImportService
+    {
+        public IReadOnlyList<ExcelImportRecord> ReadStockMaster(string filePath) => [];
+    }
 
     private sealed class FakeInvoiceGeneratorService(GenerateInvoicesResult? generateResult) : IInvoiceGeneratorService
     {
