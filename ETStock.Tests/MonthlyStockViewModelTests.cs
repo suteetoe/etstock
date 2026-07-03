@@ -139,7 +139,7 @@ public class MonthlyStockViewModelTests
             int taxMonth,
             IReadOnlyList<PosStockLine> stockLines,
             bool replaceExisting = false,
-            (int BookNo, int RunningNo)? seedStart = null,
+            int? seedRunningNo = null,
             CancellationToken ct = default)
             => Task.FromResult(generateResult);
 

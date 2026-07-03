@@ -11,18 +11,21 @@ public partial class ProductViewModel
     private readonly IMonthlyStockRepository? _repository;
     private readonly IInvoiceGeneratorService? _invoiceGenerator;
     private readonly IExcelImportService? _excelImporter;
+    private readonly IExcelExportService? _excelExporter;
 
     public event EventHandler? AddProductRequested;
     public event EventHandler<int>? GenerateInvoicesConfirmRequested;
     public event Action? InvoicesGenerated;
     public event EventHandler? ImportExcelRequested;
     public event EventHandler<int>? ImportExcelConfirmRequested;
+    public event EventHandler? ExportExcelRequested;
     public event EventHandler<MonthlyStockRowViewModel>? ScrollToRowRequested;
 
     private TaskCompletionSource<AddProductResult?>? _addProductTcs;
     private TaskCompletionSource<bool>? _generateConfirmTcs;
     private TaskCompletionSource<string?>? _importExcelTcs;
     private TaskCompletionSource<bool>? _importExcelConfirmTcs;
+    private TaskCompletionSource<string?>? _exportExcelTcs;
     private IReadOnlyList<ExcelImportRecord>? _pendingImportRecords;
     private int? _seed;
     private bool _hasUnsavedChanges;
@@ -78,6 +81,18 @@ public partial class ProductViewModel
         _repository = repository;
         _invoiceGenerator = invoiceGenerator;
         _excelImporter = excelImporter;
+    }
+
+    public ProductViewModel(
+        IMonthlyStockRepository repository,
+        IInvoiceGeneratorService invoiceGenerator,
+        IExcelImportService excelImporter,
+        IExcelExportService excelExporter,
+        int year,
+        int month)
+        : this(repository, invoiceGenerator, excelImporter, year, month)
+    {
+        _excelExporter = excelExporter;
     }
 
     public void CompleteGenerateInvoicesConfirm(bool confirmed) =>
@@ -249,6 +264,7 @@ public partial class ProductViewModel
 
     public void CompleteImportExcel(string? path) => _importExcelTcs?.TrySetResult(path);
     public void CompleteImportExcelConfirm(bool confirmed) => _importExcelConfirmTcs?.TrySetResult(confirmed);
+    public void CompleteExportExcel(string? path) => _exportExcelTcs?.TrySetResult(path);
 
     [RelayCommand]
     private async Task ImportFromExcelAsync()
@@ -300,6 +316,53 @@ public partial class ProductViewModel
         finally
         {
             _pendingImportRecords = null;
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task ExportExcelAsync()
+    {
+        if (_excelExporter is null) { StatusMessage = "Excel export service is not available."; return; }
+        if (!CanRun()) return;
+        if (IsBusy) return;
+
+        IsBusy = true;
+        StatusMessage = string.Empty;
+
+        try
+        {
+            if (_hasUnsavedChanges)
+            {
+                StatusMessage = "กำลังบันทึกข้อมูลสต๊อก...";
+                foreach (var row in Rows)
+                    await _repository!.SaveAsync(row.ToInput(SelectedYear, SelectedMonth));
+                await LoadRowsAsync();
+                StatusMessage = string.Empty;
+            }
+
+            _exportExcelTcs = new TaskCompletionSource<string?>();
+            ExportExcelRequested?.Invoke(this, EventArgs.Empty);
+            var filePath = await _exportExcelTcs.Task;
+            _exportExcelTcs = null;
+
+            if (string.IsNullOrEmpty(filePath))
+            {
+                StatusMessage = "ยกเลิกการส่งออก";
+                return;
+            }
+
+            _excelExporter.WriteStock(Rows, SelectedYear, SelectedMonth, filePath);
+
+            StatusMessage = "ส่งออกข้อมูลสำเร็จ";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"ไม่สามารถส่งออกข้อมูลได้: {ex.Message}";
+        }
+        finally
+        {
+            _exportExcelTcs = null;
             IsBusy = false;
         }
     }
@@ -463,6 +526,7 @@ public partial class MonthlyStockRowViewModel : ViewModelBase
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ClosingValue))]
+    [NotifyPropertyChangedFor(nameof(TotalCost))]
     private decimal _costPrice;
 
     [ObservableProperty]
@@ -489,6 +553,7 @@ public partial class MonthlyStockRowViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(ClosingValue))]
     [NotifyPropertyChangedFor(nameof(SalesQty))]
     [NotifyPropertyChangedFor(nameof(SalesAmount))]
+    [NotifyPropertyChangedFor(nameof(TotalCost))]
     private decimal _sellFullQty;
 
     [ObservableProperty]
@@ -496,11 +561,13 @@ public partial class MonthlyStockRowViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(ClosingValue))]
     [NotifyPropertyChangedFor(nameof(SalesQty))]
     [NotifyPropertyChangedFor(nameof(SalesAmount))]
+    [NotifyPropertyChangedFor(nameof(TotalCost))]
     private decimal _sellPosQty;
 
     public decimal ClosingQty => OpeningQty + BuyQty - SellFullQty - SellPosQty;
     public decimal SalesQty => SellFullQty + SellPosQty;
     public decimal SalesAmount => SalesQty * SellPrice;
+    public decimal TotalCost => SalesQty * CostPrice;
 
     public MonthlyStockInput ToInput(int year, int month) => new(
         Name,

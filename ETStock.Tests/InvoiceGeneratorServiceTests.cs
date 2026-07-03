@@ -67,7 +67,7 @@ public class InvoiceGeneratorServiceTests
                 new("Product A", 5m, 107m)
             };
 
-            var result = await svc.GenerateAsync(2026, 6, lines, seedStart: (1, 1));
+            var result = await svc.GenerateAsync(2026, 6, lines, seedRunningNo: 1);
 
             Assert.NotNull(result);
             Assert.True(result.InvoiceCount >= 1);
@@ -118,7 +118,7 @@ public class InvoiceGeneratorServiceTests
                 new("Product C", 3m, 214m)
             };
 
-            var result = await svc.GenerateAsync(2026, 6, lines, seedStart: (1, 1));
+            var result = await svc.GenerateAsync(2026, 6, lines, seedRunningNo: 1);
 
             Assert.NotNull(result);
             Assert.True(result.InvoiceCount >= 1);
@@ -152,7 +152,7 @@ public class InvoiceGeneratorServiceTests
                 new("Product B", 8m, 214m)
             };
 
-            var result = await svc.GenerateAsync(2026, 6, lines, seedStart: (1, 1));
+            var result = await svc.GenerateAsync(2026, 6, lines, seedRunningNo: 1);
 
             Assert.NotNull(result);
 
@@ -180,7 +180,7 @@ public class InvoiceGeneratorServiceTests
                 new("Product B", 3m, 214m)
             };
 
-            var result = await svc.GenerateAsync(2026, 6, lines, seedStart: (1, 1));
+            var result = await svc.GenerateAsync(2026, 6, lines, seedRunningNo: 1);
 
             Assert.NotNull(result);
             Assert.True(await db.AbbrInvoices.CountAsync() > 0);
@@ -212,7 +212,7 @@ public class InvoiceGeneratorServiceTests
                 new("Product A", 4m, 107m)
             };
 
-            var result = await svc.GenerateAsync(2026, 6, lines, replaceExisting: true, seedStart: (1, 1));
+            var result = await svc.GenerateAsync(2026, 6, lines, replaceExisting: true, seedRunningNo: 1);
 
             Assert.NotNull(result);
 
@@ -251,7 +251,7 @@ public class InvoiceGeneratorServiceTests
             };
 
             // replaceExisting defaults to false
-            var result = await svc.GenerateAsync(2026, 6, lines, replaceExisting: false, seedStart: (1, 1));
+            var result = await svc.GenerateAsync(2026, 6, lines, replaceExisting: false, seedRunningNo: 1);
 
             Assert.NotNull(result);
 
@@ -290,9 +290,9 @@ public class InvoiceGeneratorServiceTests
         }
     }
 
-    // TC-8: no prior RunningNo rows and no seedStart -> throws InvalidOperationException with exact message
+    // TC-8: no prior RunningNo rows and no seedRunningNo -> throws InvalidOperationException with exact message
     [Fact]
-    public async Task GenerateAsync_NoPriorRunningNo_NoSeedStart_Throws()
+    public async Task GenerateAsync_NoPriorRunningNo_NoSeedRunningNo_Throws()
     {
         var (svc, db) = CreateService();
         await using (db)
@@ -305,13 +305,13 @@ public class InvoiceGeneratorServiceTests
             var ex = await Assert.ThrowsAsync<InvalidOperationException>(
                 () => svc.GenerateAsync(2026, 6, lines));
 
-            Assert.Equal("ไม่พบเลขที่ใบกำกับล่าสุด กรุณาระบุเล่มที่และเลขที่เริ่มต้น", ex.Message);
+            Assert.Equal("ไม่พบเลขที่ใบกำกับล่าสุด กรุณาระบุเลขที่เริ่มต้น", ex.Message);
         }
     }
 
-    // TC-9: no prior RunningNo rows but seedStart given -> first digital invoice = seed+1; BookNo derived from formula
+    // TC-9: no prior RunningNo rows but seedRunningNo given -> first digital invoice = seed+1; BookNo derived from formula
     [Fact]
-    public async Task GenerateAsync_NoPriorRunningNo_WithSeedStart_UsesSeedAsFirstInvoice()
+    public async Task GenerateAsync_NoPriorRunningNo_WithSeedRunningNo_UsesSeedAsFirstInvoice()
     {
         var (svc, db) = CreateService();
         await using (db)
@@ -321,7 +321,7 @@ public class InvoiceGeneratorServiceTests
                 new("Product A", 1m, 107m)
             };
 
-            var result = await svc.GenerateAsync(2026, 6, lines, seedStart: (233, 11600));
+            var result = await svc.GenerateAsync(2026, 6, lines, seedRunningNo: 11600);
 
             Assert.NotNull(result);
 
@@ -411,7 +411,7 @@ public class InvoiceGeneratorServiceTests
             };
 
             // First generation for period 2026/6, seeded at book 1, running 1.
-            var firstResult = await svc.GenerateAsync(2026, 6, lines, seedStart: (1, 1));
+            var firstResult = await svc.GenerateAsync(2026, 6, lines, seedRunningNo: 1);
             Assert.NotNull(firstResult);
 
             var firstInvoices = await db.AbbrInvoices
@@ -427,7 +427,7 @@ public class InvoiceGeneratorServiceTests
             // only invoices in the DB, after deletion there is no "latest" left, so the
             // new batch must restart from the same seed point (book 1, running 1) rather
             // than continuing from the now-deleted invoices' running numbers.
-            var secondResult = await svc.GenerateAsync(2026, 6, lines, replaceExisting: true, seedStart: (1, 1));
+            var secondResult = await svc.GenerateAsync(2026, 6, lines, replaceExisting: true, seedRunningNo: 1);
             Assert.NotNull(secondResult);
 
             var secondInvoices = await db.AbbrInvoices
@@ -466,7 +466,7 @@ public class InvoiceGeneratorServiceTests
                 db.AbbrInvoices.RemoveRange(db.AbbrInvoices.ToList());
                 await db.SaveChangesAsync();
 
-                await svc.GenerateAsync(2026, 6, lines, seedStart: (1, 1));
+                await svc.GenerateAsync(2026, 6, lines, seedRunningNo: 1);
 
                 invoices = await db.AbbrInvoices
                     .Where(i => i.TaxYear == 2026 && i.TaxMonth == 6)
