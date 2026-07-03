@@ -20,7 +20,8 @@ public sealed class InvoicePrintService : IInvoicePrintService
         var invoice = await _invoiceRepo.GetByIdAsync(invoiceId)
             ?? throw new InvalidOperationException($"Invoice {invoiceId} not found.");
 
-        var company = await _companyRepo.GetAsync(ct) ?? new Company();
+        var company = await _companyRepo.GetAsync(ct)
+            ?? throw new InvalidOperationException("ยังไม่ได้ตั้งค่าข้อมูลบริษัท กรุณาไปที่เมนูตั้งค่าและบันทึกข้อมูลบริษัทก่อนพิมพ์");
 
         return Build(invoice, company);
     }
@@ -41,7 +42,8 @@ public sealed class InvoicePrintService : IInvoicePrintService
             return Array.Empty<byte>();
         }
 
-        var company = await _companyRepo.GetAsync(ct) ?? new Company();
+        var company = await _companyRepo.GetAsync(ct)
+            ?? throw new InvalidOperationException("ยังไม่ได้ตั้งค่าข้อมูลบริษัท กรุณาไปที่เมนูตั้งค่าและบันทึกข้อมูลบริษัทก่อนพิมพ์");
         ct.ThrowIfCancellationRequested();
 
         var docs = invoices
@@ -79,6 +81,7 @@ public sealed class InvoicePrintService : IInvoicePrintService
             vatTotal,
             subTotal + vatTotal,
             invoice.BookNo,
-            invoice.RunningNo);
+            invoice.RunningNo,
+            company.PhoneNumber);
     }
 }
