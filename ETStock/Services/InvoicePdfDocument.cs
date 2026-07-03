@@ -59,10 +59,12 @@ internal sealed class InvoicePdfDocument : IDocument
         if (!string.IsNullOrWhiteSpace(_doc.CompanyAddress))
             col.Item().Text(_doc.CompanyAddress).FontSize(9.5f);
 
-        col.Item().Text($"เลขประจำตัวผู้เสียภาษี {_doc.CompanyTaxId}").FontSize(9.5f);
-
         if (!string.IsNullOrWhiteSpace(_doc.CompanyPhone))
             col.Item().Text($"โทร. {_doc.CompanyPhone}").FontSize(9.5f);
+
+        col.Item().Text($"เลขประจำตัวผู้เสียภาษี {_doc.CompanyTaxId}").FontSize(9.5f);
+
+       
     }
 
     private static void ComposeTitle(ColumnDescriptor col)
@@ -140,14 +142,14 @@ internal sealed class InvoicePdfDocument : IDocument
                     table.Cell().Element(DataCell).Text("");
 
             // ── Footer row ───────────────────────────────────────────────
-            table.Cell().ColumnSpan(3).Element(DataCell)
+            table.Cell().ColumnSpan(2).Element(DataCell)
                 .AlignCenter()
                 .Text(ThaiAmountInWords(_doc.GrandTotal)).Bold().FontSize(10);
 
-            table.Cell().Element(DataCell).Column(c =>
+            table.Cell().ColumnSpan(2).Element(DataCell).Column(c =>
             {
-                c.Item().AlignRight().Text("รวมทั้งสิ้น").FontSize(8.5f);
-                c.Item().AlignRight().Text("(ราคารวมภาษีมูลค่าเพิ่มแล้ว)").FontSize(7.5f);
+                c.Item().AlignCenter().Text("รวมทั้งสิ้น").FontSize(8.5f);
+                c.Item().AlignCenter().Text("(ราคารวมภาษีมูลค่าเพิ่มแล้ว)").FontSize(7.5f);
             });
 
             table.Cell().Element(DataCell)

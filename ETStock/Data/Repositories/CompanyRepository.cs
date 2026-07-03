@@ -32,6 +32,7 @@ public class CompanyRepository : ICompanyRepository
             existing.Address = company.Address;
             existing.BranchName = company.BranchName;
             existing.BranchCode = company.BranchCode;
+            existing.PhoneNumber = company.PhoneNumber;
             existing.InvoicePrefix = company.InvoicePrefix;
             existing.VatRate = company.VatRate;
         }
