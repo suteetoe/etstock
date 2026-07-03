@@ -21,7 +21,7 @@ public class InvoiceGeneratorService(IAbbrInvoiceRepository repo) : IInvoiceGene
         int taxMonth,
         IReadOnlyList<PosStockLine> stockLines,
         bool replaceExisting = false,
-        (int BookNo, int RunningNo)? seedStart = null,
+        int? seedRunningNo = null,
         CancellationToken ct = default)
     {
         // 1. filter stockLines that have SellPosQty > 0
@@ -49,25 +49,19 @@ public class InvoiceGeneratorService(IAbbrInvoiceRepository repo) : IInvoiceGene
         // 4b. determine the running-number / book-number starting point
         var latest = await repo.GetLatestRunningAsync(ct);
 
-        int currentBook;
-        int currentRunningNo;
-        int countInCurrentBook;
+        int startRunningNo;
 
         if (latest is not null)
         {
-            currentBook = latest.Value.BookNo;
-            currentRunningNo = latest.Value.RunningNo + 1;
-            countInCurrentBook = await repo.CountByBookNoAsync(latest.Value.BookNo, ct);
+            startRunningNo    = latest.Value.RunningNo + 1;
         }
-        else if (seedStart is not null)
+        else if (seedRunningNo is not null)
         {
-            currentBook = seedStart.Value.BookNo;
-            currentRunningNo = seedStart.Value.RunningNo;
-            countInCurrentBook = 0;
+            startRunningNo   = seedRunningNo.Value + 1;
         }
         else
         {
-            throw new InvalidOperationException("ไม่พบเลขที่ใบกำกับล่าสุด กรุณาระบุเล่มที่และเลขที่เริ่มต้น");
+            throw new InvalidOperationException("ไม่พบเลขที่ใบกำกับล่าสุด กรุณาระบุเลขที่เริ่มต้น");
         }
 
         // 5. partition each product's qty across N invoice slots
@@ -79,6 +73,10 @@ public class InvoiceGeneratorService(IAbbrInvoiceRepository repo) : IInvoiceGene
         // 6. build AbbrInvoice list
         var daysInMonth = DateTime.DaysInMonth(taxYear, taxMonth);
         var invoices = new List<AbbrInvoice>();
+        // Initialize mutable running number from the computed starting point.
+        // Book number is DERIVED from running number: book = (runningNo - 1) / 50 + 1
+        // This guarantees correct book assignment at any point (e.g. runningNo 11001 -> book 221).
+        var currentRunningNo = startRunningNo;
         var isFirstAssigned = true;
 
         // Pre-generate and sort days so running numbers align with dates
@@ -123,17 +121,11 @@ public class InvoiceGeneratorService(IAbbrInvoiceRepository repo) : IInvoiceGene
                 currentRunningNo++;
             isFirstAssigned = false;
 
-            countInCurrentBook++;
-            if (countInCurrentBook > 50)
-            {
-                currentBook++;
-                countInCurrentBook = 1;
-            }
 
             var invoice = new AbbrInvoice
             {
                 InvoiceNo = currentRunningNo.ToString("00000"),
-                BookNo = currentBook,
+                BookNo = (currentRunningNo - 1) / 50 + 1,
                 RunningNo = currentRunningNo,
                 InvoiceDate = invoiceDate,
                 TaxYear = taxYear,

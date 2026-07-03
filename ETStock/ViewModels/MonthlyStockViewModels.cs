@@ -24,10 +24,10 @@ public partial class ProductViewModel
     private TaskCompletionSource<string?>? _importExcelTcs;
     private TaskCompletionSource<bool>? _importExcelConfirmTcs;
     private IReadOnlyList<ExcelImportRecord>? _pendingImportRecords;
-    private (int BookNo, int RunningNo)? _seed;
+    private int? _seed;
     private bool _hasUnsavedChanges;
 
-    public void SetSeed(int bookNo, int runningNo) => _seed = (bookNo, runningNo);
+    public void SetSeed(int runningNo) => _seed = runningNo;
 
     public decimal TotalSalesAmount => Rows.Sum(r => r.SalesAmount);
     public decimal TotalClosingValue => Rows.Sum(r => r.ClosingValue);
@@ -349,9 +349,9 @@ public partial class ProductViewModel
                 .ToList();
 
             var result = await _invoiceGenerator.GenerateAsync(
-                SelectedYear, SelectedMonth, stockLines, replaceExisting, seedStart: _seed);
+                SelectedYear, SelectedMonth, stockLines, replaceExisting, seedRunningNo: _seed);
 
-            _seed = null;
+            // _seed = null;
 
             StatusMessage = result is null
                 ? "ไม่มียอดขายหน้าร้านในเดือนนี้ (SellPosQty ทุกรายการเป็น 0)"

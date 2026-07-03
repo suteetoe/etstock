@@ -70,25 +70,32 @@ public partial class InvoiceViewModel : ViewModelBase
     public bool NeedsSeed => HasLoadedLatest && CurrentBookNo == 0 && CurrentDocNo == 0;
 
     [ObservableProperty]
-    private int _seedBookNo = 1;
-
-    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CalculatedSeedBookNo))]
     private int _seedRunningNo = 1;
 
-    public event Action<int, int>? SeedConfirmed;
+    /// <summary>
+    /// BookNo ที่คำนวณอัตโนมัติจาก SeedRunningNo (สูตร: (runningNo - 1) / 50 + 1)
+    /// </summary>
+    public int CalculatedSeedBookNo => (SeedRunningNo - 1) / 50 + 1;
+
+    /// <summary>
+    /// ส่งเฉพาะ RunningNo เท่านั้น (BookNo คำนวณอัตโนมัติ)
+    /// </summary>
+    public event Action<int>? SeedConfirmed;
 
     [RelayCommand]
     private void ConfirmSeed()
     {
-        if (SeedBookNo < 1 || SeedRunningNo < 1)
+        if (SeedRunningNo < 1)
         {
-            StatusMessage = "กรุณาระบุเล่มที่และเลขที่เริ่มต้นให้ถูกต้อง (ต้องมากกว่า 0)";
+            StatusMessage = "กรุณาระบุเลขที่เริ่มต้นให้ถูกต้อง (ต้องมากกว่า 0)";
             return;
         }
-        CurrentBookNo = SeedBookNo;
+        var bookNo = CalculatedSeedBookNo;
+        CurrentBookNo = bookNo;
         CurrentDocNo = SeedRunningNo;
-        SeedConfirmed?.Invoke(SeedBookNo, SeedRunningNo);
-        StatusMessage = $"บันทึกเลขเริ่มต้น เล่มที่ {SeedBookNo} เลขที่ {SeedRunningNo:00000} — กลับไปที่แท็บ Stock เพื่อสร้างใบกำกับ";
+        SeedConfirmed?.Invoke(SeedRunningNo);
+        StatusMessage = $"บันทึกเลขเริ่มต้น เล่มที่ {bookNo} เลขที่ {SeedRunningNo:00000} — กลับไปที่แท็บ Stock เพื่อสร้างใบกำกับ";
     }
 
     [RelayCommand]

@@ -14,13 +14,14 @@ public interface IInvoiceGeneratorService
     /// สร้างใบกำกับสุ่มจาก POS qty
     /// - ถ้า replaceExisting = true ให้ลบใบเดิมทั้งหมดก่อน
     /// - คืน null ถ้าไม่มี stockLine ใดที่ SellPosQty > 0
+    /// - seedRunningNo: เลขที่เริ่มต้น (BookNo คำนวณอัตโนมัติจากสูตร (runningNo-1)/50+1)
     /// </summary>
     Task<GenerateInvoicesResult?> GenerateAsync(
         int taxYear,
         int taxMonth,
         IReadOnlyList<PosStockLine> stockLines,
         bool replaceExisting = false,
-        (int BookNo, int RunningNo)? seedStart = null,
+        int? seedRunningNo = null,
         CancellationToken ct = default);
 
     /// <summary>

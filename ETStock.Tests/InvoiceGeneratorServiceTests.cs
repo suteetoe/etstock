@@ -1,4 +1,4 @@
-﻿using ETStock.Data;
+using ETStock.Data;
 using ETStock.Data.Repositories;
 using ETStock.Models;
 using ETStock.Services;
@@ -309,7 +309,7 @@ public class InvoiceGeneratorServiceTests
         }
     }
 
-    // TC-9: no prior RunningNo rows but seedStart given -> first invoice gets seedStart's BookNo/RunningNo as-is
+    // TC-9: no prior RunningNo rows but seedStart given -> first digital invoice = seed+1; BookNo derived from formula
     [Fact]
     public async Task GenerateAsync_NoPriorRunningNo_WithSeedStart_UsesSeedAsFirstInvoice()
     {
@@ -331,13 +331,13 @@ public class InvoiceGeneratorServiceTests
                 .ToListAsync();
 
             Assert.NotEmpty(invoices);
-            Assert.Equal(233, invoices[0].BookNo);
-            Assert.Equal(11600, invoices[0].RunningNo);
-            Assert.Equal("11600", invoices[0].InvoiceNo);
+            Assert.Equal((11601 - 1) / 50 + 1, invoices[0].BookNo);
+            Assert.Equal(11601, invoices[0].RunningNo);
+            Assert.Equal("11601", invoices[0].InvoiceNo);
         }
     }
 
-    // TC-10: worked example - book 232 full at 50 invoices ending RunningNo 11599 -> next 2 invoices roll to book 233
+    // TC-10: 50 invoices seeded at RunningNo 11550..11599 -> next 2 are 11600,11601; BookNo derived from formula
     [Fact]
     public async Task GenerateAsync_BookFull_RollsOverToNextBook()
     {
@@ -351,7 +351,7 @@ public class InvoiceGeneratorServiceTests
             {
                 var runningNo = 11550 + i;
                 var inv = MakeInvoice(2025, 1, i + 1);
-                inv.BookNo = 232;
+                inv.BookNo = (runningNo - 1) / 50 + 1;
                 inv.RunningNo = runningNo;
                 inv.InvoiceNo = runningNo.ToString("00000");
                 await repo.SaveAsync(inv);
@@ -384,11 +384,11 @@ public class InvoiceGeneratorServiceTests
             Assert.NotNull(result);
             Assert.Equal(2, invoices.Count);
 
-            Assert.Equal(233, invoices[0].BookNo);
+            Assert.Equal((11600 - 1) / 50 + 1, invoices[0].BookNo);
             Assert.Equal(11600, invoices[0].RunningNo);
             Assert.Equal("11600", invoices[0].InvoiceNo);
 
-            Assert.Equal(233, invoices[1].BookNo);
+            Assert.Equal((11601 - 1) / 50 + 1, invoices[1].BookNo);
             Assert.Equal(11601, invoices[1].RunningNo);
             Assert.Equal("11601", invoices[1].InvoiceNo);
         }
@@ -486,7 +486,7 @@ public class InvoiceGeneratorServiceTests
         }
     }
 
-    // TC-11: mid-book case - book not yet full -> no rollover, RunningNo continues in same book
+    // TC-11: mid-book case -> RunningNo continues; BookNo derived from formula
     [Fact]
     public async Task GenerateAsync_BookNotFull_NoRollover()
     {
@@ -500,7 +500,7 @@ public class InvoiceGeneratorServiceTests
             {
                 var runningNo = 111 + i;
                 var inv = MakeInvoice(2025, 1, i + 1);
-                inv.BookNo = 5;
+                inv.BookNo = (runningNo - 1) / 50 + 1;
                 inv.RunningNo = runningNo;
                 inv.InvoiceNo = runningNo.ToString("00000");
                 await repo.SaveAsync(inv);
@@ -521,8 +521,26 @@ public class InvoiceGeneratorServiceTests
                 .ToListAsync();
 
             Assert.NotEmpty(invoices);
-            Assert.Equal(5, invoices[0].BookNo);
+            Assert.Equal((121 - 1) / 50 + 1, invoices[0].BookNo);
             Assert.Equal(121, invoices[0].RunningNo);
         }
     }
-}
+
+    // TC-14: Book number derived purely from RunningNo - (runningNo - 1) / 50 + 1.
+    // Critical boundaries per user requirement (50 documents per book):
+    //   1->book 1, 50->book 1, 51->book 2, ..., 11001->book 221
+    [Theory]
+    [InlineData(1, 1)]       // first invoice of book 1
+    [InlineData(50, 1)]      // last invoice of book 1
+    [InlineData(51, 2)]      // first invoice of book 2
+    [InlineData(100, 2)]     // last invoice of book 2
+    [InlineData(101, 3)]     // first invoice of book 3
+    [InlineData(10999, 220)] // book 220
+    [InlineData(11000, 220)] // last invoice of book 220
+    [InlineData(11001, 221)] // first invoice of book 221 - the user reported case
+    public void BookNo_Formula_Boundaries(int runningNo, int expectedBook)
+    {
+        var actualBook = (runningNo - 1) / 50 + 1;
+        Assert.Equal(expectedBook, actualBook);
+    }
+    }

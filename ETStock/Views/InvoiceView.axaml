@@ -50,13 +50,6 @@
                                VerticalAlignment="Center"
                                Foreground="DarkOrange"
                                FontWeight="SemiBold"/>
-                    <TextBlock Text="เล่มที่" VerticalAlignment="Center"/>
-                    <NumericUpDown Value="{Binding SeedBookNo}"
-                                   Minimum="1"
-                                   Width="80"
-                                   FormatString="0"
-                                   HorizontalContentAlignment="Right"
-                                   IsEnabled="{Binding !IsBusy}"/>
                     <TextBlock Text="เลขที่เริ่มต้น" VerticalAlignment="Center"/>
                     <NumericUpDown Value="{Binding SeedRunningNo}"
                                    Minimum="1"
@@ -64,6 +57,10 @@
                                    FormatString="0"
                                    HorizontalContentAlignment="Right"
                                    IsEnabled="{Binding !IsBusy}"/>
+                    <TextBlock Text="→ เล่มที่" VerticalAlignment="Center" Opacity="0.7"/>
+                    <TextBlock Text="{Binding CalculatedSeedBookNo}"
+                               VerticalAlignment="Center"
+                               FontWeight="SemiBold"/>
                     <Button Content="ยืนยัน"
                             Command="{Binding ConfirmSeedCommand}"
                             IsEnabled="{Binding !IsBusy}"/>
