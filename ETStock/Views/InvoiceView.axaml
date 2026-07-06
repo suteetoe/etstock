@@ -1,205 +1,208 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:ETStock.ViewModels"
-             xmlns:converters="using:ETStock.Converters"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="700"
-             x:Class="ETStock.Views.InvoiceView"
-             x:DataType="vm:InvoiceViewModel">
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:vm="using:ETStock.ViewModels"
+			 xmlns:converters="using:ETStock.Converters"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
+			 xmlns:icx="clr-namespace:FluentIcons.Avalonia.Markup;assembly=FluentIcons.Avalonia"
+			 mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="700"
+			 x:Class="ETStock.Views.InvoiceView"
+			 x:DataType="vm:InvoiceViewModel">
 
-    <Design.DataContext>
-        <vm:InvoiceViewModel/>
-    </Design.DataContext>
+	<Design.DataContext>
+		<vm:InvoiceViewModel/>
+	</Design.DataContext>
 
-    <Grid RowDefinitions="Auto,*,Auto,Auto" RowSpacing="8" Margin="12">
+	<Grid RowDefinitions="Auto,*,Auto,Auto" RowSpacing="8" >
 
-        <!-- Row 0: current running state + seed form (conditional) -->
-        <StackPanel Grid.Row="0" Spacing="6">
+		<!-- Row 0: current running state + seed form (conditional) -->
+		<StackPanel Grid.Row="0" Spacing="6">
 
-            <!-- toolbar: Load button + latest running number (hidden when seed needed) -->
-            <DockPanel LastChildFill="False">
-             
-                <TextBlock Text="เล่มที่ "
-                           VerticalAlignment="Center"
-                           IsVisible="{Binding !NeedsSeed}"/>
-                <TextBlock Text="{Binding CurrentBookNo}"
-                           VerticalAlignment="Center"
-                           IsVisible="{Binding !NeedsSeed}"/>
-                <TextBlock Text="  เลขที่ "
-                           VerticalAlignment="Center"
-                           IsVisible="{Binding !NeedsSeed}"/>
-                <TextBlock Text="{Binding CurrentDocNo, StringFormat='{}{0:00000}'}"
-                           VerticalAlignment="Center"
-                           IsVisible="{Binding !NeedsSeed}"/>             
-                <Button Content="พิมพ์ทั้งหมด"
-                        DockPanel.Dock="Right"
-                        Command="{Binding PrintAllCommand}"
-                        IsEnabled="{Binding !IsBusy}"/>
-            </DockPanel>
+			<!-- toolbar: Load button + latest running number (hidden when seed needed) -->
+			<DockPanel LastChildFill="False">
 
-            <!-- seed form: visible once when no running numbers exist in DB -->
-            <Border IsVisible="{Binding NeedsSeed}"
-                    Background="#FFF8E1"
-                    BorderBrush="Orange"
-                    BorderThickness="1"
-                    CornerRadius="4"
-                    Padding="10,6">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Text="ยังไม่มีเลขที่ใบกำกับในระบบ — ระบุเลขเริ่มต้น:"
-                               VerticalAlignment="Center"
-                               Foreground="DarkOrange"
-                               FontWeight="SemiBold"/>
-                    <TextBlock Text="เลขที่เริ่มต้น" VerticalAlignment="Center"/>
-                    <NumericUpDown Value="{Binding SeedRunningNo}"
-                                   Minimum="1"
-                                   Width="100"
-                                   FormatString="0"
-                                   HorizontalContentAlignment="Right"
-                                   IsEnabled="{Binding !IsBusy}"/>
-                    <TextBlock Text="→ เล่มที่" VerticalAlignment="Center" Opacity="0.7"/>
-                    <TextBlock Text="{Binding CalculatedSeedBookNo}"
-                               VerticalAlignment="Center"
-                               FontWeight="SemiBold"/>
-                    <Button Content="ยืนยัน"
-                            Command="{Binding ConfirmSeedCommand}"
-                            IsEnabled="{Binding !IsBusy}"/>
-                </StackPanel>
-            </Border>
+				<TextBlock Text="เล่มที่ "
+						   VerticalAlignment="Center"
+						   IsVisible="{Binding !NeedsSeed}"/>
+				<TextBlock Text="{Binding CurrentBookNo}"
+						   VerticalAlignment="Center"
+						   IsVisible="{Binding !NeedsSeed}"/>
+				<TextBlock Text=" เลขที่ "
+						   VerticalAlignment="Center"
+						   IsVisible="{Binding !NeedsSeed}"/>
+				<TextBlock Text="{Binding CurrentDocNo, StringFormat='{}{0:00000}'}"
+						   VerticalAlignment="Center"
+						   IsVisible="{Binding !NeedsSeed}"/>
+				<Button Content="พิมพ์ทั้งหมด"
+						DockPanel.Dock="Right"
+						Command="{Binding PrintAllCommand}"
+						IsEnabled="{Binding !IsBusy}"/>
+				
+			</DockPanel>
 
-        </StackPanel>
+			<!-- seed form: visible once when no running numbers exist in DB -->
+			<Border IsVisible="{Binding NeedsSeed}"
+					Background="#FFF8E1"
+					BorderBrush="Orange"
+					BorderThickness="1"
+					CornerRadius="4"
+					Padding="10,6">
+				<StackPanel Orientation="Horizontal" Spacing="8">
+					<TextBlock Text="ยังไม่มีเลขที่ใบกำกับในระบบ — ระบุเลขเริ่มต้น:"
+							   VerticalAlignment="Center"
+							   Foreground="DarkOrange"
+							   FontWeight="SemiBold"/>
+					<TextBlock Text="เลขที่เริ่มต้น" VerticalAlignment="Center"/>
+					<NumericUpDown Value="{Binding SeedRunningNo}"
+								   Minimum="1"
+								   Width="100"
+								   FormatString="0"
+								   HorizontalContentAlignment="Right"
+								   IsEnabled="{Binding !IsBusy}"/>
+					<TextBlock Text="→ เล่มที่" VerticalAlignment="Center" Opacity="0.7"/>
+					<TextBlock Text="{Binding CalculatedSeedBookNo}"
+							   VerticalAlignment="Center"
+							   FontWeight="SemiBold"/>
+					<Button Content="ยืนยัน"
+							Command="{Binding ConfirmSeedCommand}"
+							IsEnabled="{Binding !IsBusy}"/>
+				</StackPanel>
+			</Border>
 
-        <!-- Row 1: Invoice list -->
-        <Border Grid.Row="1"
-                BorderBrush="#D0D0D0"
-                BorderThickness="1"
-                CornerRadius="4">
-            <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                          VerticalScrollBarVisibility="Auto">
-                <StackPanel MinWidth="700">
-                    <Border Background="#EEEEEE" Padding="8">
-                        <Grid ColumnDefinitions="28,*,110,80,110,80,60,120" ColumnSpacing="8">
-                            <TextBlock Grid.Column="1" Text="เลขที่ใบกำกับ" FontWeight="SemiBold"/>
-                            <TextBlock Grid.Column="2" Text="วันที่" FontWeight="SemiBold"/>
-                            <TextBlock Grid.Column="3" Text="เดือน" FontWeight="SemiBold" TextAlignment="Center"/>
-                            <TextBlock Grid.Column="4" Text="ยอดรวม" FontWeight="SemiBold" TextAlignment="Right"/>
-                            <TextBlock Grid.Column="5" Text="VAT" FontWeight="SemiBold" TextAlignment="Right"/>
-                            <TextBlock Grid.Column="6" Text="รายการ" FontWeight="SemiBold" TextAlignment="Center"/>
-                            <TextBlock Grid.Column="7" Text="" FontWeight="SemiBold"/>
-                        </Grid>
-                    </Border>
+		</StackPanel>
 
-                    <ItemsControl ItemsSource="{Binding Invoices}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="vm:InvoiceRowViewModel">
-                                <StackPanel>
-                                    <Border BorderBrush="#E5E5E5" BorderThickness="0,0,0,1" Padding="8">
-                                        <Grid ColumnDefinitions="28,*,110,80,110,80,60,120" ColumnSpacing="8">
-                                            <Button Grid.Column="0"
-                                                    Content="{Binding IsExpanded, Converter={x:Static converters:ExpandGlyphConverter.Instance}}"
-                                                    Command="{Binding $parent[UserControl].((vm:InvoiceViewModel)DataContext).ToggleExpandCommand}"
-                                                    CommandParameter="{Binding}"
-                                                    Padding="4,0"/>
-                                            <TextBlock Grid.Column="1"
-                                                       Text="{Binding InvoiceNo}"
-                                                       VerticalAlignment="Center"/>
-                                            <TextBlock Grid.Column="2"
-                                                       Text="{Binding InvoiceDate, StringFormat='{}{0:yyyy-MM-dd}'}"
-                                                       VerticalAlignment="Center"/>
-                                            <TextBlock Grid.Column="3"
-                                                       Text="{Binding TaxMonth}"
-                                                       TextAlignment="Center"
-                                                       VerticalAlignment="Center"/>
-                                            <TextBlock Grid.Column="4"
-                                                       Text="{Binding TotalAmount, StringFormat='{}{0:N2}'}"
-                                                       TextAlignment="Right"
-                                                       VerticalAlignment="Center"/>
-                                            <TextBlock Grid.Column="5"
-                                                       Text="{Binding VatAmount, StringFormat='{}{0:N2}'}"
-                                                       TextAlignment="Right"
-                                                       VerticalAlignment="Center"/>
-                                            <TextBlock Grid.Column="6"
-                                                       Text="{Binding ItemCount}"
-                                                       TextAlignment="Center"
-                                                       VerticalAlignment="Center"/>
-                                            <StackPanel Grid.Column="7" Orientation="Horizontal" Spacing="4">
-                                                <Button Content="พิมพ์"
-                                                        Command="{Binding $parent[UserControl].((vm:InvoiceViewModel)DataContext).PrintCommand}"
-                                                        CommandParameter="{Binding}"
-                                                        Padding="4,2"/>
-                                            </StackPanel>
-                                        </Grid>
-                                    </Border>
+		<!-- Row 1: Invoice list -->
+		<Border Grid.Row="1"
+				BorderBrush="#D0D0D0"
+				BorderThickness="1"
+				CornerRadius="4">
+			<ScrollViewer HorizontalScrollBarVisibility="Auto"
+						  VerticalScrollBarVisibility="Auto">
+				<StackPanel MinWidth="700">
+					<Border Background="#EEEEEE" Padding="8">
+						<Grid ColumnDefinitions="28,*,110,80,110,80,60,120" ColumnSpacing="8">
+							<TextBlock Grid.Column="1" Text="เลขที่ใบกำกับ" FontWeight="SemiBold"/>
+							<TextBlock Grid.Column="2" Text="วันที่" FontWeight="SemiBold"/>
+							<TextBlock Grid.Column="3" Text="เดือน" FontWeight="SemiBold" TextAlignment="Center"/>
+							<TextBlock Grid.Column="4" Text="ยอดรวม" FontWeight="SemiBold" TextAlignment="Right"/>
+							<TextBlock Grid.Column="5" Text="VAT" FontWeight="SemiBold" TextAlignment="Right"/>
+							<TextBlock Grid.Column="6" Text="รายการ" FontWeight="SemiBold" TextAlignment="Center"/>
+							<TextBlock Grid.Column="7" Text="" FontWeight="SemiBold"/>
+						</Grid>
+					</Border>
 
-                                    <!-- Detail panel: collapses/expands per invoice -->
-                                    <Border IsVisible="{Binding IsExpanded}"
-                                            Background="#FAFAFA"
-                                            BorderBrush="#E5E5E5"
-                                            BorderThickness="0,0,0,1"
-                                            Padding="28,4,8,8">
-                                        <StackPanel>
-                                            <Grid ColumnDefinitions="*,80,90,90" ColumnSpacing="8">
-                                                <TextBlock Grid.Column="0" Text="ชื่อสินค้า" FontWeight="SemiBold" Opacity="0.7"/>
-                                                <TextBlock Grid.Column="1" Text="จำนวน" FontWeight="SemiBold" Opacity="0.7" TextAlignment="Right"/>
-                                                <TextBlock Grid.Column="2" Text="ยอดก่อน VAT" FontWeight="SemiBold" Opacity="0.7" TextAlignment="Right"/>
-                                                <TextBlock Grid.Column="3" Text="VAT" FontWeight="SemiBold" Opacity="0.7" TextAlignment="Right"/>
-                                            </Grid>
-                                            <ItemsControl ItemsSource="{Binding Items}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate x:DataType="vm:InvoiceItemDetailViewModel">
-                                                        <Grid ColumnDefinitions="*,80,90,90" ColumnSpacing="8" Margin="0,2">
-                                                            <TextBlock Grid.Column="0" Text="{Binding ProductName}"/>
-                                                            <TextBlock Grid.Column="1" Text="{Binding Qty, StringFormat='{}{0:N0}'}" TextAlignment="Right"/>
-                                                            <TextBlock Grid.Column="2" Text="{Binding Amount, StringFormat='{}{0:N2}'}" TextAlignment="Right"/>
-                                                            <TextBlock Grid.Column="3" Text="{Binding VatAmount, StringFormat='{}{0:N2}'}" TextAlignment="Right"/>
-                                                        </Grid>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                        </StackPanel>
-                                    </Border>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
-            </ScrollViewer>
-        </Border>
+					<ItemsControl ItemsSource="{Binding Invoices}">
+						<ItemsControl.ItemTemplate>
+							<DataTemplate x:DataType="vm:InvoiceRowViewModel">
+								<StackPanel>
+									<Border BorderBrush="#E5E5E5" BorderThickness="0,0,0,1" Padding="8">
+										<Grid ColumnDefinitions="28,*,110,80,110,80,60,120" ColumnSpacing="8">
+											<Button Grid.Column="0"
+													Content="{Binding IsExpanded, Converter={x:Static converters:ExpandGlyphConverter.Instance}}"
+													Command="{Binding $parent[UserControl].((vm:InvoiceViewModel)DataContext).ToggleExpandCommand}"
+													CommandParameter="{Binding}"
+													Padding="4,0"/>
+											<TextBlock Grid.Column="1"
+													   Text="{Binding InvoiceNo}"
+													   VerticalAlignment="Center"/>
+											<TextBlock Grid.Column="2"
+													   Text="{Binding InvoiceDate, StringFormat='{}{0:yyyy-MM-dd}'}"
+													   VerticalAlignment="Center"/>
+											<TextBlock Grid.Column="3"
+													   Text="{Binding TaxMonth}"
+													   TextAlignment="Center"
+													   VerticalAlignment="Center"/>
+											<TextBlock Grid.Column="4"
+													   Text="{Binding TotalAmount, StringFormat='{}{0:N2}'}"
+													   TextAlignment="Right"
+													   VerticalAlignment="Center"/>
+											<TextBlock Grid.Column="5"
+													   Text="{Binding VatAmount, StringFormat='{}{0:N2}'}"
+													   TextAlignment="Right"
+													   VerticalAlignment="Center"/>
+											<TextBlock Grid.Column="6"
+													   Text="{Binding ItemCount}"
+													   TextAlignment="Center"
+													   VerticalAlignment="Center"/>
+											<StackPanel Grid.Column="7" Orientation="Horizontal" Spacing="4">
+												<Button Content="พิมพ์"
+														Command="{Binding $parent[UserControl].((vm:InvoiceViewModel)DataContext).PrintCommand}"
+														CommandParameter="{Binding}"
+														Padding="4,2"/>
+											</StackPanel>
+										</Grid>
+									</Border>
 
-        <!-- Row 2: Summary footer -->
-        <Border Grid.Row="2"
-                Background="#F5F5F5"
-                BorderBrush="#D0D0D0"
-                BorderThickness="1"
-                CornerRadius="4"
-                Padding="10,6">
-            <StackPanel Orientation="Horizontal" Spacing="16">
-                <TextBlock Text="รวมช่วงนี้:" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                <TextBlock Text="{Binding SummaryCount, StringFormat='{}{0} ใบ'}" VerticalAlignment="Center"/>
-                <TextBlock Text="|" Opacity="0.4" VerticalAlignment="Center"/>
-                <TextBlock Text="ยอดรวม:" VerticalAlignment="Center"/>
-                <TextBlock Text="{Binding SummaryTotal, StringFormat='{}{0:N2}'}"
-                           FontWeight="SemiBold" VerticalAlignment="Center"/>
-                <TextBlock Text="|" Opacity="0.4" VerticalAlignment="Center"/>
-                <TextBlock Text="VAT:" VerticalAlignment="Center"/>
-                <TextBlock Text="{Binding SummaryVat, StringFormat='{}{0:N2}'}"
-                           FontWeight="SemiBold" VerticalAlignment="Center"/>
-            </StackPanel>
-        </Border>
+									<!-- Detail panel: collapses/expands per invoice -->
+									<Border IsVisible="{Binding IsExpanded}"
+											Background="#FAFAFA"
+											BorderBrush="#E5E5E5"
+											BorderThickness="0,0,0,1"
+											Padding="28,4,8,8">
+										<StackPanel>
+											<Grid ColumnDefinitions="*,80,90,90" ColumnSpacing="8">
+												<TextBlock Grid.Column="0" Text="ชื่อสินค้า" FontWeight="SemiBold" Opacity="0.7"/>
+												<TextBlock Grid.Column="1" Text="จำนวน" FontWeight="SemiBold" Opacity="0.7" TextAlignment="Right"/>
+												<TextBlock Grid.Column="2" Text="ยอดก่อน VAT" FontWeight="SemiBold" Opacity="0.7" TextAlignment="Right"/>
+												<TextBlock Grid.Column="3" Text="VAT" FontWeight="SemiBold" Opacity="0.7" TextAlignment="Right"/>
+											</Grid>
+											<ItemsControl ItemsSource="{Binding Items}">
+												<ItemsControl.ItemTemplate>
+													<DataTemplate x:DataType="vm:InvoiceItemDetailViewModel">
+														<Grid ColumnDefinitions="*,80,90,90" ColumnSpacing="8" Margin="0,2">
+															<TextBlock Grid.Column="0" Text="{Binding ProductName}"/>
+															<TextBlock Grid.Column="1" Text="{Binding Qty, StringFormat='{}{0:N0}'}" TextAlignment="Right"/>
+															<TextBlock Grid.Column="2" Text="{Binding Amount, StringFormat='{}{0:N2}'}" TextAlignment="Right"/>
+															<TextBlock Grid.Column="3" Text="{Binding VatAmount, StringFormat='{}{0:N2}'}" TextAlignment="Right"/>
+														</Grid>
+													</DataTemplate>
+												</ItemsControl.ItemTemplate>
+											</ItemsControl>
+										</StackPanel>
+									</Border>
+								</StackPanel>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</StackPanel>
+			</ScrollViewer>
+		</Border>
 
-        <!-- Row 3: Status bar -->
-        <Grid Grid.Row="3" ColumnDefinitions="*,Auto">
-            <TextBlock Grid.Column="0"
-                       Text="{Binding StatusMessage}"
-                       FontStyle="Italic"
-                       TextWrapping="Wrap"
-                       VerticalAlignment="Center"/>
-            <ProgressBar Grid.Column="1"
-                         Width="120"
-                         IsIndeterminate="True"
-                         IsVisible="{Binding IsBusy}"/>
-        </Grid>
+		<!-- Row 2: Summary footer -->
+		<Border Grid.Row="2"
+				Background="#F5F5F5"
+				BorderBrush="#D0D0D0"
+				BorderThickness="1"
+				CornerRadius="4"
+				Padding="10,6">
+			<StackPanel Orientation="Horizontal" Spacing="16">
+				<TextBlock Text="รวมช่วงนี้:" FontWeight="SemiBold" VerticalAlignment="Center"/>
+				<TextBlock Text="{Binding SummaryCount, StringFormat='{}{0} ใบ'}" VerticalAlignment="Center"/>
+				<TextBlock Text="|" Opacity="0.4" VerticalAlignment="Center"/>
+				<TextBlock Text="ยอดรวม:" VerticalAlignment="Center"/>
+				<TextBlock Text="{Binding SummaryTotal, StringFormat='{}{0:N2}'}"
+						   FontWeight="SemiBold" VerticalAlignment="Center"/>
+				<TextBlock Text="|" Opacity="0.4" VerticalAlignment="Center"/>
+				<TextBlock Text="VAT:" VerticalAlignment="Center"/>
+				<TextBlock Text="{Binding SummaryVat, StringFormat='{}{0:N2}'}"
+						   FontWeight="SemiBold" VerticalAlignment="Center"/>
+			</StackPanel>
+		</Border>
 
-    </Grid>
+		<!-- Row 3: Status bar -->
+		<Grid Grid.Row="3" ColumnDefinitions="*,Auto">
+			<TextBlock Grid.Column="0"
+					   Text="{Binding StatusMessage}"
+					   FontStyle="Italic"
+					   TextWrapping="Wrap"
+					   VerticalAlignment="Center"/>
+			<ProgressBar Grid.Column="1"
+						 Width="120"
+						 IsIndeterminate="True"
+						 IsVisible="{Binding IsBusy}"/>
+		</Grid>
+
+	</Grid>
 
 </UserControl>

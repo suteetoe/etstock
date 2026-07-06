@@ -44,12 +44,12 @@
         </Border>
 
         <!-- Tab area -->
-        <TabControl Grid.Row="2">
+        <TabControl Grid.Row="2" Margin="8">
             <TabItem Header="สินค้าคงเหลือ">
-                <views:ProductView DataContext="{Binding StockPage}" Margin="16"/>
+                <views:ProductView DataContext="{Binding StockPage}" Margin="8"/>
             </TabItem>
             <TabItem Header="ใบกำกับภาษีอย่างย่อ">
-                <views:InvoiceView DataContext="{Binding InvoicePage}" Margin="16"/>
+                <views:InvoiceView DataContext="{Binding InvoicePage}" Margin="8"/>
             </TabItem>
         </TabControl>
     </Grid>
