@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+
+  <!-- auto-harvest ไฟล์ทั้งหมดจาก publish directory -->
+  <Fragment>
+    <ComponentGroup Id="HarvestedFiles" Directory="INSTALLFOLDER">
+      <Files Include="..\publish\**\*.*" />
+    </ComponentGroup>
+  </Fragment>
+
+</Wix>
