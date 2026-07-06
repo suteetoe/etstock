@@ -17,10 +17,10 @@
 		<vm:MainWindowViewModel/>
 	</Design.DataContext>
 
-	<Grid RowDefinitions="22,Auto,*" Background="{DynamicResource AppBackgroundBrush}">
+	<Grid RowDefinitions="24,Auto,*" Background="{DynamicResource AppBackgroundBrush}">
 		<!-- Menu bar -->
 		<Menu Grid.Row="0">
-			<MenuItem Header="การตั้งค่า">
+			<MenuItem Header="การตั้งค่า" Padding="0,3,0,0">
 				<MenuItem Header="ข้อมูลบริษัท"
 						  Command="{Binding OpenCompanyDialogCommand}"/>
 				<MenuItem Header="นำเข้ายอดคงเหลือใหม่"

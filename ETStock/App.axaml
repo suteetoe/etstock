@@ -1,130 +1,132 @@
 <Application xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="ETStock.App"
-             xmlns:local="using:ETStock"
-             RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 x:Class="ETStock.App"
+			 xmlns:local="using:ETStock"
+			 RequestedThemeVariant="Default">
+	<!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
-    <Application.DataTemplates>
-        <local:ViewLocator/>
-    </Application.DataTemplates>
+	<Application.DataTemplates>
+		<local:ViewLocator/>
+	</Application.DataTemplates>
 
-    <Application.Resources>
-        <SolidColorBrush x:Key="AppBackgroundBrush" Color="#F6F7FB" />
-        <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF" />
-        <SolidColorBrush x:Key="SurfaceAltBrush" Color="#F8FAFC" />
-        <SolidColorBrush x:Key="PeriodBarBrush" Color="#EEF4FF" />
-        <SolidColorBrush x:Key="TableHeaderBrush" Color="#E6EEF9" />
-        <SolidColorBrush x:Key="TableFooterBrush" Color="#F0F6FF" />
-        <SolidColorBrush x:Key="DetailPanelBrush" Color="#F8FBFF" />
-        <SolidColorBrush x:Key="PanelBorderBrush" Color="#CBD5E1" />
-        <SolidColorBrush x:Key="RowDividerBrush" Color="#E2E8F0" />
-        <SolidColorBrush x:Key="PreviewChromeBrush" Color="#E5EAF2" />
-        <SolidColorBrush x:Key="WarningBackgroundBrush" Color="#FFF7ED" />
-        <SolidColorBrush x:Key="WarningBorderBrush" Color="#FDBA74" />
-        <SolidColorBrush x:Key="WarningTextBrush" Color="#C2410C" />
-        <SolidColorBrush x:Key="PositiveTextBrush" Color="#15803D" />
-        <SolidColorBrush x:Key="ErrorTextBrush" Color="#B91C1C" />
-        <SolidColorBrush x:Key="AccentButtonBrush" Color="#2563EB" />
-        <SolidColorBrush x:Key="AccentButtonHoverBrush" Color="#1D4ED8" />
-        <SolidColorBrush x:Key="AccentButtonPressedBrush" Color="#1E40AF" />
-        <SolidColorBrush x:Key="InfoButtonBrush" Color="#0F766E" />
-        <SolidColorBrush x:Key="InfoButtonHoverBrush" Color="#0D9488" />
-        <SolidColorBrush x:Key="InfoButtonPressedBrush" Color="#0F5F59" />
-        <SolidColorBrush x:Key="SuccessButtonBrush" Color="#16A34A" />
-        <SolidColorBrush x:Key="SuccessButtonHoverBrush" Color="#15803D" />
-        <SolidColorBrush x:Key="SuccessButtonPressedBrush" Color="#166534" />
-        <SolidColorBrush x:Key="DangerButtonBrush" Color="#DC2626" />
-        <SolidColorBrush x:Key="DangerButtonHoverBrush" Color="#B91C1C" />
-        <SolidColorBrush x:Key="DangerButtonPressedBrush" Color="#991B1B" />
-        <SolidColorBrush x:Key="StatusButtonForegroundBrush" Color="#FFFFFF" />
-    </Application.Resources>
-  
-    <Application.Styles>
-        <SimpleTheme />
-        <!--
-        <Style Selector="TopLevel">
-            <Setter Property="FontFamily" Value="Angsana New" />
-        </Style>
-        -->
+	<Application.Resources>
+		<SolidColorBrush x:Key="AppBackgroundBrush" Color="#F6F7FB" />
+		<SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF" />
+		<SolidColorBrush x:Key="SurfaceAltBrush" Color="#F8FAFC" />
+		<SolidColorBrush x:Key="PeriodBarBrush" Color="#EEF4FF" />
+		<SolidColorBrush x:Key="TableHeaderBrush" Color="#E6EEF9" />
+		<SolidColorBrush x:Key="TableFooterBrush" Color="#F0F6FF" />
+		<SolidColorBrush x:Key="DetailPanelBrush" Color="#F8FBFF" />
+		<SolidColorBrush x:Key="PanelBorderBrush" Color="#CBD5E1" />
+		<SolidColorBrush x:Key="RowDividerBrush" Color="#E2E8F0" />
+		<SolidColorBrush x:Key="PreviewChromeBrush" Color="#E5EAF2" />
+		<SolidColorBrush x:Key="WarningBackgroundBrush" Color="#FFF7ED" />
+		<SolidColorBrush x:Key="WarningBorderBrush" Color="#FDBA74" />
+		<SolidColorBrush x:Key="WarningTextBrush" Color="#C2410C" />
+		<SolidColorBrush x:Key="PositiveTextBrush" Color="#15803D" />
+		<SolidColorBrush x:Key="ErrorTextBrush" Color="#B91C1C" />
+		<SolidColorBrush x:Key="AccentButtonBrush" Color="#2563EB" />
+		<SolidColorBrush x:Key="AccentButtonHoverBrush" Color="#1D4ED8" />
+		<SolidColorBrush x:Key="AccentButtonPressedBrush" Color="#1E40AF" />
+		<SolidColorBrush x:Key="InfoButtonBrush" Color="#0F766E" />
+		<SolidColorBrush x:Key="InfoButtonHoverBrush" Color="#0D9488" />
+		<SolidColorBrush x:Key="InfoButtonPressedBrush" Color="#0F5F59" />
+		<SolidColorBrush x:Key="SuccessButtonBrush" Color="#16A34A" />
+		<SolidColorBrush x:Key="SuccessButtonHoverBrush" Color="#15803D" />
+		<SolidColorBrush x:Key="SuccessButtonPressedBrush" Color="#166534" />
+		<SolidColorBrush x:Key="DangerButtonBrush" Color="#DC2626" />
+		<SolidColorBrush x:Key="DangerButtonHoverBrush" Color="#B91C1C" />
+		<SolidColorBrush x:Key="DangerButtonPressedBrush" Color="#991B1B" />
+		<SolidColorBrush x:Key="StatusButtonForegroundBrush" Color="#FFFFFF" />
+	</Application.Resources>
 
- 
-        <Style Selector="Button">
+	<Application.Styles>
+		<SimpleTheme />
+
+		<Style Selector="TopLevel">
+			<Setter Property="FontFamily" Value="Tahoma" />
+		</Style>
+
+		<Style Selector="TextBlock">
+			<Setter Property="FontFamily" Value="Tahoma" />
+		</Style>
+
+		<Style Selector="Button">
 			<Setter Property="CornerRadius" Value="4" />
-            <Setter Property="Padding" Value="10,6,10,6" />
-        </Style>
+			<Setter Property="Padding" Value="10,6,10,6" />
+		</Style>
 
-         <Style Selector="TextBox">
+		<Style Selector="TextBox">
 			<Setter Property="CornerRadius" Value="3" />
-        </Style>
+		</Style>
 
-        <Style Selector="NumericUpDown">
+		<Style Selector="NumericUpDown">
 			<Setter Property="CornerRadius" Value="3" />
-        </Style>
+		</Style>
 
-        <Style Selector="Button.accent">
-            <Setter Property="Background" Value="{DynamicResource AccentButtonBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource AccentButtonBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
-        </Style>
-        <Style Selector="Button.accent:pointerover">
-            <Setter Property="Background" Value="{DynamicResource AccentButtonHoverBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource AccentButtonHoverBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
-        </Style>
-        <Style Selector="Button.accent:pressed">
-            <Setter Property="Background" Value="{DynamicResource AccentButtonPressedBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource AccentButtonPressedBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
-        </Style>
+		<Style Selector="Button.accent">
+			<Setter Property="Background" Value="{DynamicResource AccentButtonBrush}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource AccentButtonBrush}" />
+			<Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+		</Style>
+		<Style Selector="Button.accent:pointerover">
+			<Setter Property="Background" Value="{DynamicResource AccentButtonHoverBrush}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource AccentButtonHoverBrush}" />
+			<Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+		</Style>
+		<Style Selector="Button.accent:pressed">
+			<Setter Property="Background" Value="{DynamicResource AccentButtonPressedBrush}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource AccentButtonPressedBrush}" />
+			<Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+		</Style>
 
-        <Style Selector="Button.info">
-            <Setter Property="Background" Value="{DynamicResource InfoButtonBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource InfoButtonBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
-        </Style>
-        <Style Selector="Button.info:pointerover">
-            <Setter Property="Background" Value="{DynamicResource InfoButtonHoverBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource InfoButtonHoverBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
-        </Style>
-        <Style Selector="Button.info:pressed">
-            <Setter Property="Background" Value="{DynamicResource InfoButtonPressedBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource InfoButtonPressedBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
-        </Style>
+		<Style Selector="Button.info">
+			<Setter Property="Background" Value="{DynamicResource InfoButtonBrush}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource InfoButtonBrush}" />
+			<Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+		</Style>
+		<Style Selector="Button.info:pointerover">
+			<Setter Property="Background" Value="{DynamicResource InfoButtonHoverBrush}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource InfoButtonHoverBrush}" />
+			<Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+		</Style>
+		<Style Selector="Button.info:pressed">
+			<Setter Property="Background" Value="{DynamicResource InfoButtonPressedBrush}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource InfoButtonPressedBrush}" />
+			<Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+		</Style>
 
-        <Style Selector="Button.success">
-            <Setter Property="Background" Value="{DynamicResource SuccessButtonBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource SuccessButtonBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
-        </Style>
-        <Style Selector="Button.success:pointerover">
-            <Setter Property="Background" Value="{DynamicResource SuccessButtonHoverBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource SuccessButtonHoverBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
-        </Style>
-        <Style Selector="Button.success:pressed">
-            <Setter Property="Background" Value="{DynamicResource SuccessButtonPressedBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource SuccessButtonPressedBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
-        </Style>
+		<Style Selector="Button.success">
+			<Setter Property="Background" Value="{DynamicResource SuccessButtonBrush}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource SuccessButtonBrush}" />
+			<Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+		</Style>
+		<Style Selector="Button.success:pointerover">
+			<Setter Property="Background" Value="{DynamicResource SuccessButtonHoverBrush}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource SuccessButtonHoverBrush}" />
+			<Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+		</Style>
+		<Style Selector="Button.success:pressed">
+			<Setter Property="Background" Value="{DynamicResource SuccessButtonPressedBrush}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource SuccessButtonPressedBrush}" />
+			<Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+		</Style>
 
-        <Style Selector="Button.danger">
-            <Setter Property="Background" Value="{DynamicResource DangerButtonBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource DangerButtonBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
-        </Style>
-        <Style Selector="Button.danger:pointerover">
-            <Setter Property="Background" Value="{DynamicResource DangerButtonHoverBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource DangerButtonHoverBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
-        </Style>
-        <Style Selector="Button.danger:pressed">
-            <Setter Property="Background" Value="{DynamicResource DangerButtonPressedBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource DangerButtonPressedBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
-        </Style>
-    </Application.Styles>
- 
+		<Style Selector="Button.danger">
+			<Setter Property="Background" Value="{DynamicResource DangerButtonBrush}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource DangerButtonBrush}" />
+			<Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+		</Style>
+		<Style Selector="Button.danger:pointerover">
+			<Setter Property="Background" Value="{DynamicResource DangerButtonHoverBrush}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource DangerButtonHoverBrush}" />
+			<Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+		</Style>
+		<Style Selector="Button.danger:pressed">
+			<Setter Property="Background" Value="{DynamicResource DangerButtonPressedBrush}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource DangerButtonPressedBrush}" />
+			<Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+		</Style>
+	</Application.Styles>
+
 </Application>
