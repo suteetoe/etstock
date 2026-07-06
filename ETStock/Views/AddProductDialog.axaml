@@ -10,7 +10,7 @@
         CanResize="False"
         ShowInTaskbar="False">
 
-    <Grid RowDefinitions="*,Auto" Margin="16">
+    <Grid RowDefinitions="*,Auto" Margin="16" Background="{DynamicResource AppBackgroundBrush}">
         <StackPanel Grid.Row="0" Spacing="8">
             <TextBlock Text="ชื่อสินค้า *" FontWeight="SemiBold"/>
             <TextBox Text="{Binding Name}"/>
@@ -29,7 +29,7 @@
                 </StackPanel>
             </Grid>
 
-            <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+            <TextBlock Text="{Binding ErrorMessage}" Foreground="{DynamicResource ErrorTextBrush}" IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
         </StackPanel>
 
         <Grid Grid.Row="1" ColumnDefinitions="*,8,*" Margin="0,8,0,0">

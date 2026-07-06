@@ -11,7 +11,7 @@
         <vm:CompanyViewModel/>
     </Design.DataContext>
 
-    <ScrollViewer>
+    <ScrollViewer Background="{DynamicResource AppBackgroundBrush}">
         <StackPanel Margin="24" Spacing="16" MaxWidth="600">
             <TextBlock Text="ข้อมูลบริษัท" FontSize="22" FontWeight="Bold" Margin="0,0,0,8"/>
 
@@ -42,11 +42,11 @@
                 <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding VatRate}" IsEnabled="{Binding !IsBusy}"/>
 
                 <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding StatusMessage}"
-                           Foreground="Green" FontStyle="Italic" IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                           Foreground="{DynamicResource PositiveTextBrush}" FontStyle="Italic" IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
 
                 <StackPanel Grid.Row="9" Grid.Column="1" Orientation="Horizontal" Spacing="8">
                     <Button Content="โหลดข้อมูล" Command="{Binding LoadCommand}" IsEnabled="{Binding !IsBusy}"/>
-                    <Button Content="บันทึก" Command="{Binding SaveCommand}" IsEnabled="{Binding !IsBusy}"/>
+                    <Button Content="บันทึก" Classes="accent" Command="{Binding SaveCommand}" IsEnabled="{Binding !IsBusy}"/>
                 </StackPanel>
             </Grid>
         </StackPanel>

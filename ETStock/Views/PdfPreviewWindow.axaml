@@ -9,10 +9,10 @@
         MinHeight="640"
         WindowStartupLocation="CenterOwner">
 
-    <Grid RowDefinitions="Auto,*" Background="#F3F4F6">
+    <Grid RowDefinitions="Auto,*" Background="{DynamicResource AppBackgroundBrush}">
         <Border Grid.Row="0"
-                Background="White"
-                BorderBrush="#D1D5DB"
+                Background="{DynamicResource SurfaceBrush}"
+                BorderBrush="{DynamicResource PanelBorderBrush}"
                 BorderThickness="0,0,0,1"
                 Padding="10">
             <DockPanel LastChildFill="False">
@@ -23,7 +23,7 @@
             </DockPanel>
         </Border>
 
-        <Border Grid.Row="1" Margin="14" Background="#E5E7EB">
+        <Border Grid.Row="1" Margin="14" Background="{DynamicResource PreviewChromeBrush}">
             <NativeWebView x:Name="WebView" />
         </Border>
     </Grid>

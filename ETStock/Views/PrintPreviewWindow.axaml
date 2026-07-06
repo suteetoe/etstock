@@ -9,11 +9,11 @@
         Width="560" Height="740"
         WindowStartupLocation="CenterOwner">
 
-    <Grid RowDefinitions="*,Auto" Margin="20">
+    <Grid RowDefinitions="*,Auto" Margin="20" Background="{DynamicResource AppBackgroundBrush}">
 
         <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Disabled">
-            <Border BorderBrush="#C8C8C8" BorderThickness="1" CornerRadius="3" Padding="18"
-                    MaxWidth="500" Background="White">
+            <Border BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="1" CornerRadius="3" Padding="18"
+                    MaxWidth="500" Background="{DynamicResource SurfaceBrush}">
                 <StackPanel Spacing="4">
 
                     <!-- Company header -->
@@ -51,10 +51,10 @@
                     </Grid>
 
                     <!-- Items table -->
-                    <Border BorderBrush="#888" BorderThickness="1" Margin="0,8,0,0">
+                    <Border BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="1" Margin="0,8,0,0">
                         <StackPanel>
                             <!-- Header row -->
-                            <Border Background="#C8C8C8" Padding="6,4">
+                            <Border Background="{DynamicResource TableHeaderBrush}" Padding="6,4">
                                 <Grid ColumnDefinitions="24,*,50,70,70" ColumnSpacing="6">
                                     <TextBlock Grid.Column="0" Text="ลำดับ"        FontWeight="Bold" TextAlignment="Center" FontSize="10"/>
                                     <TextBlock Grid.Column="1" Text="รายการสินค้า" FontWeight="Bold" FontSize="10"/>
@@ -68,7 +68,7 @@
                             <ItemsControl ItemsSource="{Binding Doc.Lines}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate x:DataType="models:InvoiceDocumentLine">
-                                        <Border BorderBrush="#CCCCCC" BorderThickness="0,0,0,1" Padding="6,4">
+                                        <Border BorderBrush="{DynamicResource RowDividerBrush}" BorderThickness="0,0,0,1" Padding="6,4">
                                             <Grid ColumnDefinitions="24,*,50,70,70" ColumnSpacing="6">
                                                 <TextBlock Grid.Column="1" Text="{Binding ProductName}"
                                                            TextWrapping="Wrap" FontSize="10"/>
@@ -88,7 +88,7 @@
                             </ItemsControl>
 
                             <!-- Total footer row -->
-                            <Border Background="#F0F0F0" BorderBrush="#888" BorderThickness="0,1,0,0" Padding="6,5">
+                            <Border Background="{DynamicResource TableFooterBrush}" BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="0,1,0,0" Padding="6,5">
                                 <Grid ColumnDefinitions="*,Auto">
                                     <TextBlock Grid.Column="0"
                                                Text="รวมทั้งสิ้น (ราคารวมภาษีมูลค่าเพิ่มแล้ว)"

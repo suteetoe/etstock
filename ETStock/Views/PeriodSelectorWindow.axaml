@@ -10,9 +10,11 @@
 		Width="400" Height="180"
 		WindowStartupLocation="CenterScreen"
 		CanResize="False"
-		ShowInTaskbar="True">
+		ShowInTaskbar="True" Background="{DynamicResource AppBackgroundBrush}" >
 
-	<Grid RowDefinitions="*,Auto" Margin="16">
+
+
+	<Grid RowDefinitions="*,Auto" Margin="16" >
 		<StackPanel Grid.Row="0" Spacing="8">
 			<TextBlock Text="เลือกเดือน / ปี" FontWeight="SemiBold"/>
 			<DatePicker SelectedDate="{Binding SelectedDate}"
@@ -22,7 +24,7 @@
 
 		<Grid Grid.Row="1" ColumnDefinitions="*,8,*" Margin="0,16,0,0">
 
-			<Button  Grid.Column="0" HorizontalAlignment="Stretch"
+			<Button Classes="danger"  Grid.Column="0" HorizontalAlignment="Stretch"
 					 Command="{Binding CancelCommand}">
 
 				<StackPanel Orientation="Horizontal" >
@@ -30,7 +32,7 @@
 					<TextBlock Text=" ยกเลิก" />
 				</StackPanel>
 			</Button>
-			<Button Grid.Column="2" HorizontalAlignment="Stretch"
+			<Button  Classes="success" Grid.Column="2" HorizontalAlignment="Stretch"
 					Command="{Binding ConfirmCommand}">
 				<StackPanel Orientation="Horizontal">
 					<ic:FluentIcon Icon="CheckmarkCircle" />

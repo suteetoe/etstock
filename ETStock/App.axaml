@@ -10,15 +10,33 @@
     </Application.DataTemplates>
 
     <Application.Resources>
-        <SolidColorBrush x:Key="InfoButtonBrush" Color="#0D6EFD" />
-        <SolidColorBrush x:Key="InfoButtonHoverBrush" Color="#0B5ED7" />
-        <SolidColorBrush x:Key="InfoButtonPressedBrush" Color="#0A58CA" />
-        <SolidColorBrush x:Key="SuccessButtonBrush" Color="#198754" />
-        <SolidColorBrush x:Key="SuccessButtonHoverBrush" Color="#157347" />
-        <SolidColorBrush x:Key="SuccessButtonPressedBrush" Color="#146C43" />
-        <SolidColorBrush x:Key="DangerButtonBrush" Color="#DC3545" />
-        <SolidColorBrush x:Key="DangerButtonHoverBrush" Color="#BB2D3B" />
-        <SolidColorBrush x:Key="DangerButtonPressedBrush" Color="#B02A37" />
+        <SolidColorBrush x:Key="AppBackgroundBrush" Color="#F6F7FB" />
+        <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="SurfaceAltBrush" Color="#F8FAFC" />
+        <SolidColorBrush x:Key="PeriodBarBrush" Color="#EEF4FF" />
+        <SolidColorBrush x:Key="TableHeaderBrush" Color="#E6EEF9" />
+        <SolidColorBrush x:Key="TableFooterBrush" Color="#F0F6FF" />
+        <SolidColorBrush x:Key="DetailPanelBrush" Color="#F8FBFF" />
+        <SolidColorBrush x:Key="PanelBorderBrush" Color="#CBD5E1" />
+        <SolidColorBrush x:Key="RowDividerBrush" Color="#E2E8F0" />
+        <SolidColorBrush x:Key="PreviewChromeBrush" Color="#E5EAF2" />
+        <SolidColorBrush x:Key="WarningBackgroundBrush" Color="#FFF7ED" />
+        <SolidColorBrush x:Key="WarningBorderBrush" Color="#FDBA74" />
+        <SolidColorBrush x:Key="WarningTextBrush" Color="#C2410C" />
+        <SolidColorBrush x:Key="PositiveTextBrush" Color="#15803D" />
+        <SolidColorBrush x:Key="ErrorTextBrush" Color="#B91C1C" />
+        <SolidColorBrush x:Key="AccentButtonBrush" Color="#2563EB" />
+        <SolidColorBrush x:Key="AccentButtonHoverBrush" Color="#1D4ED8" />
+        <SolidColorBrush x:Key="AccentButtonPressedBrush" Color="#1E40AF" />
+        <SolidColorBrush x:Key="InfoButtonBrush" Color="#0F766E" />
+        <SolidColorBrush x:Key="InfoButtonHoverBrush" Color="#0D9488" />
+        <SolidColorBrush x:Key="InfoButtonPressedBrush" Color="#0F5F59" />
+        <SolidColorBrush x:Key="SuccessButtonBrush" Color="#16A34A" />
+        <SolidColorBrush x:Key="SuccessButtonHoverBrush" Color="#15803D" />
+        <SolidColorBrush x:Key="SuccessButtonPressedBrush" Color="#166534" />
+        <SolidColorBrush x:Key="DangerButtonBrush" Color="#DC2626" />
+        <SolidColorBrush x:Key="DangerButtonHoverBrush" Color="#B91C1C" />
+        <SolidColorBrush x:Key="DangerButtonPressedBrush" Color="#991B1B" />
         <SolidColorBrush x:Key="StatusButtonForegroundBrush" Color="#FFFFFF" />
     </Application.Resources>
   
@@ -38,6 +56,26 @@
 
          <Style Selector="TextBox">
 			<Setter Property="CornerRadius" Value="3" />
+        </Style>
+
+        <Style Selector="NumericUpDown">
+			<Setter Property="CornerRadius" Value="3" />
+        </Style>
+
+        <Style Selector="Button.accent">
+            <Setter Property="Background" Value="{DynamicResource AccentButtonBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentButtonBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+        </Style>
+        <Style Selector="Button.accent:pointerover">
+            <Setter Property="Background" Value="{DynamicResource AccentButtonHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentButtonHoverBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+        </Style>
+        <Style Selector="Button.accent:pressed">
+            <Setter Property="Background" Value="{DynamicResource AccentButtonPressedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentButtonPressedBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
         </Style>
 
         <Style Selector="Button.info">
