@@ -34,10 +34,16 @@
 				<TextBlock Text="{Binding CurrentDocNo, StringFormat='{}{0:00000}'}"
 						   VerticalAlignment="Center"
 						   IsVisible="{Binding !NeedsSeed}"/>
-				<Button Content="พิมพ์ทั้งหมด"
+				<Button 
+					
 						DockPanel.Dock="Right"
 						Command="{Binding PrintAllCommand}"
-						IsEnabled="{Binding !IsBusy}"/>
+						IsEnabled="{Binding !IsBusy}">
+				<StackPanel Orientation="Horizontal" >
+						<ic:FluentIcon Icon="Print" />
+						<TextBlock Text=" พิมพ์ทั้งหมด" />
+					</StackPanel>
+				</Button>
 				
 			</DockPanel>
 
@@ -126,10 +132,12 @@
 													   TextAlignment="Center"
 													   VerticalAlignment="Center"/>
 											<StackPanel Grid.Column="7" Orientation="Horizontal" Spacing="4">
-												<Button Content="พิมพ์"
+												<Button Content="{icx:SymbolIcon Symbol=PreviewLink }"
 														Command="{Binding $parent[UserControl].((vm:InvoiceViewModel)DataContext).PrintCommand}"
 														CommandParameter="{Binding}"
-														Padding="4,2"/>
+														Padding="4,2" >
+													
+												</Button>
 											</StackPanel>
 										</Grid>
 									</Border>

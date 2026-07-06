@@ -1,57 +1,82 @@
 <Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:ETStock.ViewModels"
-        xmlns:views="using:ETStock.Views"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="680"
-        x:Class="ETStock.Views.MainWindow"
-        x:DataType="vm:MainWindowViewModel"
-        Icon="avares://ETStock/Assets/etstock.ico"
-        Title="ET Stock"
-        Width="1024" Height="680">
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:vm="using:ETStock.ViewModels"
+		xmlns:views="using:ETStock.Views"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
+		xmlns:icx="clr-namespace:FluentIcons.Avalonia.Markup;assembly=FluentIcons.Avalonia"
+		mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="680"
+		x:Class="ETStock.Views.MainWindow"
+		x:DataType="vm:MainWindowViewModel"
+		Icon="avares://ETStock/Assets/etstock.ico"
+		Title="ET Stock"
+		Width="1024" Height="680">
 
-    <Design.DataContext>
-        <vm:MainWindowViewModel/>
-    </Design.DataContext>
+	<Design.DataContext>
+		<vm:MainWindowViewModel/>
+	</Design.DataContext>
 
-    <Grid RowDefinitions="22,Auto,*">
-        <!-- Menu bar -->
-        <Menu Grid.Row="0">
-            <MenuItem Header="การตั้งค่า">
-                <MenuItem Header="ข้อมูลบริษัท"
-                          Command="{Binding OpenCompanyDialogCommand}"/>
-                <MenuItem Header="นำเข้ายอดคงเหลือใหม่"
-                          Command="{Binding StockPage.ImportFromExcelCommand}"
-                          IsEnabled="{Binding !StockPage.IsBusy}"/>
-            </MenuItem>
-        </Menu>
+	<Grid RowDefinitions="22,Auto,*">
+		<!-- Menu bar -->
+		<Menu Grid.Row="0">
+			<MenuItem Header="การตั้งค่า">
+				<MenuItem Header="ข้อมูลบริษัท"
+						  Command="{Binding OpenCompanyDialogCommand}"/>
+				<MenuItem Header="นำเข้ายอดคงเหลือใหม่"
+						  Command="{Binding StockPage.ImportFromExcelCommand}"
+						  IsEnabled="{Binding !StockPage.IsBusy}"/>
+			</MenuItem>
+		</Menu>
 
-        <!-- Global period selector -->
-        <Border Grid.Row="1" Background="#F0F0F5" BorderBrush="#D0D0D0" BorderThickness="0,0,0,1" Padding="16,6">
-            <StackPanel Orientation="Horizontal"
-                        Spacing="8"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center">
-                <Button Content="นำเข้าข้อมูลเดือนก่อนหน้าใหม่"
-                        Command="{Binding StockPage.CarryForwardCommand}"
-                        IsEnabled="{Binding !StockPage.IsBusy}"
-                        Padding="12,4"/>
-                <Button Content="{Binding PeriodLabel}"
-                        Command="{Binding OpenPeriodSelectorCommand}"
-                        Padding="12,4"/>
-            </StackPanel>
-        </Border>
+		<!-- Global period selector -->
+		<Border Grid.Row="1" Background="#F0F0F5" BorderBrush="#D0D0D0" BorderThickness="0,0,0,1" Padding="16,6">
+			<StackPanel Orientation="Horizontal"
+						Spacing="8"
+						HorizontalAlignment="Right"
+						VerticalAlignment="Center">
+				<Button
+				Command="{Binding StockPage.CarryForwardCommand}"
+				IsEnabled="{Binding !StockPage.IsBusy}"
+				>
+					<StackPanel Orientation="Horizontal" >
+						<ic:SymbolIcon Symbol="CalendarArrowCounterclockwise" />
+						<TextBlock Text=" นำเข้าข้อมูลเดือนก่อนหน้าใหม่" />
+					</StackPanel>
+				</Button>
+				<Button
+				Command="{Binding OpenPeriodSelectorCommand}"
+				>
+					<StackPanel Orientation="Horizontal" >
+						<ic:SymbolIcon Symbol="Calendar" />
+						<TextBlock Text="{Binding PeriodLabel}" Padding="5,0,0,0" />
+					</StackPanel>
+				</Button>
+			</StackPanel>
+		</Border>
 
-        <!-- Tab area -->
-        <TabControl Grid.Row="2" Margin="8">
-            <TabItem Header="สินค้าคงเหลือ">
-                <views:ProductView DataContext="{Binding StockPage}" Margin="8"/>
-            </TabItem>
-            <TabItem Header="ใบกำกับภาษีอย่างย่อ">
-                <views:InvoiceView DataContext="{Binding InvoicePage}" Margin="8"/>
-            </TabItem>
-        </TabControl>
-    </Grid>
+		<!-- Tab area -->
+		<TabControl Grid.Row="2" Margin="8">
+			<TabItem>
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal" >
+						<ic:SymbolIcon Symbol="Cube" />
+						<TextBlock Text="สินค้าคงเหลือ" Padding="5,0,0,0" />
+					</StackPanel>
+				</TabItem.Header>
+				<views:ProductView DataContext="{Binding StockPage}" Margin="8"/>
+			</TabItem>
+			<TabItem>
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal" >
+						<ic:SymbolIcon Symbol="DocumentOnePageMultiple" />
+						<TextBlock Text="ใบกำกับภาษีอย่างย่อ" Padding="5,0,0,0" />
+					</StackPanel>
+				</TabItem.Header>
+
+				<views:InvoiceView DataContext="{Binding InvoicePage}" Margin="8"/>
+			</TabItem>
+		</TabControl>
+	</Grid>
 
 </Window>

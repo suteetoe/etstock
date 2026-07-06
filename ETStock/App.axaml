@@ -8,9 +8,85 @@
     <Application.DataTemplates>
         <local:ViewLocator/>
     </Application.DataTemplates>
+
+    <Application.Resources>
+        <SolidColorBrush x:Key="InfoButtonBrush" Color="#0D6EFD" />
+        <SolidColorBrush x:Key="InfoButtonHoverBrush" Color="#0B5ED7" />
+        <SolidColorBrush x:Key="InfoButtonPressedBrush" Color="#0A58CA" />
+        <SolidColorBrush x:Key="SuccessButtonBrush" Color="#198754" />
+        <SolidColorBrush x:Key="SuccessButtonHoverBrush" Color="#157347" />
+        <SolidColorBrush x:Key="SuccessButtonPressedBrush" Color="#146C43" />
+        <SolidColorBrush x:Key="DangerButtonBrush" Color="#DC3545" />
+        <SolidColorBrush x:Key="DangerButtonHoverBrush" Color="#BB2D3B" />
+        <SolidColorBrush x:Key="DangerButtonPressedBrush" Color="#B02A37" />
+        <SolidColorBrush x:Key="StatusButtonForegroundBrush" Color="#FFFFFF" />
+    </Application.Resources>
   
     <Application.Styles>
         <SimpleTheme />
+        <!--
+        <Style Selector="TopLevel">
+            <Setter Property="FontFamily" Value="Angsana New" />
+        </Style>
+        -->
+
+ 
+        <Style Selector="Button">
+			<Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="10,6,10,6" />
+        </Style>
+
+         <Style Selector="TextBox">
+			<Setter Property="CornerRadius" Value="3" />
+        </Style>
+
+        <Style Selector="Button.info">
+            <Setter Property="Background" Value="{DynamicResource InfoButtonBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource InfoButtonBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+        </Style>
+        <Style Selector="Button.info:pointerover">
+            <Setter Property="Background" Value="{DynamicResource InfoButtonHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource InfoButtonHoverBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+        </Style>
+        <Style Selector="Button.info:pressed">
+            <Setter Property="Background" Value="{DynamicResource InfoButtonPressedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource InfoButtonPressedBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+        </Style>
+
+        <Style Selector="Button.success">
+            <Setter Property="Background" Value="{DynamicResource SuccessButtonBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SuccessButtonBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+        </Style>
+        <Style Selector="Button.success:pointerover">
+            <Setter Property="Background" Value="{DynamicResource SuccessButtonHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SuccessButtonHoverBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+        </Style>
+        <Style Selector="Button.success:pressed">
+            <Setter Property="Background" Value="{DynamicResource SuccessButtonPressedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SuccessButtonPressedBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+        </Style>
+
+        <Style Selector="Button.danger">
+            <Setter Property="Background" Value="{DynamicResource DangerButtonBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerButtonBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+        </Style>
+        <Style Selector="Button.danger:pointerover">
+            <Setter Property="Background" Value="{DynamicResource DangerButtonHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerButtonHoverBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+        </Style>
+        <Style Selector="Button.danger:pressed">
+            <Setter Property="Background" Value="{DynamicResource DangerButtonPressedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DangerButtonPressedBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource StatusButtonForegroundBrush}" />
+        </Style>
     </Application.Styles>
  
 </Application>

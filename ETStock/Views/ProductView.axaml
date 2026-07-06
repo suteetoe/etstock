@@ -3,6 +3,8 @@
 			 xmlns:vm="using:ETStock.ViewModels"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
+			 xmlns:icx="clr-namespace:FluentIcons.Avalonia.Markup;assembly=FluentIcons.Avalonia"
 			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
 			 x:Class="ETStock.Views.ProductView"
 			 x:DataType="vm:ProductViewModel">
@@ -19,11 +21,21 @@
 					   FontSize="24"
 					   FontWeight="Bold"/>
 			<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-				<Button Content="ลบสินค้า"
-						Command="{Binding DeleteProductCommand}"
-						IsEnabled="{Binding SelectedRow, Converter={x:Static ObjectConverters.IsNotNull}}"/>
-				<Button Content="เพิ่มสินค้า"
-						Command="{Binding AddProductCommand}"/>
+				<Button Command="{Binding DeleteProductCommand}"
+						IsEnabled="{Binding SelectedRow, Converter={x:Static ObjectConverters.IsNotNull}}">
+
+					<StackPanel Orientation="Horizontal" >
+						<ic:FluentIcon Icon="DismissCircle" />
+						<TextBlock Text=" ลบสินค้า" />
+					</StackPanel>
+				</Button>
+				<Button
+				Command="{Binding AddProductCommand}" >
+					<StackPanel Orientation="Horizontal" >
+						<ic:FluentIcon Icon="AddCircle" />
+						<TextBlock Text=" เพิ่มสินค้า" />
+					</StackPanel>
+				</Button>
 			</StackPanel>
 		</Grid>
 
@@ -34,7 +46,7 @@
 				<TextBox Text="{Binding SearchText}"
 						 Watermark="ค้นหาชื่อสินค้า..."
 						 Width="400"
-						>
+						 >
 					<TextBox.KeyBindings>
 						<KeyBinding Gesture="Enter" Command="{Binding SearchProductCommand}"/>
 					</TextBox.KeyBindings>
@@ -42,15 +54,31 @@
 			</StackPanel>
 			<StackPanel  Orientation="Horizontal" Spacing="8"  DockPanel.Dock="Right" >
 
-				<Button Content="บันทีกข้อมูล"
-						Command="{Binding SaveCommand}"
-						IsEnabled="{Binding !IsBusy}"/>
-				<Button Content="ส่งออกเป็น Excel"
-						Command="{Binding ExportExcelCommand}"
-						IsEnabled="{Binding !IsBusy}"/>
-				<Button Content="สร้างใบกำกับภาษีอย่างย่อ"
-						Command="{Binding GenerateInvoicesCommand}"
-						IsEnabled="{Binding !IsBusy}"/>
+				<Button
+				Command="{Binding SaveCommand}"
+				IsEnabled="{Binding !IsBusy}" >
+
+					<StackPanel Orientation="Horizontal" >
+						<ic:FluentIcon Icon="Save" />
+						<TextBlock Text=" บันทีกข้อมูล" />
+					</StackPanel>
+				</Button>
+				<Button
+				Command="{Binding ExportExcelCommand}"
+				IsEnabled="{Binding !IsBusy}" >
+					<StackPanel Orientation="Horizontal" >
+						<ic:FluentIcon Icon="DocumentSave" />
+						<TextBlock Text=" ส่งออกเป็น Excel" />
+					</StackPanel>
+				</Button>
+				<Button
+				Command="{Binding GenerateInvoicesCommand}"
+				IsEnabled="{Binding !IsBusy}">
+					<StackPanel Orientation="Horizontal" >
+						<ic:FluentIcon Icon="DocumentOnePageSparkle" />
+						<TextBlock Text=" สร้างใบกำกับภาษีอย่างย่อ" />
+					</StackPanel>
+				</Button>
 			</StackPanel>
 		</DockPanel>
 

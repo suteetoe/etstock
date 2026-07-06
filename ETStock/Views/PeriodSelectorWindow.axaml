@@ -1,28 +1,42 @@
 <Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:ETStock.ViewModels"
-        x:Class="ETStock.Views.PeriodSelectorWindow"
-        x:DataType="vm:PeriodSelectorViewModel"
-        Icon="avares://ETStock/Assets/etstock.ico"
-        Title="เลือกงวด (ปี / เดือน)"
-        Width="400" Height="180"
-        WindowStartupLocation="CenterScreen"
-        CanResize="False"
-        ShowInTaskbar="True">
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
+		xmlns:icx="clr-namespace:FluentIcons.Avalonia.Markup;assembly=FluentIcons.Avalonia"
+		xmlns:vm="using:ETStock.ViewModels"
+		x:Class="ETStock.Views.PeriodSelectorWindow"
+		x:DataType="vm:PeriodSelectorViewModel"
+		Icon="avares://ETStock/Assets/etstock.ico"
+		Title="เลือกงวด (ปี / เดือน)"
+		Width="400" Height="180"
+		WindowStartupLocation="CenterScreen"
+		CanResize="False"
+		ShowInTaskbar="True">
 
-    <Grid RowDefinitions="*,Auto" Margin="16">
-        <StackPanel Grid.Row="0" Spacing="8">
-            <TextBlock Text="เลือกเดือน / ปี" FontWeight="SemiBold"/>
-            <DatePicker SelectedDate="{Binding SelectedDate}"
-                        DayVisible="False"
-                        HorizontalAlignment="Stretch"/>
-        </StackPanel>
+	<Grid RowDefinitions="*,Auto" Margin="16">
+		<StackPanel Grid.Row="0" Spacing="8">
+			<TextBlock Text="เลือกเดือน / ปี" FontWeight="SemiBold"/>
+			<DatePicker SelectedDate="{Binding SelectedDate}"
+						DayVisible="False"
+						HorizontalAlignment="Stretch"/>
+		</StackPanel>
 
-        <Grid Grid.Row="1" ColumnDefinitions="*,8,*" Margin="0,16,0,0">
-            <Button Grid.Column="0" Content="ยกเลิก" HorizontalAlignment="Stretch"
-                    Command="{Binding CancelCommand}"/>
-            <Button Grid.Column="2" Content="ตกลง" HorizontalAlignment="Stretch"
-                    Classes="accent" Command="{Binding ConfirmCommand}"/>
-        </Grid>
-    </Grid>
+		<Grid Grid.Row="1" ColumnDefinitions="*,8,*" Margin="0,16,0,0">
+
+			<Button  Grid.Column="0" HorizontalAlignment="Stretch"
+					 Command="{Binding CancelCommand}">
+
+				<StackPanel Orientation="Horizontal" >
+					<ic:FluentIcon Icon="DismissCircle" />
+					<TextBlock Text=" ยกเลิก" />
+				</StackPanel>
+			</Button>
+			<Button Grid.Column="2" HorizontalAlignment="Stretch"
+					Command="{Binding ConfirmCommand}">
+				<StackPanel Orientation="Horizontal">
+					<ic:FluentIcon Icon="CheckmarkCircle" />
+					<TextBlock Text=" ตกลง" />
+				</StackPanel>
+			</Button>
+		</Grid>
+	</Grid>
 </Window>
