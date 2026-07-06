@@ -8,13 +8,13 @@
 			 xmlns:icx="clr-namespace:FluentIcons.Avalonia.Markup;assembly=FluentIcons.Avalonia"
 			 mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="700"
 			 x:Class="ETStock.Views.InvoiceView"
-			 x:DataType="vm:InvoiceViewModel">
+			 x:DataType="vm:InvoiceViewModel" >
 
 	<Design.DataContext>
 		<vm:InvoiceViewModel/>
 	</Design.DataContext>
 
-	<Grid RowDefinitions="Auto,*,Auto,Auto" RowSpacing="8" Background="{DynamicResource AppBackgroundBrush}">
+	<Grid RowDefinitions="Auto,*,Auto,Auto" RowSpacing="8" >
 
 		<!-- Row 0: current running state + seed form (conditional) -->
 		<StackPanel Grid.Row="0" Spacing="6">
@@ -42,7 +42,7 @@
 						IsEnabled="{Binding !IsBusy}">
 				<StackPanel Orientation="Horizontal" >
 						<ic:FluentIcon Icon="Print" />
-						<TextBlock Text=" พิมพ์ทั้งหมด" />
+						<TextBlock Text=" พิมพ์ทั้งหมด"  Padding="0,2,0,0" />
 					</StackPanel>
 				</Button>
 				

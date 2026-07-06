@@ -10,7 +10,7 @@
 		Width="400" Height="180"
 		WindowStartupLocation="CenterScreen"
 		CanResize="False"
-		ShowInTaskbar="True" Background="{DynamicResource AppBackgroundBrush}" >
+		ShowInTaskbar="True"  >
 
 
 
@@ -29,14 +29,14 @@
 
 				<StackPanel Orientation="Horizontal" >
 					<ic:FluentIcon Icon="DismissCircle" />
-					<TextBlock Text=" ยกเลิก" />
+					<TextBlock Text=" ยกเลิก" Padding="0,2,0,0" />
 				</StackPanel>
 			</Button>
 			<Button  Classes="success" Grid.Column="2" HorizontalAlignment="Stretch"
 					Command="{Binding ConfirmCommand}">
 				<StackPanel Orientation="Horizontal">
 					<ic:FluentIcon Icon="CheckmarkCircle" />
-					<TextBlock Text=" ตกลง" />
+					<TextBlock Text=" ตกลง"  Padding="0,2,0,0" />
 				</StackPanel>
 			</Button>
 		</Grid>

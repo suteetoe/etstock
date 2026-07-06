@@ -20,6 +20,12 @@
 		<SolidColorBrush x:Key="PanelBorderBrush" Color="#CBD5E1" />
 		<SolidColorBrush x:Key="RowDividerBrush" Color="#E2E8F0" />
 		<SolidColorBrush x:Key="PreviewChromeBrush" Color="#E5EAF2" />
+		<SolidColorBrush x:Key="TabStripBrush" Color="#E5E5E5" />
+		<SolidColorBrush x:Key="TabSelectedBrush" Color="#FFFFFF" />
+		<SolidColorBrush x:Key="TabInactiveBrush" Color="#DADADA" />
+		<SolidColorBrush x:Key="TabHoverBrush" Color="#D0D0D0" />
+		<SolidColorBrush x:Key="TabTextBrush" Color="#334155" />
+		<SolidColorBrush x:Key="TabSelectedTextBrush" Color="#0F172A" />
 		<SolidColorBrush x:Key="WarningBackgroundBrush" Color="#FFF7ED" />
 		<SolidColorBrush x:Key="WarningBorderBrush" Color="#FDBA74" />
 		<SolidColorBrush x:Key="WarningTextBrush" Color="#C2410C" />
@@ -63,6 +69,51 @@
 		<Style Selector="NumericUpDown">
 			<Setter Property="CornerRadius" Value="3" />
 		</Style>
+
+		<Style Selector="TabControl">
+			<Setter Property="Background" Value="{DynamicResource AppBackgroundBrush}" />
+		</Style>
+
+		<Style Selector="TabControl /template/ ContentPresenter#PART_SelectedContentHost">
+			<Setter Property="Background" Value="#FFFFFF"/>
+			<Setter Property="Padding" Value="5"/>
+			<Setter Property="Margin" Value="0,0,0,0"/>
+			<Setter Property="BorderBrush" Value="{DynamicResource TabInactiveBrush}" />
+			<Setter Property="BorderThickness" Value="1" />
+		</Style>
+
+		<Style Selector="TabItem">
+			<Setter Property="Background" Value="{DynamicResource TabInactiveBrush}" />
+			<Setter Property="BorderBrush" Value="{DynamicResource TabInactiveBrush}" />
+			<Setter Property="Foreground" Value="{DynamicResource TabTextBrush}" />
+			<Setter Property="Padding" Value="16,8" />
+			<Setter Property="CornerRadius" Value="6,6,0,0" />
+			<Setter Property="Margin" Value="0,0,2,0" />
+		</Style>
+
+		<Style Selector="TabItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#FFFFFF" />
+			<Setter Property="BorderThickness" Value="1,1,1,0" />
+		</Style>
+
+		<!--
+		<Style Selector="TabItem:pointerover">
+		<Setter Property="Background" Value="#000000" />
+		<Setter Property="BorderBrush" Value="{DynamicResource TabHoverBrush}" />
+		<Setter Property="Foreground" Value="{DynamicResource TabSelectedTextBrush}" />
+		</Style>
+
+		<Style Selector="TabItem:selected">
+		<Setter Property="Background" Value="{DynamicResource TabSelectedBrush}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource TabSelectedBrush}" />
+		<Setter Property="Foreground" Value="{DynamicResource TabSelectedTextBrush}" />
+		</Style>
+
+		<Style Selector="TabItem:selected:pointerover">
+		<Setter Property="Background" Value="{DynamicResource TabSelectedBrush}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource TabSelectedBrush}" />
+		</Style>
+		-->
 
 		<Style Selector="Button.accent">
 			<Setter Property="Background" Value="{DynamicResource AccentButtonBrush}" />

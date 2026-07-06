@@ -5,15 +5,15 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:ic="clr-namespace:FluentIcons.Avalonia;assembly=FluentIcons.Avalonia"
 			 xmlns:icx="clr-namespace:FluentIcons.Avalonia.Markup;assembly=FluentIcons.Avalonia"
-			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+			 mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="600"
 			 x:Class="ETStock.Views.ProductView"
-			 x:DataType="vm:ProductViewModel">
+			 x:DataType="vm:ProductViewModel" >
 
 	<Design.DataContext>
 		<vm:ProductViewModel/>
 	</Design.DataContext>
 
-	<Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" Background="{DynamicResource AppBackgroundBrush}">
+	<Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12" >
 
 		<Grid Grid.Row="0" ColumnDefinitions="*,Auto">
 			<TextBlock Grid.Column="0"
@@ -27,7 +27,7 @@
 
 					<StackPanel Orientation="Horizontal" >
 						<ic:FluentIcon Icon="DismissCircle" />
-						<TextBlock Text=" ลบสินค้า" />
+						<TextBlock Text=" ลบสินค้า"  Padding="0,2,0,0" />
 					</StackPanel>
 				</Button>
 				<Button
@@ -35,7 +35,7 @@
 				Classes="success" >
 					<StackPanel Orientation="Horizontal" >
 						<ic:FluentIcon Icon="AddCircle" />
-						<TextBlock Text=" เพิ่มสินค้า" />
+						<TextBlock Text=" เพิ่มสินค้า"  Padding="0,2,0,0" />
 					</StackPanel>
 				</Button>
 			</StackPanel>
@@ -44,9 +44,9 @@
 
 		<DockPanel Grid.Row="1" LastChildFill="False">
 			<StackPanel Orientation="Horizontal" Spacing="8" >
-				<TextBlock Text="ค้นหา : " Margin="5,4,0,0" />
+				<TextBlock Text="ค้นหา : " Margin="5,10,0,0" />
 				<TextBox Text="{Binding SearchText}"
-						 Watermark="ค้นหาชื่อสินค้า..."
+						 Watermark="ค้นหาชื่อสินค้า..."  Padding="5,10,0,0"
 						 Width="400"
 						 >
 					<TextBox.KeyBindings>
@@ -63,7 +63,7 @@
 
 					<StackPanel Orientation="Horizontal" >
 						<ic:FluentIcon Icon="Save" />
-						<TextBlock Text=" บันทีกข้อมูล" />
+						<TextBlock Text=" บันทีกข้อมูล"  Padding="0,2,0,0" />
 					</StackPanel>
 				</Button>
 				<Button
@@ -72,7 +72,7 @@
 				IsEnabled="{Binding !IsBusy}" >
 					<StackPanel Orientation="Horizontal" >
 						<ic:FluentIcon Icon="DocumentSave" />
-						<TextBlock Text=" ส่งออกเป็น Excel" />
+						<TextBlock Text=" ส่งออกเป็น Excel"  Padding="0,2,0,0" />
 					</StackPanel>
 				</Button>
 				<Button
@@ -81,7 +81,7 @@
 				IsEnabled="{Binding !IsBusy}">
 					<StackPanel Orientation="Horizontal" >
 						<ic:FluentIcon Icon="DocumentOnePageSparkle" />
-						<TextBlock Text=" สร้างใบกำกับภาษีอย่างย่อ" />
+						<TextBlock Text=" สร้างใบกำกับภาษีอย่างย่อ"  Padding="0,2,0,0" />
 					</StackPanel>
 				</Button>
 			</StackPanel>

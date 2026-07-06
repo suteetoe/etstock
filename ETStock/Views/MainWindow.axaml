@@ -19,8 +19,8 @@
 
 	<Grid RowDefinitions="24,Auto,*" Background="{DynamicResource AppBackgroundBrush}">
 		<!-- Menu bar -->
-		<Menu Grid.Row="0">
-			<MenuItem Header="การตั้งค่า" Padding="0,3,0,0">
+		<Menu Grid.Row="0" Padding="0,0,0,0">
+			<MenuItem Header="การตั้งค่า" Padding="10,3,10,0">
 				<MenuItem Header="ข้อมูลบริษัท"
 						  Command="{Binding OpenCompanyDialogCommand}"/>
 				<MenuItem Header="นำเข้ายอดคงเหลือใหม่"
@@ -31,17 +31,23 @@
 
 		<!-- Global period selector -->
 		<Border Grid.Row="1" Background="{DynamicResource PeriodBarBrush}" BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="0,0,0,1" Padding="16,6">
-			<StackPanel Orientation="Horizontal"
+			<Grid ColumnDefinitions="200, *" >
+
+				<TextBlock Grid.Column="0" FontSize="28" FontWeight="Bold" Foreground="DeepSkyBlue">
+					ET Stock
+				</TextBlock>
+
+				<StackPanel Orientation="Horizontal" Grid.Column="1"
 						Spacing="8"
 						HorizontalAlignment="Right"
 						VerticalAlignment="Center">
-				<Button 
+				<Button
 				Command="{Binding StockPage.CarryForwardCommand}"
 				IsEnabled="{Binding !StockPage.IsBusy}"
 				>
 					<StackPanel Orientation="Horizontal" >
 						<ic:SymbolIcon Symbol="CalendarArrowCounterclockwise" />
-						<TextBlock Text=" นำเข้าข้อมูลเดือนก่อนหน้าใหม่" />
+						<TextBlock Text=" นำเข้าข้อมูลเดือนก่อนหน้าใหม่"  Padding="0,2,0,0" />
 					</StackPanel>
 				</Button>
 				<Button
@@ -50,10 +56,12 @@
 				>
 					<StackPanel Orientation="Horizontal" >
 						<ic:SymbolIcon Symbol="Calendar" />
-						<TextBlock Text="{Binding PeriodLabel}" Padding="5,0,0,0" />
+						<TextBlock Text="{Binding PeriodLabel}" Padding="5,2,0,0" />
 					</StackPanel>
 				</Button>
 			</StackPanel>
+			</Grid>
+			
 		</Border>
 
 		<!-- Tab area -->
@@ -65,7 +73,8 @@
 						<TextBlock Text="สินค้าคงเหลือ" Padding="5,0,0,0" />
 					</StackPanel>
 				</TabItem.Header>
-				<views:ProductView DataContext="{Binding StockPage}" Margin="8"/>
+
+				<views:ProductView DataContext="{Binding StockPage}" Margin="8" />
 			</TabItem>
 			<TabItem>
 				<TabItem.Header>
