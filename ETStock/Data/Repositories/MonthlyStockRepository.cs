@@ -15,7 +15,7 @@ public class MonthlyStockRepository(AppDbContext db) : IMonthlyStockRepository
         return await db.MonthlyStocks
             .AsNoTracking()
             .Where(stock => stock.Year == year && stock.Month == month)
-            .OrderBy(stock => stock.ProductName)
+            .OrderBy(stock => stock.Id)
             .Select(stock => new ProductWithStock(
                 stock.ProductName,
                 stock.Unit,
