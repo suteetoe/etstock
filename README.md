@@ -8,3 +8,11 @@
 
 - [ภาพรวมโปรเจกต์ (docs/OVERVIEW.md)](docs/OVERVIEW.md) — scope, workflow, หน้าจอ, business rules
 - [Data Model (docs/DATA_MODEL.md)](docs/DATA_MODEL.md) — โครงสร้างตาราง PostgreSQL
+
+
+## Setup
+
+Database Setup
+```
+Host=localhost;Port=5432;Database=database;Username=postgres;Password=password
+```
