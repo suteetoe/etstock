@@ -55,7 +55,7 @@ public class ExcelExportServiceTests
             using var wb = new XLWorkbook(path);
             var ws = wb.Worksheets.First();
 
-            // SalesQty=3+1=4, ClosingQty=10+5-3-1=11, SalesAmount=4*150=600, TotalCost=4*100=400, ClosingValue=11*100=1100
+            // SalesQty=3+1=4, ClosingQty=10+5-3-1=11, SalesAmount=1*150=150, TotalCost=4*100=400, ClosingValue=11*100=1100
             Assert.Equal(1.0, ws.Cell(2, 1).GetValue<double>());    // LineNumber
             Assert.Equal("สินค้า A", ws.Cell(2, 2).GetString());    // Name
             Assert.Equal(10.0, ws.Cell(2, 3).GetValue<double>());   // OpeningQty
@@ -64,7 +64,7 @@ public class ExcelExportServiceTests
             Assert.Equal(3.0, ws.Cell(2, 6).GetValue<double>());    // SellFullQty
             Assert.Equal(11.0, ws.Cell(2, 7).GetValue<double>());   // ClosingQty
             Assert.Equal(150.0, ws.Cell(2, 8).GetValue<double>());  // SellPrice
-            Assert.Equal(600.0, ws.Cell(2, 9).GetValue<double>());  // SalesAmount
+            Assert.Equal(150.0, ws.Cell(2, 9).GetValue<double>());  // SalesAmount
             Assert.Equal(100.0, ws.Cell(2, 10).GetValue<double>()); // CostPrice
             Assert.Equal(400.0, ws.Cell(2, 11).GetValue<double>()); // TotalCost
             Assert.Equal(1100.0, ws.Cell(2, 12).GetValue<double>()); // ClosingValue

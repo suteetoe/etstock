@@ -198,6 +198,41 @@
 							<Grid ColumnDefinitions="40,*,90,90,90,90,90,110,90,110,150"
 								  ColumnSpacing="8">
 								<TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="รวม" FontWeight="Bold" VerticalAlignment="Center"/>
+								<TextBlock Grid.Column="2"
+										   Text="{Binding TotalOpeningQty, StringFormat={}{0:N2}}"
+										   FontWeight="Bold"
+										   TextAlignment="Right"
+										   VerticalAlignment="Center"/>
+								<TextBlock Grid.Column="3"
+										   Text="{Binding TotalBuyQty, StringFormat={}{0:N2}}"
+										   FontWeight="Bold"
+										   TextAlignment="Right"
+										   VerticalAlignment="Center"/>
+								<TextBlock Grid.Column="4"
+										   Text="{Binding TotalSellPosQty, StringFormat={}{0:N2}}"
+										   FontWeight="Bold"
+										   TextAlignment="Right"
+										   VerticalAlignment="Center"/>
+								<TextBlock Grid.Column="5"
+										   Text="{Binding TotalSellFullQty, StringFormat={}{0:N2}}"
+										   FontWeight="Bold"
+										   TextAlignment="Right"
+										   VerticalAlignment="Center"/>
+								<TextBlock Grid.Column="6"
+										   Text="{Binding TotalClosingQty, StringFormat={}{0:N2}}"
+										   FontWeight="Bold"
+										   TextAlignment="Right"
+										   VerticalAlignment="Center"/>
+								<TextBlock Grid.Column="7"
+										   Text="{Binding TotalCostValue, StringFormat={}{0:N2}}"
+										   FontWeight="Bold"
+										   TextAlignment="Right"
+										   VerticalAlignment="Center"/>
+								<TextBlock Grid.Column="8"
+										   Text="{Binding TotalSellValue, StringFormat={}{0:N2}}"
+										   FontWeight="Bold"
+										   TextAlignment="Right"
+										   VerticalAlignment="Center"/>
 								<TextBlock Grid.Column="9"
 										   Text="{Binding TotalSalesAmount, StringFormat={}{0:N2}}"
 										   FontWeight="Bold"

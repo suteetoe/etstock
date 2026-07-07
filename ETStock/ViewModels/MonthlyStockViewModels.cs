@@ -32,11 +32,25 @@ public partial class ProductViewModel
 
     public void SetSeed(int runningNo) => _seed = runningNo;
 
+    public decimal TotalOpeningQty => Rows.Sum(r => r.OpeningQty);
+    public decimal TotalBuyQty => Rows.Sum(r => r.BuyQty);
+    public decimal TotalSellPosQty => Rows.Sum(r => r.SellPosQty);
+    public decimal TotalSellFullQty => Rows.Sum(r => r.SellFullQty);
+    public decimal TotalClosingQty => Rows.Sum(r => r.ClosingQty);
+    public decimal TotalCostValue => Rows.Sum(r => r.TotalCost);
+    public decimal TotalSellValue => Rows.Sum(r => r.ClosingQty * r.SellPrice);
     public decimal TotalSalesAmount => Rows.Sum(r => r.SalesAmount);
     public decimal TotalClosingValue => Rows.Sum(r => r.ClosingValue);
 
     private void RecalcTotals()
     {
+        OnPropertyChanged(nameof(TotalOpeningQty));
+        OnPropertyChanged(nameof(TotalBuyQty));
+        OnPropertyChanged(nameof(TotalSellPosQty));
+        OnPropertyChanged(nameof(TotalSellFullQty));
+        OnPropertyChanged(nameof(TotalClosingQty));
+        OnPropertyChanged(nameof(TotalCostValue));
+        OnPropertyChanged(nameof(TotalSellValue));
         OnPropertyChanged(nameof(TotalSalesAmount));
         OnPropertyChanged(nameof(TotalClosingValue));
     }
@@ -552,7 +566,6 @@ public partial class MonthlyStockRowViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(ClosingQty))]
     [NotifyPropertyChangedFor(nameof(ClosingValue))]
     [NotifyPropertyChangedFor(nameof(SalesQty))]
-    [NotifyPropertyChangedFor(nameof(SalesAmount))]
     [NotifyPropertyChangedFor(nameof(TotalCost))]
     private decimal _sellFullQty;
 
@@ -566,7 +579,7 @@ public partial class MonthlyStockRowViewModel : ViewModelBase
 
     public decimal ClosingQty => OpeningQty + BuyQty - SellFullQty - SellPosQty;
     public decimal SalesQty => SellFullQty + SellPosQty;
-    public decimal SalesAmount => SalesQty * SellPrice;
+    public decimal SalesAmount => SellPosQty * SellPrice;
     public decimal TotalCost => SalesQty * CostPrice;
 
     public MonthlyStockInput ToInput(int year, int month) => new(
