@@ -37,8 +37,8 @@ public partial class ProductViewModel
     public decimal TotalSellPosQty => Rows.Sum(r => r.SellPosQty);
     public decimal TotalSellFullQty => Rows.Sum(r => r.SellFullQty);
     public decimal TotalClosingQty => Rows.Sum(r => r.ClosingQty);
-    public decimal TotalCostValue => Rows.Sum(r => r.TotalCost);
-    public decimal TotalSellValue => Rows.Sum(r => r.ClosingQty * r.SellPrice);
+    public decimal TotalCostValue => Rows.Sum(r => r.CostPrice);
+    public decimal TotalSellValue => Rows.Sum(r => r.SellPrice);
     public decimal TotalSalesAmount => Rows.Sum(r => r.SalesAmount);
     public decimal TotalClosingValue => Rows.Sum(r => r.ClosingValue);
 
@@ -519,6 +519,7 @@ public partial class MonthlyStockRowViewModel : ViewModelBase
         _buyQty = stock?.BuyQty ?? 0;
         _sellFullQty = stock?.SellFullQty ?? 0;
         _sellPosQty = stock?.SellPosQty ?? 0;
+        CarryForwardQty = stock?.CarryForwardQty ?? 0;
     }
 
     public MonthlyStockRowViewModel(ExcelImportRecord record)
@@ -581,6 +582,7 @@ public partial class MonthlyStockRowViewModel : ViewModelBase
     public decimal SalesQty => SellFullQty + SellPosQty;
     public decimal SalesAmount => SellPosQty * SellPrice;
     public decimal TotalCost => SalesQty * CostPrice;
+    public decimal CarryForwardQty { get; private set; }
 
     public MonthlyStockInput ToInput(int year, int month) => new(
         Name,

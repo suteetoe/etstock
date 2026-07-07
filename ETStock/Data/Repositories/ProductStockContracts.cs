@@ -27,7 +27,8 @@ public sealed record MonthlyStockSnapshot(
     decimal OpeningQty,
     decimal BuyQty,
     decimal SellFullQty,
-    decimal SellPosQty)
+    decimal SellPosQty,
+    decimal CarryForwardQty = 0)
 {
     public decimal ClosingQty => OpeningQty + BuyQty - SellFullQty - SellPosQty;
 }

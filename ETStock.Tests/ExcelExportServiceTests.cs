@@ -25,10 +25,11 @@ public class ExcelExportServiceTests
             [
                 "ลำดับ", "ชื่อสินค้า", "ยอดยกมา", "ซื้อเข้า",
                 "ขายออก", "บิลเต็ม", "คงเหลือ", "ราคาขาย",
-                "จำนวนเงิน", "ต้นทุนสินค้า", "ต้นทุนรวม", "มูลค่าสินค้าคงเหลือ"
+                "จำนวนเงิน", "ต้นทุนสินค้า", "ต้นทุนรวม", "มูลค่าสินค้าคงเหลือ",
+                "ยอดคงเหลือยกไป"
             ];
 
-            for (int c = 1; c <= 12; c++)
+            for (int c = 1; c <= 13; c++)
                 Assert.Equal(expectedHeaders[c - 1], ws.Cell(1, c).GetString());
 
             Assert.True(ws.Cell(1, 1).Style.Font.Bold);
@@ -117,7 +118,7 @@ public class ExcelExportServiceTests
             using var wb = new XLWorkbook(path);
             var ws = wb.Worksheets.First();
 
-            for (int col = 3; col <= 12; col++)
+            for (int col = 3; col <= 13; col++)
             {
                 var fmt = ws.Cell(2, col).Style.NumberFormat;
                 Assert.True(

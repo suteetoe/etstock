@@ -29,7 +29,8 @@ public class MonthlyStockRepository(AppDbContext db) : IMonthlyStockRepository
                     stock.OpeningQty,
                     stock.BuyQty,
                     stock.SellFullQty,
-                    stock.SellPosQty)))
+                    stock.SellPosQty,
+                    stock.CarryForwardQty)))
             .ToListAsync(ct);
     }
 
@@ -71,7 +72,9 @@ public class MonthlyStockRepository(AppDbContext db) : IMonthlyStockRepository
         entity.SellFullQty = stock.SellFullQty;
         entity.SellPosQty = stock.SellPosQty;
         entity.SalesAmount = stock.SellPosQty * stock.SellPrice;
-        entity.ClosingValue = (stock.OpeningQty + stock.BuyQty - stock.SellFullQty - stock.SellPosQty) * stock.CostPrice;
+        var closingQty = stock.OpeningQty + stock.BuyQty - stock.SellFullQty - stock.SellPosQty;
+        entity.ClosingValue = closingQty * stock.CostPrice;
+        entity.CarryForwardQty = closingQty;
 
         await db.SaveChangesAsync(ct);
         return ToSnapshot(entity);
@@ -133,6 +136,7 @@ public class MonthlyStockRepository(AppDbContext db) : IMonthlyStockRepository
             currentRow.SellPosQty = 0;
             currentRow.SalesAmount = 0;
             currentRow.ClosingValue = currentRow.OpeningQty * currentRow.CostPrice;
+            currentRow.CarryForwardQty = currentRow.OpeningQty;
         }
 
         await db.SaveChangesAsync(ct);
@@ -181,7 +185,8 @@ public class MonthlyStockRepository(AppDbContext db) : IMonthlyStockRepository
             stock.OpeningQty,
             stock.BuyQty,
             stock.SellFullQty,
-            stock.SellPosQty);
+            stock.SellPosQty,
+            stock.CarryForwardQty);
     }
 
     private static void ValidatePeriod(int year, int month)

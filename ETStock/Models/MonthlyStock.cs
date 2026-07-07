@@ -15,4 +15,5 @@ public class MonthlyStock
     public decimal ClosingQty => OpeningQty + BuyQty - SellFullQty - SellPosQty;
     public decimal SalesAmount { get; set; }
     public decimal ClosingValue { get; set; }
+    public decimal CarryForwardQty { get; set; } // ยอดคงเหลือยกไป
 }

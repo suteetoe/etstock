@@ -31,6 +31,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .Property(ms => ms.SalesAmount).HasPrecision(18, 4);
         modelBuilder.Entity<MonthlyStock>()
             .Property(ms => ms.ClosingValue).HasPrecision(18, 4);
+        modelBuilder.Entity<MonthlyStock>()
+            .Property(ms => ms.CarryForwardQty).HasPrecision(18, 4);
 
         modelBuilder.Entity<AbbrInvoice>()
             .Property(i => i.TotalAmount).HasPrecision(18, 4);
