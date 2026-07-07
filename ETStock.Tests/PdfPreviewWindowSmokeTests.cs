@@ -63,7 +63,8 @@ public class PdfPreviewWindowSmokeTests
     {
         // %PDF magic header — a minimal valid-looking PDF byte sequence
         var pdfBytes = new byte[] { 0x25, 0x50, 0x44, 0x46, 0x2D };
-        var window = new PdfPreviewWindow(pdfBytes);
+        var window = new PdfPreviewWindow();
+        window.LoadPdf(pdfBytes);
         Assert.NotNull(window);
     }
 }

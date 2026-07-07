@@ -6,6 +6,7 @@ namespace ETStock.Views;
 public partial class InvoiceView : UserControl
 {
     private InvoiceViewModel? _vm;
+    private PdfPreviewWindow? _previewWindow;
 
     public InvoiceView()
     {
@@ -24,12 +25,16 @@ public partial class InvoiceView : UserControl
             _vm.PdfPreviewRequested += OnPdfPreviewRequested;
     }
 
-    private async void OnPdfPreviewRequested(byte[] pdfBytes)
+    private void OnPdfPreviewRequested(byte[] pdfBytes)
     {
-        var window = new PdfPreviewWindow(pdfBytes);
-        if (TopLevel.GetTopLevel(this) is Window parent)
-            await window.ShowDialog(parent);
+        // Reuse the same window — recreating WebView2 fails with 0x800700AA if called
+        // shortly after closing, because the browser process hasn't fully exited yet.
+        _previewWindow ??= new PdfPreviewWindow();
+        _previewWindow.LoadPdf(pdfBytes);
+
+        if (!_previewWindow.IsVisible)
+            _previewWindow.Show();
         else
-            window.Show();
+            _previewWindow.Activate();
     }
 }

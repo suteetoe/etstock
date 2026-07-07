@@ -13,9 +13,12 @@
     <SuppressIces>ICE60</SuppressIces>
     <!-- ชี้ไปที่ publish output -->
     <PublishDir>$(MSBuildThisFileDirectory)..\publish\</PublishDir>
-    <Platforms>x86</Platforms>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.0.5" />
+    <PackageReference Include="Avalonia.Controls.WebView" Version="12.0.1" />
+    <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3" />
     <PackageReference Include="WixToolset.UI.wixext" Version="6.0.2" />
     <PackageReference Include="WixToolset.Util.wixext" Version="6.0.2" />
   </ItemGroup>
