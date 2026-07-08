@@ -31,12 +31,17 @@ public class InvoiceGeneratorService(IAbbrInvoiceRepository repo) : IInvoiceGene
         if (validLines.Count == 0)
             return null;
 
-        // 3. totalQty = sum of all SellPosQty
-        var totalQty = validLines.Sum(l => l.SellPosQty);
+        // 3. totalQty = sum of all SellPosQty; totalSales = revenue used for bill-count tier
+        var totalQty   = validLines.Sum(l => l.SellPosQty);
+        var totalSales = validLines.Sum(l => l.SellPosQty * l.SellPrice);
 
-        // 4. determine N = random number of invoices in [1, maxInvoices]
-        var maxInvoices = Math.Min(20, Math.Max(1, (int)Math.Ceiling(totalQty)));
-        var n = _rng.Next(1, maxInvoices + 1);
+        // 4. max invoices allowed by sales tier
+        var tierMax = totalSales switch
+        {
+            <= 100_000m => 50,
+            <= 300_000m => 200,
+            _           => 500
+        };
 
         // 4a. delete existing invoices for this period BEFORE computing the
         // starting running-number/book-number, so invoices about to be
@@ -53,22 +58,57 @@ public class InvoiceGeneratorService(IAbbrInvoiceRepository repo) : IInvoiceGene
 
         if (latest is not null)
         {
-            startRunningNo    = latest.Value.RunningNo + 1;
+            startRunningNo = latest.Value.RunningNo + 1;
         }
         else if (seedRunningNo is not null)
         {
-            startRunningNo   = seedRunningNo.Value + 1;
+            startRunningNo = seedRunningNo.Value + 1;
         }
         else
         {
             throw new InvalidOperationException("ไม่พบเลขที่ใบกำกับล่าสุด กรุณาระบุเลขที่เริ่มต้น");
         }
 
-        // 5. partition each product's qty across N invoice slots
-        //    partitions[productIndex][invoiceIndex] = qty for that slot
-        var partitions = validLines
-            .Select(l => RandomPartition(l.SellPosQty, n, _rng))
-            .ToList();
+        // 5. group products into batches of at most MaxItemsPerInvoice so that no
+        //    single invoice contains more than 12 product lines.  Each batch is
+        //    assigned to its own slice of the global invoice slots so that every
+        //    product appears in at least one invoice.
+        const int MaxItemsPerInvoice = 12;
+        int numBatches = (int)Math.Ceiling(validLines.Count / (double)MaxItemsPerInvoice);
+
+        // n must be at least numBatches (one invoice per batch) and at most the tier cap.
+        // A qty-based ceiling prevents creating far more invoice slots than there are units.
+        var qtyBasedMax = Math.Max(1, (int)Math.Ceiling(totalQty));
+        var nMin = numBatches;
+        var nMax = Math.Max(nMin, Math.Min(tierMax, qtyBasedMax));
+        var n = _rng.Next(nMin, nMax + 1);
+
+        // 5a. distribute n slots across batches (round-robin remainder)
+        var slotsPerBatch = new int[numBatches];
+        int baseSlots   = n / numBatches;
+        int remainSlots = n % numBatches;
+        for (int b = 0; b < numBatches; b++)
+            slotsPerBatch[b] = baseSlots + (b < remainSlots ? 1 : 0);
+
+        // 5b. compute the global starting slot index for each batch
+        var batchStartIdx = new int[numBatches];
+        for (int b = 1; b < numBatches; b++)
+            batchStartIdx[b] = batchStartIdx[b - 1] + slotsPerBatch[b - 1];
+
+        // 5c. build sparse partitions: partitions[p][i] = qty of product p in global slot i.
+        //     Product p belongs to batch floor(p / MaxItemsPerInvoice); its qty is spread
+        //     only across that batch's invoice slots.
+        var partitions = new decimal[validLines.Count][];
+        for (int p = 0; p < validLines.Count; p++)
+        {
+            int batchIdx  = p / MaxItemsPerInvoice;
+            int slots     = slotsPerBatch[batchIdx];
+            var localPtn  = RandomPartition(validLines[p].SellPosQty, slots, _rng);
+
+            partitions[p] = new decimal[n];
+            for (int k = 0; k < slots; k++)
+                partitions[p][batchStartIdx[batchIdx] + k] = localPtn[k];
+        }
 
         // 6. build AbbrInvoice list
         var daysInMonth = DateTime.DaysInMonth(taxYear, taxMonth);

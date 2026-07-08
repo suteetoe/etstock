@@ -526,6 +526,64 @@ public class InvoiceGeneratorServiceTests
         }
     }
 
+    // TC-NEW-1: each invoice must have at most 12 product lines when > 12 products provided
+    [Fact]
+    public async Task GenerateAsync_MoreThan12Products_EachInvoiceHasAtMost12Items()
+    {
+        var (svc, db) = CreateService();
+        await using (db)
+        {
+            // 15 products → numBatches = 2 (12 + 3), each invoice must stay ≤ 12 lines
+            var lines = Enumerable.Range(1, 15)
+                .Select(i => new PosStockLine($"Product {i}", 15m, 100m))
+                .ToList();
+
+            var result = await svc.GenerateAsync(2026, 6, lines, seedRunningNo: 1);
+
+            Assert.NotNull(result);
+
+            var invoices = await db.AbbrInvoices
+                .Include(i => i.Items)
+                .Where(i => i.TaxYear == 2026 && i.TaxMonth == 6)
+                .ToListAsync();
+
+            Assert.NotEmpty(invoices);
+            Assert.All(invoices, inv => Assert.True(inv.Items.Count <= 12,
+                $"Invoice {inv.InvoiceNo} has {inv.Items.Count} items (max allowed: 12)"));
+        }
+    }
+
+    // TC-NEW-2: all products must appear in at least one invoice even when batched
+    [Fact]
+    public async Task GenerateAsync_MoreThan12Products_AllProductsPresent()
+    {
+        var (svc, db) = CreateService();
+        await using (db)
+        {
+            var lines = Enumerable.Range(1, 15)
+                .Select(i => new PosStockLine($"Product {i}", 15m, 100m))
+                .ToList();
+
+            var result = await svc.GenerateAsync(2026, 6, lines, seedRunningNo: 1);
+
+            Assert.NotNull(result);
+
+            var invoices = await db.AbbrInvoices
+                .Include(i => i.Items)
+                .Where(i => i.TaxYear == 2026 && i.TaxMonth == 6)
+                .ToListAsync();
+
+            var allProductNames = invoices
+                .SelectMany(inv => inv.Items)
+                .Select(it => it.ProductName)
+                .Distinct()
+                .ToHashSet();
+
+            foreach (var line in lines)
+                Assert.Contains(line.ProductName, allProductNames);
+        }
+    }
+
     // TC-14: Book number derived purely from RunningNo - (runningNo - 1) / 50 + 1.
     // Critical boundaries per user requirement (50 documents per book):
     //   1->book 1, 50->book 1, 51->book 2, ..., 11001->book 221
