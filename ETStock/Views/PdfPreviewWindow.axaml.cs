@@ -26,16 +26,18 @@ public partial class PdfPreviewWindow : Window
 
         Closing += (_, e) =>
         {
-            // The title-bar close button reports WindowClosing (not Undefined) —
-            // intercept it so the window is hidden and reused instead of disposed,
-            // which would otherwise make the next Show() throw "Cannot re-show a
-            // closed window". Let owner/shutdown-driven closes proceed normally.
-            if (e.CloseReason is WindowCloseReason.Undefined or WindowCloseReason.WindowClosing)
+            // The title-bar close button reports WindowClosing — intercept it so
+            // the window is hidden and reused instead of disposed, which would
+            // otherwise make the next Show() throw "Cannot re-show a closed window".
+            // Undefined (programmatic Close) and other reasons (app shutdown, owner
+            // closing) are NOT intercepted so the process can exit cleanly.
+            if (e.CloseReason is WindowCloseReason.WindowClosing)
             {
                 e.Cancel = true;
                 Hide();
             }
         };
+        Closed += (_, _) => DeleteTempFile();
     }
 
     public void LoadPdf(byte[] pdfBytes)

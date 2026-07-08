@@ -43,6 +43,7 @@ namespace ETStock
                     };
                     desktop.MainWindow = mainWindow;
                     mainWindow.Show();
+                    mainWindow.Closed += (_, _) => Environment.Exit(0);
                 };
             }
 
