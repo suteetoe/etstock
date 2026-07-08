@@ -14,6 +14,8 @@
 
     <SummaryInformation Description="ETStock Installer" />
 
+    <Property Id="ARPPRODUCTICON" Value="ETStockIcon" />
+
     <MajorUpgrade DowngradeErrorMessage="A newer version is already installed. Please uninstall it first." />
 
     <MediaTemplate EmbedCab="yes" />
