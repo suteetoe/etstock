@@ -12,6 +12,8 @@
     <SuppressIces>ICE60</SuppressIces>
     <!-- ชี้ไปที่ publish output -->
     <PublishDir>$(MSBuildThisFileDirectory)..\publish\</PublishDir>
+    <!-- map MSBuild Version property → WiX preprocessor $(Version) -->
+    <DefineConstants>Version=$(Version)</DefineConstants>
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
   <ItemGroup>

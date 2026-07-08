@@ -1,4 +1,5 @@
 using Avalonia;
+using System.IO;
 using ETStock.Data;
 using ETStock.Data.Repositories;
 using ETStock.Services;
@@ -28,11 +29,22 @@ internal sealed class Program
         CultureInfo.DefaultThreadCurrentCulture = culture;
         CultureInfo.DefaultThreadCurrentUICulture = culture;
 
+        var appDataDir = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "ETStock");
+        Directory.CreateDirectory(appDataDir);
+
+        var userConfigPath = Path.Combine(appDataDir, "appsettings.json");
+        var defaultConfigPath = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
+        if (!File.Exists(userConfigPath) && File.Exists(defaultConfigPath))
+            File.Copy(defaultConfigPath, userConfigPath);
+
         var host = Host.CreateDefaultBuilder(args)
             .ConfigureAppConfiguration(config =>
             {
                 config.SetBasePath(AppContext.BaseDirectory)
-                      .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
+                      .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                      .AddJsonFile(userConfigPath, optional: true, reloadOnChange: false)
                       .AddEnvironmentVariables();
             })
             .ConfigureServices((ctx, services) =>
