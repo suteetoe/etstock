@@ -5,7 +5,7 @@
 
   <Package Name="ETStock"
            Manufacturer="ETStock"
-           Version="1.0.1"
+           Version="$(Version)"
            UpgradeCode="4166FA39-65F5-4C96-A223-267DE58EACD5"
            Language="1033"
            Codepage="utf-8"

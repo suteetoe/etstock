@@ -16,3 +16,17 @@ Database Setup
 ```
 Host=localhost;Port=5432;Database=database;Username=postgres;Password=password
 ```
+
+
+## Build & Publish
+
+```
+# puslish
+
+dotnet publish ETStock\ETStock.csproj -c Release -r win-x64 --self-contained true -o publish
+
+# build msi
+
+dotnet build ETStock.Installer\ETStock.Installer.wixproj -c Release -p:Platform=x64
+
+```
