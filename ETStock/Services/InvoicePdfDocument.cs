@@ -165,11 +165,22 @@ internal sealed class InvoicePdfDocument : IDocument
 
     private void ComposeSignature(ColumnDescriptor col)
     {
+        const string receiverName = "วรรณวิษา";
+
         col.Item().PaddingTop(8).Row(row =>
         {
-            row.RelativeItem()
-                .Text("ลงชื่อ  .........................................  ผู้รับเงิน")
-                .FontSize(10);
+            row.AutoItem().Row(nameRow =>
+            {
+                nameRow.AutoItem().Text("ลงชื่อ  ").FontSize(10);
+                nameRow.AutoItem().MinWidth(80).Column(c =>
+                {
+                    c.Item().AlignCenter().Text(receiverName).FontSize(10);
+                    c.Item().AlignCenter().PaddingTop(-10)
+                        .Text("......................................").FontSize(10).FontColor("#666666");
+                });
+                nameRow.AutoItem().Text("  ผู้รับเงิน").FontSize(10);
+            });
+            row.RelativeItem();
             row.AutoItem()
                 .Text($"วันที่  {ThaiDate(_doc.InvoiceDate)}")
                 .FontSize(10);
