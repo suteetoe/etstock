@@ -52,10 +52,12 @@ public partial class PrintPreviewViewModel : ViewModelBase
 
         // ─── Head + CSS ──────────────────────────────────────────────────
         sb.Append("<!DOCTYPE html><html><head><meta charset='utf-8'><style>");
-        sb.Append("@page{size:A5 portrait;margin:8mm 10mm}");
+        sb.Append("@page{size:A4 portrait;margin:0}");
         sb.Append("*{box-sizing:border-box;margin:0;padding:0}");
+        sb.Append("html,body{width:210mm;min-height:297mm}");
         sb.Append("body{font-family:'TH Sarabun New','Cordia New','AngsanaUPC',Tahoma,sans-serif;font-size:10pt}");
-        sb.Append("@media screen{body{max-width:148mm;margin:10mm auto;padding:2mm}}");
+        sb.Append(".a5-sheet{width:148mm;height:210mm;margin:0 auto;padding:8mm 10mm}");
+        sb.Append("@media screen{body{width:auto;min-height:100vh;background:#e5e7eb;padding:10mm}.a5-sheet{margin:0 auto;background:#fff;box-shadow:0 2mm 8mm rgba(0,0,0,.18)}}");
         sb.Append(".co-name{font-size:11.5pt;font-weight:bold;margin-bottom:1pt}");
         sb.Append(".co-info{font-size:9.5pt;line-height:1.4}");
         sb.Append(".title{text-align:center;margin:5pt 0 3pt}");
@@ -74,7 +76,7 @@ public partial class PrintPreviewViewModel : ViewModelBase
         sb.Append(".tf-label{text-align:right;font-size:8.5pt;line-height:1.3}");
         sb.Append(".tf-amount{text-align:right;font-weight:bold;vertical-align:middle}");
         sb.Append(".sig{display:flex;justify-content:space-between;margin-top:6pt;font-size:9.5pt}");
-        sb.Append("</style></head><body>");
+        sb.Append("</style></head><body><main class='a5-sheet'>");
 
         // ─── Company header ──────────────────────────────────────────────
         string branchSuffix = string.IsNullOrWhiteSpace(doc.CompanyBranch) ? "" : $" ({H(doc.CompanyBranch)})";
@@ -143,7 +145,7 @@ public partial class PrintPreviewViewModel : ViewModelBase
         sb.Append("<span>วันที่ <span class='uline' style='min-width:80pt'></span></span>");
         sb.Append("</div>");
 
-        sb.Append("</body></html>");
+        sb.Append("</main></body></html>");
         return sb.ToString();
     }
 

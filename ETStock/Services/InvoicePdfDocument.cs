@@ -14,6 +14,9 @@ internal sealed class InvoicePdfDocument : IDocument
 
     private const string ThaiFont = "TH Sarabun New";
     private const float BodySize  = 10f;
+    private const float A5Width = 148f;
+    private const float A5Height = 210f;
+    private const float A5Margin = 10f;
 
     static InvoicePdfDocument()
     {
@@ -31,19 +34,25 @@ internal sealed class InvoicePdfDocument : IDocument
     {
         container.Page(page =>
         {
-            page.Size(PageSizes.A5);
-            page.Margin(10, Unit.Millimetre);
+            page.Size(PageSizes.A4);
+            page.Margin(0);
             page.DefaultTextStyle(t => t.FontFamily(ThaiFont).FontSize(BodySize));
 
-            page.Content().Column(col =>
-            {
-                col.Spacing(3);
-                ComposeHeader(col);
-                ComposeTitle(col);
-                ComposeRefNumbers(col);
-                ComposeItemTable(col);
-                ComposeSignature(col);
-            });
+            page.Content()
+                .AlignCenter()
+                .AlignTop()
+                .Width(A5Width, Unit.Millimetre)
+                .Height(A5Height, Unit.Millimetre)
+                .Padding(A5Margin, Unit.Millimetre)
+                .Column(col =>
+                {
+                    col.Spacing(3);
+                    ComposeHeader(col);
+                    ComposeTitle(col);
+                    ComposeRefNumbers(col);
+                    ComposeItemTable(col);
+                    ComposeSignature(col);
+                });
         });
     }
 

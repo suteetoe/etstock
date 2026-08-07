@@ -291,4 +291,14 @@ public class PrintPreviewViewModelTests
         var html = PrintPreviewViewModel.BuildHtml(MakeDoc());
         Assert.Contains("107.00", html);
     }
+
+    [Fact]
+    public void BuildHtml_PrintsA5SheetTopAlignedOnA4Page()
+    {
+        var html = PrintPreviewViewModel.BuildHtml(MakeDoc());
+
+        Assert.Contains("@page{size:A4 portrait;margin:0}", html);
+        Assert.Contains(".a5-sheet{width:148mm;height:210mm;margin:0 auto", html);
+        Assert.Contains("<body><main class='a5-sheet'>", html);
+    }
 }
